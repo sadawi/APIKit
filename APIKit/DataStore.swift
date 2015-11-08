@@ -17,6 +17,8 @@ enum Operation {
     case Delete
 }
 
+let DataStoreErrorDomain = "DataStore"
+
 protocol DataStore {
     func create(model:Model) -> Promise<Model>
     func update(model:Model) -> Promise<Model>

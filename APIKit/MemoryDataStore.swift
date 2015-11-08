@@ -16,6 +16,9 @@ class MemoryDataStore: DataStore {
     private func keyForClass<T: Model>(modelClass: T.Type) -> String {
         return String(modelClass)
     }
+    private func keyForModel(model:Model) -> String? {
+        return model.identifier
+    }
     
     private func collectionForClass<T: Model>(modelClass: T.Type, create:Bool=false) -> NSMutableDictionary? {
         let key = self.keyForClass(modelClass)
@@ -42,11 +45,16 @@ class MemoryDataStore: DataStore {
     func update(model: Model) -> Promise<Model> {
         return Promise { fulfill, reject in
             // no-op since it's already in memory
-            return fulfill(model)
+            fulfill(model)
         }
     }
     func delete(model: Model) -> Promise<Model> {
         return Promise { fulfill, reject in
+            if let id=self.keyForModel(model), let collection = self.collectionForClass(model.dynamicType) {
+                collection.removeObjectForKey(id)
+            }
+            // TODO: probably should reject when not deleted
+            fulfill(model)
         }
     }
     func lookup<T:Model>(modelClass:T.Type, identifier:String) -> Promise<T?> {
@@ -54,6 +62,8 @@ class MemoryDataStore: DataStore {
             let collection = self.collectionForClass(modelClass)
             if let result = collection?[identifier] as? T {
                 fulfill(result)
+            } else {
+                reject(NSError(domain: DataStoreErrorDomain, code: 0, userInfo: [NSLocalizedDescriptionKey: "Model not found with id \(identifier)"]))
             }
         }
     }
@@ -63,7 +73,7 @@ class MemoryDataStore: DataStore {
             if let items = self.collectionForClass(modelClass)?.allValues as? [T] {
                 fulfill(items)
             } else {
-                reject(NSError(domain: "Data", code: 0, userInfo: nil)) // TODO: better error
+                reject(NSError(domain: DataStoreErrorDomain, code: 0, userInfo: [NSLocalizedDescriptionKey: "Error retrieving collection"]))
             }
         }
     }
