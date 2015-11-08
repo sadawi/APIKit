@@ -17,14 +17,14 @@ class MemoryDataStore: DataStore {
         return String(modelClass)
     }
     
-    private func collectionForClass<T: Model>(modelClass: T.Type, create:Bool=false) -> NSMutableDictionary {
+    private func collectionForClass<T: Model>(modelClass: T.Type, create:Bool=false) -> NSMutableDictionary? {
         let key = self.keyForClass(modelClass)
         var collection = self.data[key] as? NSMutableDictionary
-        if collection == nil {
+        if collection == nil && create {
             collection = NSMutableDictionary()
             self.data[key] = collection
         }
-        return collection!
+        return collection
     }
     
     func generateIdentifier() -> String {
@@ -35,25 +35,24 @@ class MemoryDataStore: DataStore {
         return Promise { fulfill, reject in
             let id = self.generateIdentifier()
             model.identifier = id
-            self.collectionForClass(model.dynamicType, create: true)[id] = model
+            self.collectionForClass(model.dynamicType, create: true)![id] = model
             fulfill(model)
         }
     }
     func update(model: Model) -> Promise<Model> {
         return Promise { fulfill, reject in
             // no-op since it's already in memory
-//            return fulfill()
+            return fulfill(model)
         }
     }
     func delete(model: Model) -> Promise<Model> {
         return Promise { fulfill, reject in
-            
         }
     }
     func lookup<T:Model>(modelClass:T.Type, identifier:String) -> Promise<T?> {
         return Promise { fulfill, reject in
             let collection = self.collectionForClass(modelClass)
-            if let result = collection[identifier] as? T {
+            if let result = collection?[identifier] as? T {
                 fulfill(result)
             }
         }
@@ -61,7 +60,7 @@ class MemoryDataStore: DataStore {
 
     func list<T: Model>(modelClass:T.Type) -> Promise<[T]> {
         return Promise { fulfill, reject in
-            if let items = self.collectionForClass(modelClass).allValues as? [T] {
+            if let items = self.collectionForClass(modelClass)?.allValues as? [T] {
                 fulfill(items)
             } else {
                 reject(NSError(domain: "Data", code: 0, userInfo: nil)) // TODO: better error
