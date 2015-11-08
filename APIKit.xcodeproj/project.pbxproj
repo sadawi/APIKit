@@ -7,9 +7,21 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		22080E311BEED3A200A633AA /* CompoundDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22080E301BEED3A200A633AA /* CompoundDataStore.swift */; settings = {ASSET_TAGS = (); }; };
 		225DE7EA1BEE8069009698FC /* APIKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 225DE7E91BEE8069009698FC /* APIKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		225DE7F11BEE8069009698FC /* APIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 225DE7E61BEE8069009698FC /* APIKit.framework */; settings = {ASSET_TAGS = (); }; };
 		225DE7F61BEE8069009698FC /* APIKitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 225DE7F51BEE8069009698FC /* APIKitTests.swift */; };
+		225DE8071BEEB04D009698FC /* MemoryDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 225DE8061BEEB04D009698FC /* MemoryDataStore.swift */; settings = {ASSET_TAGS = (); }; };
+		225DE80C1BEEB9CF009698FC /* DataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 225DE80B1BEEB9CF009698FC /* DataStore.swift */; settings = {ASSET_TAGS = (); }; };
+		225DE80E1BEEB9FE009698FC /* RemoteDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 225DE80D1BEEB9FE009698FC /* RemoteDataStore.swift */; settings = {ASSET_TAGS = (); }; };
+		225DE8121BEEBABE009698FC /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = 225DE8111BEEBABE009698FC /* Model.swift */; settings = {ASSET_TAGS = (); }; };
+		225DE8161BEEC0D5009698FC /* ModelManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 225DE8151BEEC0D5009698FC /* ModelManager.swift */; settings = {ASSET_TAGS = (); }; };
+		225DE8171BEEC4D8009698FC /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = 225DE8111BEEBABE009698FC /* Model.swift */; settings = {ASSET_TAGS = (); }; };
+		225DE8181BEEC4DC009698FC /* ModelManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 225DE8151BEEC0D5009698FC /* ModelManager.swift */; settings = {ASSET_TAGS = (); }; };
+		225DE81C1BEEC4E3009698FC /* MemoryDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 225DE8061BEEB04D009698FC /* MemoryDataStore.swift */; settings = {ASSET_TAGS = (); }; };
+		225DE81D1BEEC4E3009698FC /* DataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 225DE80B1BEEB9CF009698FC /* DataStore.swift */; settings = {ASSET_TAGS = (); }; };
+		225DE81E1BEEC4E3009698FC /* RemoteDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 225DE80D1BEEB9FE009698FC /* RemoteDataStore.swift */; settings = {ASSET_TAGS = (); }; };
+		3379611099364D616E5921CF /* Pods_APIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA64AEC3AC528E3B53B826E1 /* Pods_APIKit.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -23,12 +35,22 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		22080E301BEED3A200A633AA /* CompoundDataStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CompoundDataStore.swift; sourceTree = "<group>"; };
 		225DE7E61BEE8069009698FC /* APIKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = APIKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		225DE7E91BEE8069009698FC /* APIKit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = APIKit.h; sourceTree = "<group>"; };
 		225DE7EB1BEE8069009698FC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		225DE7F01BEE8069009698FC /* APIKitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = APIKitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		225DE7F51BEE8069009698FC /* APIKitTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIKitTests.swift; sourceTree = "<group>"; };
 		225DE7F71BEE8069009698FC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		225DE8001BEE807D009698FC /* Podfile */ = {isa = PBXFileReference; lastKnownFileType = text; path = Podfile; sourceTree = "<group>"; };
+		225DE8061BEEB04D009698FC /* MemoryDataStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MemoryDataStore.swift; sourceTree = "<group>"; };
+		225DE80B1BEEB9CF009698FC /* DataStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataStore.swift; sourceTree = "<group>"; };
+		225DE80D1BEEB9FE009698FC /* RemoteDataStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RemoteDataStore.swift; sourceTree = "<group>"; };
+		225DE8111BEEBABE009698FC /* Model.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Model.swift; sourceTree = "<group>"; };
+		225DE8151BEEC0D5009698FC /* ModelManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ModelManager.swift; sourceTree = "<group>"; };
+		4449023E723EA0BF4A2BA99C /* Pods-APIKit.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-APIKit.debug.xcconfig"; path = "Pods/Target Support Files/Pods-APIKit/Pods-APIKit.debug.xcconfig"; sourceTree = "<group>"; };
+		5A96EBE05329483E5F866082 /* Pods-APIKit.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-APIKit.release.xcconfig"; path = "Pods/Target Support Files/Pods-APIKit/Pods-APIKit.release.xcconfig"; sourceTree = "<group>"; };
+		FA64AEC3AC528E3B53B826E1 /* Pods_APIKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_APIKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -36,6 +58,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3379611099364D616E5921CF /* Pods_APIKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -53,9 +76,12 @@
 		225DE7DC1BEE8068009698FC = {
 			isa = PBXGroup;
 			children = (
+				225DE8001BEE807D009698FC /* Podfile */,
 				225DE7E81BEE8069009698FC /* APIKit */,
 				225DE7F41BEE8069009698FC /* APIKitTests */,
 				225DE7E71BEE8069009698FC /* Products */,
+				FE36985B2E7A0EB51874A5E0 /* Pods */,
+				B2A99780F0A5091C87C8EAFF /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -71,8 +97,11 @@
 		225DE7E81BEE8069009698FC /* APIKit */ = {
 			isa = PBXGroup;
 			children = (
+				225DE80F1BEEBA93009698FC /* data store */,
+				225DE8101BEEBA9A009698FC /* models */,
 				225DE7E91BEE8069009698FC /* APIKit.h */,
 				225DE7EB1BEE8069009698FC /* Info.plist */,
+				225DE8151BEEC0D5009698FC /* ModelManager.swift */,
 			);
 			path = APIKit;
 			sourceTree = "<group>";
@@ -84,6 +113,42 @@
 				225DE7F71BEE8069009698FC /* Info.plist */,
 			);
 			path = APIKitTests;
+			sourceTree = "<group>";
+		};
+		225DE80F1BEEBA93009698FC /* data store */ = {
+			isa = PBXGroup;
+			children = (
+				225DE80B1BEEB9CF009698FC /* DataStore.swift */,
+				225DE8061BEEB04D009698FC /* MemoryDataStore.swift */,
+				225DE80D1BEEB9FE009698FC /* RemoteDataStore.swift */,
+				22080E301BEED3A200A633AA /* CompoundDataStore.swift */,
+			);
+			name = "data store";
+			sourceTree = "<group>";
+		};
+		225DE8101BEEBA9A009698FC /* models */ = {
+			isa = PBXGroup;
+			children = (
+				225DE8111BEEBABE009698FC /* Model.swift */,
+			);
+			name = models;
+			sourceTree = "<group>";
+		};
+		B2A99780F0A5091C87C8EAFF /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				FA64AEC3AC528E3B53B826E1 /* Pods_APIKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		FE36985B2E7A0EB51874A5E0 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				4449023E723EA0BF4A2BA99C /* Pods-APIKit.debug.xcconfig */,
+				5A96EBE05329483E5F866082 /* Pods-APIKit.release.xcconfig */,
+			);
+			name = Pods;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -104,10 +169,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 225DE7FA1BEE8069009698FC /* Build configuration list for PBXNativeTarget "APIKit" */;
 			buildPhases = (
+				846755F590DFCCCAF88694E6 /* Check Pods Manifest.lock */,
 				225DE7E11BEE8068009698FC /* Sources */,
 				225DE7E21BEE8068009698FC /* Frameworks */,
 				225DE7E31BEE8068009698FC /* Headers */,
 				225DE7E41BEE8068009698FC /* Resources */,
+				B0B31320040353A880AABAB2 /* Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -142,6 +209,7 @@
 		225DE7DD1BEE8068009698FC /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				LastSwiftUpdateCheck = 0700;
 				LastUpgradeCheck = 0700;
 				ORGANIZATIONNAME = "Sam Williams";
 				TargetAttributes = {
@@ -188,11 +256,50 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		846755F590DFCCCAF88694E6 /* Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		B0B31320040353A880AABAB2 /* Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-APIKit/Pods-APIKit-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		225DE7E11BEE8068009698FC /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				225DE80C1BEEB9CF009698FC /* DataStore.swift in Sources */,
+				225DE8071BEEB04D009698FC /* MemoryDataStore.swift in Sources */,
+				22080E311BEED3A200A633AA /* CompoundDataStore.swift in Sources */,
+				225DE80E1BEEB9FE009698FC /* RemoteDataStore.swift in Sources */,
+				225DE8121BEEBABE009698FC /* Model.swift in Sources */,
+				225DE8161BEEC0D5009698FC /* ModelManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -200,7 +307,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				225DE81C1BEEC4E3009698FC /* MemoryDataStore.swift in Sources */,
+				225DE8171BEEC4D8009698FC /* Model.swift in Sources */,
+				225DE8181BEEC4DC009698FC /* ModelManager.swift in Sources */,
+				225DE81D1BEEC4E3009698FC /* DataStore.swift in Sources */,
 				225DE7F61BEE8069009698FC /* APIKitTests.swift in Sources */,
+				225DE81E1BEEC4E3009698FC /* RemoteDataStore.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -306,7 +418,9 @@
 		};
 		225DE7FB1BEE8069009698FC /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 4449023E723EA0BF4A2BA99C /* Pods-APIKit.debug.xcconfig */;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
@@ -317,12 +431,15 @@
 				PRODUCT_BUNDLE_IDENTIFIER = samwilliams.APIKit;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
 		};
 		225DE7FC1BEE8069009698FC /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 5A96EBE05329483E5F866082 /* Pods-APIKit.release.xcconfig */;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
@@ -375,6 +492,7 @@
 				225DE7FC1BEE8069009698FC /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		225DE7FD1BEE8069009698FC /* Build configuration list for PBXNativeTarget "APIKitTests" */ = {
 			isa = XCConfigurationList;
@@ -383,6 +501,7 @@
 				225DE7FF1BEE8069009698FC /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
