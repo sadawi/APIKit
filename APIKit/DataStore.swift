@@ -35,6 +35,6 @@ extension DataStore {
     }
 }
 
-func <<(left:DataStore, right:Model) {
-    left.save(right)
+func <<(left:DataStore, right:Model) -> Promise<Model> {
+    return left.save(right)
 }
