@@ -44,7 +44,10 @@ class MemoryDataStore: DataStore {
     }
     func update(model: Model) -> Promise<Model> {
         return Promise { fulfill, reject in
-            // no-op since it's already in memory
+            // store in the collection just to be safe
+            if let id = model.identifier {
+                self.collectionForClass(model.dynamicType, create: true)![id] = model
+            }
             fulfill(model)
         }
     }
@@ -57,7 +60,7 @@ class MemoryDataStore: DataStore {
             fulfill(model)
         }
     }
-    func lookup<T:Model>(modelClass:T.Type, identifier:String) -> Promise<T?> {
+    func lookup<T: Model>(modelClass:T.Type, identifier:String) -> Promise<T?> {
         return Promise { fulfill, reject in
             let collection = self.collectionForClass(modelClass)
             if let result = collection?[identifier] as? T {

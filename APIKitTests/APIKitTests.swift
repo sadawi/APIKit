@@ -7,6 +7,8 @@
 //
 
 import XCTest
+import PromiseKit
+
 @testable import APIKit
 
 class Person:Model {
@@ -48,10 +50,14 @@ class APIKitTests: XCTestCase {
     
     func testResources() {
         let expectation = expectationWithDescription("Waiting")
-        ModelManager.sharedInstance.dataStore.list(Person).then { results -> Void in
-            print(results)
+        ModelManager.sharedInstance.dataStore.list(Person).then { results -> Promise<Person?> in
             XCTAssertEqual(2, results.count)
-            expectation.fulfill()
+            let person = results[0]
+            return ModelManager.sharedInstance.dataStore.lookup(person.dynamicType, identifier: person.identifier!)
+            }.then { person -> () in
+                XCTAssertNotNil(person)
+                XCTAssertEqual("Bob", person?.name)
+                expectation.fulfill()
         }
         self.waitForExpectationsWithTimeout(1, handler:nil)
 
