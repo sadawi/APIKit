@@ -16,7 +16,7 @@ class CompoundDataStore {
     }
     
     // Override this to customize how each model class is looked up
-    func dataStoresForModelClass<T:Model>(modelClass:T.Type, operation:Operation = .Any) -> [DataStore] {
+    func dataStoresForModelClass<T:Model>(modelClass:T.Type, operation:Operation) -> [DataStore] {
         return self.dataStores
     }
     
