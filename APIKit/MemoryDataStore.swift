@@ -60,7 +60,7 @@ class MemoryDataStore: DataStore {
             fulfill(model)
         }
     }
-    func lookup<T: Model>(modelClass:T.Type, identifier:String) -> Promise<T?> {
+    func lookup<T: Model>(modelClass:T.Type, identifier:String) -> Promise<T> {
         return Promise { fulfill, reject in
             let collection = self.collectionForClass(modelClass)
             if let result = collection?[identifier] as? T {

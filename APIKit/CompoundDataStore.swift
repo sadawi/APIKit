@@ -8,7 +8,7 @@
 
 import PromiseKit
 
-class CompoundDataStore: DataStore {
+class CompoundDataStore {
     var dataStores:[DataStore] = []
     
     init(dataStores:[DataStore]) {

@@ -23,7 +23,7 @@ protocol DataStore {
     func create(model:Model) -> Promise<Model>
     func update(model:Model) -> Promise<Model>
     func delete(model:Model) -> Promise<Model>
-    func lookup<T: Model>(modelClass:T.Type, identifier:String) -> Promise<T?>
+    func lookup<T: Model>(modelClass:T.Type, identifier:String) -> Promise<T>
     func list<T: Model>(modelClass:T.Type) -> Promise<[T]>
 }
 
@@ -40,3 +40,4 @@ extension DataStore {
 func <<(left:DataStore, right:Model) -> Promise<Model> {
     return left.save(right)
 }
+

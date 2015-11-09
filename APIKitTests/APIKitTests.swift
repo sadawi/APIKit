@@ -15,6 +15,8 @@ class Person:Model {
     var name:String?
     var age:Int?
     
+    required init() { }
+    
     init(name:String?, age:Int?) {
         self.name = name
         self.age = age
@@ -24,6 +26,8 @@ class Person:Model {
 class Pet:Model {
     var name:String?
     var species:String?
+    
+    required init() { }
     
     init(name:String?, species:String?) {
         self.name = name
@@ -64,14 +68,14 @@ class APIKitTests: XCTestCase {
         let a = Person(name: "Kevin", age: 33)
         XCTAssertNil(a.identifier)
         
-        ModelManager.sharedInstance.dataStore.save(a).then { model -> Promise<Person?> in
+        ModelManager.sharedInstance.dataStore.save(a).then { model -> Promise<Person> in
             XCTAssertNotNil(model.identifier)
             didSave.fulfill()
             let id = model.identifier!
             return ModelManager.sharedInstance.dataStore.lookup(a.dynamicType, identifier: id)
             }.then { model -> () in
                 XCTAssertNotNil(model)
-                XCTAssert(model! === a)
+                XCTAssert(model === a)
                 didLookup.fulfill()
         }
         
