@@ -19,7 +19,7 @@ enum Operation {
 
 let DataStoreErrorDomain = "DataStore"
 
-protocol DataStore {
+public protocol DataStore {
     func create(model:Model) -> Promise<Model>
     func update(model:Model) -> Promise<Model>
     func delete(model:Model) -> Promise<Model>

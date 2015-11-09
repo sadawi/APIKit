@@ -6,10 +6,10 @@
 //  Copyright © 2015 Sam Williams. All rights reserved.
 //
 
-class Model: DictionarySerializable, Routable {
-    var identifier:String?
+public class Model: DictionarySerializable, Routable {
+    public var identifier:String?
     
-    var persisted:Bool {
+    public var persisted:Bool {
         get {
             return self.identifier != nil
         }
@@ -17,13 +17,13 @@ class Model: DictionarySerializable, Routable {
     
     // MARK: Routable
     
-    class var path: String {
+    public class var path: String {
         get { return "models" }
     }
     
     // MARK: DictionarySerializable overrides
     
-    override var dictionaryValue:[String:AnyObject] {
+    public override var dictionaryValue:[String:AnyObject] {
         get {
             var result = super.dictionaryValue
             if let id = self.identifier {

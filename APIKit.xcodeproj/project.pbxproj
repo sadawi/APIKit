@@ -46,6 +46,7 @@
 		2235AED51BEFD4AD00A730F0 /* Routable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Routable.swift; sourceTree = "<group>"; };
 		2235AED71BEFD5B800A730F0 /* DictionarySerializable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DictionarySerializable.swift; sourceTree = "<group>"; };
 		2235AEDA1BEFE00E00A730F0 /* DictionaryExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DictionaryExtension.swift; sourceTree = "<group>"; };
+		2235AEE01BF03D1400A730F0 /* APIKit.podspec */ = {isa = PBXFileReference; lastKnownFileType = text; path = APIKit.podspec; sourceTree = "<group>"; };
 		225DE7E61BEE8069009698FC /* APIKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = APIKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		225DE7E91BEE8069009698FC /* APIKit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = APIKit.h; sourceTree = "<group>"; };
 		225DE7EB1BEE8069009698FC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -94,6 +95,7 @@
 		225DE7DC1BEE8068009698FC = {
 			isa = PBXGroup;
 			children = (
+				2235AEE01BF03D1400A730F0 /* APIKit.podspec */,
 				225DE8001BEE807D009698FC /* Podfile */,
 				225DE7E81BEE8069009698FC /* APIKit */,
 				225DE7F41BEE8069009698FC /* APIKitTests */,

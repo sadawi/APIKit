@@ -8,14 +8,14 @@
 
 import Foundation
 
-protocol Routable {
+public protocol Routable {
     static var path:String { get }
     var identifier:String? { get }
     var path:String? { get }
 }
 
 extension Routable {
-    var path:String? {
+    public var path:String? {
         get {
             if let id = self.identifier {
                 return "\(self.dynamicType.path)/\(id)"

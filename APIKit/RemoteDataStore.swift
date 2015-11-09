@@ -9,7 +9,7 @@
 import Alamofire
 import PromiseKit
 
-class RemoteDataStore: DataStore {
+public class RemoteDataStore: DataStore {
     var baseURL:NSURL
     
     init(baseURL:NSURL) {
@@ -85,12 +85,12 @@ class RemoteDataStore: DataStore {
     
     // MARK: - CRUD operations
 
-    func create(model: Model) -> Promise<Model> {
+    public func create(model: Model) -> Promise<Model> {
         let parameters = self.serializeModel(model)
         return self.modelOperation(model.dynamicType, operation: self.request(.POST, path: model.dynamicType.path, parameters: parameters))
     }
     
-    func update(model: Model) -> Promise<Model> {
+    public func update(model: Model) -> Promise<Model> {
         if let path = model.path {
             let parameters = self.serializeModel(model)
             return self.modelOperation(model.dynamicType, operation: self.request(.PUT, path: path, parameters: parameters))
@@ -99,7 +99,7 @@ class RemoteDataStore: DataStore {
         }
     }
     
-    func delete(model: Model) -> Promise<Model> {
+    public func delete(model: Model) -> Promise<Model> {
         if let path = model.path {
             return self.modelOperation(model.dynamicType, operation: self.request(.DELETE, path: path))
         } else {
@@ -107,7 +107,7 @@ class RemoteDataStore: DataStore {
         }
     }
     
-    func lookup<T: Model>(modelClass:T.Type, identifier:String) -> Promise<T> {
+    public func lookup<T: Model>(modelClass:T.Type, identifier:String) -> Promise<T> {
         let model = modelClass.init() as Model
         model.identifier = identifier
         if let path = model.path {
@@ -117,11 +117,11 @@ class RemoteDataStore: DataStore {
         }
     }
 
-    func list<T: Model>(modelClass:T.Type) -> Promise<[T]> {
+    public func list<T: Model>(modelClass:T.Type) -> Promise<[T]> {
         return self.list(modelClass, parameters: nil)
     }
     
-    func list<T: Model>(modelClass:T.Type, parameters:[String:AnyObject]?) -> Promise<[T]> {
+    public func list<T: Model>(modelClass:T.Type, parameters:[String:AnyObject]?) -> Promise<[T]> {
         return Promise { fulfill, reject in
             self.request(.GET, path: modelClass.path, parameters: parameters).then { (values:[[String:AnyObject]]) -> () in
                 // TODO: any of the individual models could fail to deserialize, and we're just silently ignoring them.

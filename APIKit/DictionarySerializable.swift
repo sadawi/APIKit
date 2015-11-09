@@ -8,18 +8,18 @@
 
 import Foundation
 
-class DictionarySerializable {
+public class DictionarySerializable {
     
-    class func fromDictionaryValue(dictionaryValue:[String:AnyObject]) -> Self? {
+    public class func fromDictionaryValue(dictionaryValue:[String:AnyObject]) -> Self? {
         let instance = self.init()
         instance.dictionaryValue = dictionaryValue
         return instance
     }
     
-    required init() {
+    required public init() {
     }
     
-    var dictionaryValue:[String:AnyObject] {
+    public var dictionaryValue:[String:AnyObject] {
         get {
             return [:]
         }
