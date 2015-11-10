@@ -29,14 +29,14 @@ public class RemoteDataStore: DataStore {
     }
 
     /**
-        Asynchronously performs the given operation (which should yield a raw attribute dictionary) and instantiates a 
+        Asynchronously performs the given operation (which should yield a raw attribute dictionary) and instantiates a
         single model of the appropriate type from that attribute dictionary.
         
         - Parameter modelClass: The Model subclass to be instantiated
         - Parameter operation: A Promise that performs some operation and delivers an attribute dictionary representation of a model
         - Returns: A Promise
     */
-    private func modelOperation<T:Model>(modelClass:T.Type, operation:Promise<AttributeDictionary>) -> Promise<T>{
+    public func modelOperation<T:Model>(modelClass:T.Type, operation:Promise<AttributeDictionary>) -> Promise<T>{
         return Promise { fulfill, reject in
             operation.then { (value:AttributeDictionary) -> () in
                 if let model = self.deserializeModel(modelClass, parameters: value) {
@@ -56,7 +56,7 @@ public class RemoteDataStore: DataStore {
         return self.baseURL.URLByAppendingPathComponent(path)
     }
     
-    private func defaultHeaders() -> [String:String] {
+    public func defaultHeaders() -> [String:String] {
         return [:]
     }
     
