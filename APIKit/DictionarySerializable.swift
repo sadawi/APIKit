@@ -10,7 +10,10 @@ import Foundation
 
 public class DictionarySerializable {
     
-    public class func fromDictionaryValue(dictionaryValue:[String:AnyObject]) -> Self? {
+    /**
+        Attempts to instantiate a new object from a dictionary representation of its attributes
+    */
+    public class func fromDictionaryValue(dictionaryValue:AttributeDictionary) -> Self? {
         let instance = self.init()
         instance.dictionaryValue = dictionaryValue
         return instance
@@ -19,7 +22,10 @@ public class DictionarySerializable {
     required public init() {
     }
     
-    public var dictionaryValue:[String:AnyObject] {
+    /**
+        Constructs a dictionary representation of this instance's attributes
+    */
+    public var dictionaryValue:AttributeDictionary {
         get {
             return [:]
         }

@@ -19,13 +19,26 @@ public class RemoteDataStore: DataStore {
     
     // MARK: - private helpers
     
+    /**
+        Parameter message: A localized error message
+    
+        Returns: An immediately failing promise
+    */
     private func errorPromise<T:Model>(message:String) -> Promise<T> {
         return Promise(error: NSError(domain: DataStoreErrorDomain, code: 0, userInfo: [NSLocalizedDescriptionKey: message]))
     }
-    
-    private func modelOperation<T:Model>(modelClass:T.Type, operation:Promise<[String:AnyObject]>) -> Promise<T>{
+
+    /**
+        Asynchronously performs the given operation (which should yield a raw attribute dictionary) and instantiates a 
+        single model of the appropriate type from that attribute dictionary.
+        
+        - Parameter modelClass: The Model subclass to be instantiated
+        - Parameter operation: A Promise that performs some operation and delivers an attribute dictionary representation of a model
+        - Returns: A Promise
+    */
+    private func modelOperation<T:Model>(modelClass:T.Type, operation:Promise<AttributeDictionary>) -> Promise<T>{
         return Promise { fulfill, reject in
-            operation.then { (value:[String:AnyObject]) -> () in
+            operation.then { (value:AttributeDictionary) -> () in
                 if let model = self.deserializeModel(modelClass, parameters: value) {
                     fulfill(model)
                 } else {
@@ -47,11 +60,11 @@ public class RemoteDataStore: DataStore {
         return [:]
     }
     
-    private func serializeModel(model:Model) -> [String:AnyObject] {
+    public func serializeModel(model:Model) -> AttributeDictionary {
         return model.dictionaryValue
     }
     
-    private func deserializeModel<T:Model>(modelClass:T.Type, parameters:[String:AnyObject]) -> T? {
+    public func deserializeModel<T:Model>(modelClass:T.Type, parameters:AttributeDictionary) -> T? {
         var deserialized = modelClass.fromDictionaryValue(parameters)
         if let id = deserialized?.identifier, canonical = self.delegate?.dataStore(self, canonicalObjectForIdentifier:id) as? T {
             deserialized = canonical
@@ -60,18 +73,28 @@ public class RemoteDataStore: DataStore {
         return deserialized
     }
     
-    // Retrieves the data payload from the Alamofire response and attempts to cast it to the correct type
-    // Override this to allow for an intermediate "data" key, for example
-    public func extractValueFromResponse<T>(response:Response<AnyObject,NSError>) -> T? {
+    /**
+        Retrieves the data payload from the Alamofire response and attempts to cast it to the correct type.
+    
+        Override this to allow for an intermediate "data" key, for example.
+    
+        - Parameter response: The JSON response from an Alamofire request
+        - Returns: The data payload cast to the specified type, or nil
+    */
+    public func extractValueFromResponse<T>(response:Alamofire.Response<AnyObject,NSError>) -> T? {
         return response.result.value as? T
     }
 
 
     // MARK: - Generic requests
     
-    // The core request method, basically a Promise wrapper around an Alamofire.request call
-    // Parameterized by the T, the expected data payload type (typically either a dictionary or an array of dictionaries)
-    func request<T>(method:Alamofire.Method, path:String, parameters:[String:AnyObject]?=nil, headers:[String:String]=[:]) -> Promise<T> {
+    /**
+        The core request method, basically a Promise wrapper around an Alamofire.request call
+        Parameterized by the T, the expected data payload type (typically either a dictionary or an array of dictionaries)
+    
+        - Returns: A Promise parameterized by the data payload type of the response
+    */
+    public func request<T>(method:Alamofire.Method, path:String, parameters:AttributeDictionary?=nil, headers:[String:String]=[:]) -> Promise<T> {
         let headers = self.defaultHeaders() + headers
         return Promise { fulfill, reject in
             Alamofire.request(method, self.url(path: path), parameters: parameters, encoding: ParameterEncoding.JSON, headers: headers).responseJSON { response in
@@ -127,9 +150,9 @@ public class RemoteDataStore: DataStore {
         return self.list(modelClass, parameters: nil)
     }
     
-    public func list<T: Model>(modelClass:T.Type, parameters:[String:AnyObject]?) -> Promise<[T]> {
+    public func list<T: Model>(modelClass:T.Type, parameters:AttributeDictionary?) -> Promise<[T]> {
         return Promise { fulfill, reject in
-            self.request(.GET, path: modelClass.path, parameters: parameters).then { (values:[[String:AnyObject]]) -> () in
+            self.request(.GET, path: modelClass.path, parameters: parameters).then { (values:[AttributeDictionary]) -> () in
                 // TODO: any of the individual models could fail to deserialize, and we're just silently ignoring them.
                 // Not sure what the right behavior should be.
                 let models = values.map{ self.deserializeModel(modelClass, parameters: $0) }.flatMap{$0}

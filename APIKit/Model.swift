@@ -6,6 +6,8 @@
 //  Copyright © 2015 Sam Williams. All rights reserved.
 //
 
+public typealias AttributeDictionary = [String:AnyObject]
+
 public class Model: DictionarySerializable, Routable {
     public var identifier:String?
     
@@ -23,7 +25,7 @@ public class Model: DictionarySerializable, Routable {
     
     // MARK: DictionarySerializable overrides
     
-    public override var dictionaryValue:[String:AnyObject] {
+    public override var dictionaryValue:AttributeDictionary {
         get {
             var result = super.dictionaryValue
             if let id = self.identifier {
