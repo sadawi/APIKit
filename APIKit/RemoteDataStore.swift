@@ -10,9 +10,10 @@ import Alamofire
 import PromiseKit
 
 public class RemoteDataStore: DataStore {
-    var baseURL:NSURL
-    
-    init(baseURL:NSURL) {
+    public var baseURL:NSURL
+    public var delegate:DataStoreDelegate?
+
+    public init(baseURL:NSURL) {
         self.baseURL = baseURL
     }
     
@@ -51,12 +52,17 @@ public class RemoteDataStore: DataStore {
     }
     
     private func deserializeModel<T:Model>(modelClass:T.Type, parameters:[String:AnyObject]) -> T? {
-        return modelClass.fromDictionaryValue(parameters)
+        var deserialized = modelClass.fromDictionaryValue(parameters)
+        if let id = deserialized?.identifier, canonical = self.delegate?.dataStore(self, canonicalObjectForIdentifier:id) as? T {
+            deserialized = canonical
+            (deserialized as? Model)?.dictionaryValue = parameters
+        }
+        return deserialized
     }
     
     // Retrieves the data payload from the Alamofire response and attempts to cast it to the correct type
     // Override this to allow for an intermediate "data" key, for example
-    private func extractValueFromResponse<T>(response:Response<AnyObject,NSError>) -> T? {
+    public func extractValueFromResponse<T>(response:Response<AnyObject,NSError>) -> T? {
         return response.result.value as? T
     }
 

@@ -9,9 +9,10 @@
 import Foundation
 import PromiseKit
 
-class MemoryDataStore: DataStore {
+public class MemoryDataStore: DataStore {
     // of the form [class name: [id: Model]]
     private var data: NSMutableDictionary = NSMutableDictionary()
+    public var delegate:DataStoreDelegate?
     
     private func keyForClass<T: Model>(modelClass: T.Type) -> String {
         return String(modelClass)
@@ -34,7 +35,7 @@ class MemoryDataStore: DataStore {
         return NSUUID().UUIDString
     }
     
-    func create(model: Model) -> Promise<Model> {
+    public func create(model: Model) -> Promise<Model> {
         return Promise { fulfill, reject in
             let id = self.generateIdentifier()
             model.identifier = id
@@ -42,7 +43,7 @@ class MemoryDataStore: DataStore {
             fulfill(model)
         }
     }
-    func update(model: Model) -> Promise<Model> {
+    public func update(model: Model) -> Promise<Model> {
         return Promise { fulfill, reject in
             // store in the collection just to be safe
             if let id = model.identifier {
@@ -51,7 +52,7 @@ class MemoryDataStore: DataStore {
             fulfill(model)
         }
     }
-    func delete(model: Model) -> Promise<Model> {
+    public func delete(model: Model) -> Promise<Model> {
         return Promise { fulfill, reject in
             if let id=self.keyForModel(model), let collection = self.collectionForClass(model.dynamicType) {
                 collection.removeObjectForKey(id)
@@ -60,7 +61,7 @@ class MemoryDataStore: DataStore {
             fulfill(model)
         }
     }
-    func lookup<T: Model>(modelClass:T.Type, identifier:String) -> Promise<T> {
+    public func lookup<T: Model>(modelClass:T.Type, identifier:String) -> Promise<T> {
         return Promise { fulfill, reject in
             let collection = self.collectionForClass(modelClass)
             if let result = collection?[identifier] as? T {
@@ -71,7 +72,7 @@ class MemoryDataStore: DataStore {
         }
     }
 
-    func list<T: Model>(modelClass:T.Type) -> Promise<[T]> {
+    public func list<T: Model>(modelClass:T.Type) -> Promise<[T]> {
         return Promise { fulfill, reject in
             if let items = self.collectionForClass(modelClass)?.allValues as? [T] {
                 fulfill(items)
