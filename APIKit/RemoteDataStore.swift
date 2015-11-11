@@ -17,7 +17,7 @@ public class RemoteDataStore: DataStore, ListableDataStore {
         self.baseURL = baseURL
     }
     
-    // MARK: - private helpers
+    // MARK: - Helpers
     
     /**
         Parameter message: A localized error message
@@ -29,17 +29,18 @@ public class RemoteDataStore: DataStore, ListableDataStore {
     }
 
     /**
-        Asynchronously performs the given operation (which should yield a raw attribute dictionary) and instantiates a
-        single model of the appropriate type from that attribute dictionary.
-        
+        Converts a Promise of type Response<AttributeDictionary> to a promise of type Model (or a subclass of Model).
+        That is, it takes a Promise that will return an API response containing a raw attribute dictionary, and wraps
+        it with logic that extracts the attribute dict and instantiates a model.
+    
         - Parameter modelClass: The Model subclass to be instantiated
         - Parameter operation: A Promise that performs some operation and delivers an attribute dictionary representation of a model
-        - Returns: A Promise
+        - Returns: A Promise yielding a Model instance
     */
-    public func modelOperation<T:Model>(modelClass:T.Type, operation:Promise<AttributeDictionary>) -> Promise<T>{
+    public func modelOperation<T:Model>(modelClass:T.Type, operation:Promise<Response<AttributeDictionary>>) -> Promise<T>{
         return Promise { fulfill, reject in
-            operation.then { (value:AttributeDictionary) -> () in
-                if let model = self.deserializeModel(modelClass, parameters: value) {
+            operation.then { (response:Response<AttributeDictionary>) -> () in
+                if let value=response.data, model = self.deserializeModel(modelClass, parameters: value) {
                     fulfill(model)
                 } else {
                     var error = NSError(domain: DataStoreErrorDomain, code: 0, userInfo: [NSLocalizedDescriptionKey: "Could not deserialize model"])
@@ -86,11 +87,13 @@ public class RemoteDataStore: DataStore, ListableDataStore {
     
         Note: T is only specified by type inference from the return value.
     
-        - Parameter response: The JSON response from an Alamofire request
-        - Returns: The data payload cast to the specified type, or nil
+        - Parameter apiResponse: The JSON response object from an Alamofire request
+        - Returns: A Response object with its payload cast to the specified type
     */
-    public func extractValueFromResponse<T>(response:Alamofire.Response<AnyObject,NSError>) -> T? {
-        return response.result.value as? T
+    public func constructResponse<T>(apiResponse:Alamofire.Response<AnyObject,NSError>) -> Response<T>? {
+        let response = Response<T>()
+        response.data = apiResponse.result.value as? T
+        return response
     }
 
 
@@ -108,13 +111,13 @@ public class RemoteDataStore: DataStore, ListableDataStore {
     
         - Returns: A Promise parameterized by the data payload type of the response
     */
-    public func request<T>(method:Alamofire.Method, path:String, parameters:AttributeDictionary?=nil, headers:[String:String]=[:]) -> Promise<T> {
+    public func request<T>(method:Alamofire.Method, path:String, parameters:AttributeDictionary?=nil, headers:[String:String]=[:]) -> Promise<Response<T>> {
         let headers = self.defaultHeaders() + headers
         return Promise { fulfill, reject in
             Alamofire.request(method, self.url(path: path), parameters: parameters, encoding: ParameterEncoding.JSON, headers: headers).responseJSON { response in
                 switch response.result {
                 case .Success:
-                    if let value:T = self.extractValueFromResponse(response) {
+                    if let value:Response<T> = self.constructResponse(response) {
                         fulfill(value)
                     } else {
                         var error = NSError(domain: DataStoreErrorDomain, code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid response value"])
@@ -169,11 +172,15 @@ public class RemoteDataStore: DataStore, ListableDataStore {
     
     public func list<T: Model>(modelClass:T.Type, parameters:AttributeDictionary?) -> Promise<[T]> {
         return Promise { fulfill, reject in
-            self.request(.GET, path: modelClass.path, parameters: parameters).then { (values:[AttributeDictionary]) -> () in
+            self.request(.GET, path: modelClass.path, parameters: parameters).then { (response:Response<[AttributeDictionary]>) -> () in
                 // TODO: any of the individual models could fail to deserialize, and we're just silently ignoring them.
                 // Not sure what the right behavior should be.
-                let models = values.map{ self.deserializeModel(modelClass, parameters: $0) }.flatMap{$0}
-                fulfill(models)
+                if let values = response.data {
+                    let models = values.map{ self.deserializeModel(modelClass, parameters: $0) }.flatMap{$0}
+                    fulfill(models)
+                } else {
+                    fulfill([])
+                }
                 }.error { error in
                     reject(error)
             }
