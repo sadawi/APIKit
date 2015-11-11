@@ -9,7 +9,7 @@
 import Alamofire
 import PromiseKit
 
-public class RemoteDataStore: DataStore {
+public class RemoteDataStore: DataStore, ListableDataStore {
     public var baseURL:NSURL
     public var delegate:DataStoreDelegate?
 
@@ -42,7 +42,9 @@ public class RemoteDataStore: DataStore {
                 if let model = self.deserializeModel(modelClass, parameters: value) {
                     fulfill(model)
                 } else {
-                    reject(NSError(domain: DataStoreErrorDomain, code: 0, userInfo: [NSLocalizedDescriptionKey: "Could not deserialize model"]))
+                    var error = NSError(domain: DataStoreErrorDomain, code: 0, userInfo: [NSLocalizedDescriptionKey: "Could not deserialize model"])
+                    self.handleError(&error)
+                    reject(error)
                 }
                 }.error { error in
                     reject(error)
@@ -73,10 +75,16 @@ public class RemoteDataStore: DataStore {
         return deserialized
     }
     
+    public func handleError(inout error:NSError) {
+        // Override
+    }
+    
     /**
         Retrieves the data payload from the Alamofire response and attempts to cast it to the correct type.
     
         Override this to allow for an intermediate "data" key, for example.
+    
+        Note: T is only specified by type inference from the return value.
     
         - Parameter response: The JSON response from an Alamofire request
         - Returns: The data payload cast to the specified type, or nil
@@ -92,6 +100,12 @@ public class RemoteDataStore: DataStore {
         The core request method, basically a Promise wrapper around an Alamofire.request call
         Parameterized by the T, the expected data payload type (typically either a dictionary or an array of dictionaries)
     
+        TODO: At the moment T is only specified by type inference from the return value, which is awkward since it's a promise.
+        Consider specifying as a param.
+    
+        TODO: I might want to yield an intermediate response struct instead of just the bare T instance.  It could contain metadata like
+        pagination information, etc.
+    
         - Returns: A Promise parameterized by the data payload type of the response
     */
     public func request<T>(method:Alamofire.Method, path:String, parameters:AttributeDictionary?=nil, headers:[String:String]=[:]) -> Promise<T> {
@@ -103,9 +117,12 @@ public class RemoteDataStore: DataStore {
                     if let value:T = self.extractValueFromResponse(response) {
                         fulfill(value)
                     } else {
-                        reject(NSError(domain: DataStoreErrorDomain, code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid response value"]))
+                        var error = NSError(domain: DataStoreErrorDomain, code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid response value"])
+                        self.handleError(&error)
+                        reject(error)
                     }
-                case .Failure(let error):
+                case .Failure(var error):
+                    self.handleError(&error)
                     reject(error)
                 }
             }

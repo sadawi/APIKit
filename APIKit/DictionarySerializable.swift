@@ -8,7 +8,7 @@
 
 import Foundation
 
-public class DictionarySerializable {
+public class DictionarySerializable: NSObject {
     
     /**
         Attempts to instantiate a new object from a dictionary representation of its attributes
@@ -19,7 +19,7 @@ public class DictionarySerializable {
         return instance
     }
     
-    required public init() {
+    override required public init() {
     }
     
     /**

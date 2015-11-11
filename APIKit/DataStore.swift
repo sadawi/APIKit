@@ -24,13 +24,16 @@ public protocol DataStore {
     func update(model:Model) -> Promise<Model>
     func delete(model:Model) -> Promise<Model>
     func lookup<T: Model>(modelClass:T.Type, identifier:String) -> Promise<T>
-    func list<T: Model>(modelClass:T.Type) -> Promise<[T]>
     
     var delegate:DataStoreDelegate? { get set }
 }
 
-extension DataStore {
-    func save(model:Model) -> Promise<Model> {
+public protocol ListableDataStore {
+    func list<T: Model>(modelClass:T.Type) -> Promise<[T]>
+}
+
+public extension DataStore {
+    public func save(model:Model) -> Promise<Model> {
         if model.persisted {
             return self.update(model)
         } else {

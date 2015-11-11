@@ -17,6 +17,11 @@
 		2235AEDF1BF0090100A730F0 /* CompoundDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22080E301BEED3A200A633AA /* CompoundDataStore.swift */; settings = {ASSET_TAGS = (); }; };
 		2235AEE61BF1057200A730F0 /* DataStoreDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2235AEE51BF1057200A730F0 /* DataStoreDelegate.swift */; settings = {ASSET_TAGS = (); }; };
 		2235AEE71BF10D9300A730F0 /* DataStoreDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2235AEE51BF1057200A730F0 /* DataStoreDelegate.swift */; settings = {ASSET_TAGS = (); }; };
+		2235AEE91BF26A0700A730F0 /* OAuth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2235AEE81BF26A0700A730F0 /* OAuth.swift */; settings = {ASSET_TAGS = (); }; };
+		2235AEEE1BF27E3200A730F0 /* KeychainStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2235AEED1BF27E3200A730F0 /* KeychainStore.swift */; settings = {ASSET_TAGS = (); }; };
+		2235AEF01BF27E4C00A730F0 /* OAuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2235AEEF1BF27E4C00A730F0 /* OAuthManager.swift */; settings = {ASSET_TAGS = (); }; };
+		2235AEF11BF27E4F00A730F0 /* OAuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2235AEEF1BF27E4C00A730F0 /* OAuthManager.swift */; settings = {ASSET_TAGS = (); }; };
+		2235AEF21BF27E5100A730F0 /* KeychainStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2235AEED1BF27E3200A730F0 /* KeychainStore.swift */; settings = {ASSET_TAGS = (); }; };
 		225DE7EA1BEE8069009698FC /* APIKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 225DE7E91BEE8069009698FC /* APIKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		225DE7F11BEE8069009698FC /* APIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 225DE7E61BEE8069009698FC /* APIKit.framework */; settings = {ASSET_TAGS = (); }; };
 		225DE7F61BEE8069009698FC /* APIKitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 225DE7F51BEE8069009698FC /* APIKitTests.swift */; };
@@ -50,6 +55,9 @@
 		2235AEDA1BEFE00E00A730F0 /* DictionaryExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DictionaryExtension.swift; sourceTree = "<group>"; };
 		2235AEE01BF03D1400A730F0 /* APIKit.podspec */ = {isa = PBXFileReference; lastKnownFileType = text; path = APIKit.podspec; sourceTree = "<group>"; };
 		2235AEE51BF1057200A730F0 /* DataStoreDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataStoreDelegate.swift; sourceTree = "<group>"; };
+		2235AEE81BF26A0700A730F0 /* OAuth.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OAuth.swift; sourceTree = "<group>"; };
+		2235AEED1BF27E3200A730F0 /* KeychainStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeychainStore.swift; sourceTree = "<group>"; };
+		2235AEEF1BF27E4C00A730F0 /* OAuthManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OAuthManager.swift; sourceTree = "<group>"; };
 		225DE7E61BEE8069009698FC /* APIKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = APIKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		225DE7E91BEE8069009698FC /* APIKit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = APIKit.h; sourceTree = "<group>"; };
 		225DE7EB1BEE8069009698FC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -95,6 +103,15 @@
 			name = extensions;
 			sourceTree = "<group>";
 		};
+		2235AEEA1BF27CCF00A730F0 /* auth */ = {
+			isa = PBXGroup;
+			children = (
+				2235AEE81BF26A0700A730F0 /* OAuth.swift */,
+				2235AEEF1BF27E4C00A730F0 /* OAuthManager.swift */,
+			);
+			name = auth;
+			sourceTree = "<group>";
+		};
 		225DE7DC1BEE8068009698FC = {
 			isa = PBXGroup;
 			children = (
@@ -120,6 +137,7 @@
 		225DE7E81BEE8069009698FC /* APIKit */ = {
 			isa = PBXGroup;
 			children = (
+				2235AEEA1BF27CCF00A730F0 /* auth */,
 				2235AED91BEFDFFE00A730F0 /* extensions */,
 				225DE80F1BEEBA93009698FC /* data store */,
 				225DE8101BEEBA9A009698FC /* models */,
@@ -149,6 +167,7 @@
 				225DE80D1BEEB9FE009698FC /* RemoteDataStore.swift */,
 				22080E301BEED3A200A633AA /* CompoundDataStore.swift */,
 				2235AEE51BF1057200A730F0 /* DataStoreDelegate.swift */,
+				2235AEED1BF27E3200A730F0 /* KeychainStore.swift */,
 			);
 			name = "data store";
 			sourceTree = "<group>";
@@ -324,13 +343,16 @@
 				2235AEDB1BEFE00E00A730F0 /* DictionaryExtension.swift in Sources */,
 				225DE80C1BEEB9CF009698FC /* DataStore.swift in Sources */,
 				2235AED61BEFD4AD00A730F0 /* Routable.swift in Sources */,
+				2235AEEE1BF27E3200A730F0 /* KeychainStore.swift in Sources */,
 				225DE8071BEEB04D009698FC /* MemoryDataStore.swift in Sources */,
 				2235AEE61BF1057200A730F0 /* DataStoreDelegate.swift in Sources */,
 				22080E311BEED3A200A633AA /* CompoundDataStore.swift in Sources */,
+				2235AEE91BF26A0700A730F0 /* OAuth.swift in Sources */,
 				2235AED81BEFD5B800A730F0 /* DictionarySerializable.swift in Sources */,
 				225DE80E1BEEB9FE009698FC /* RemoteDataStore.swift in Sources */,
 				225DE8121BEEBABE009698FC /* Model.swift in Sources */,
 				225DE8161BEEC0D5009698FC /* ModelManager.swift in Sources */,
+				2235AEF01BF27E4C00A730F0 /* OAuthManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -339,6 +361,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				2235AEDE1BF008FA00A730F0 /* DictionaryExtension.swift in Sources */,
+				2235AEF21BF27E5100A730F0 /* KeychainStore.swift in Sources */,
+				2235AEF11BF27E4F00A730F0 /* OAuthManager.swift in Sources */,
 				225DE81C1BEEC4E3009698FC /* MemoryDataStore.swift in Sources */,
 				2235AEE71BF10D9300A730F0 /* DataStoreDelegate.swift in Sources */,
 				2235AEDC1BF008E400A730F0 /* DictionarySerializable.swift in Sources */,

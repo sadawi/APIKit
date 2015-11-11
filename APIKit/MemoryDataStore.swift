@@ -9,7 +9,7 @@
 import Foundation
 import PromiseKit
 
-public class MemoryDataStore: DataStore {
+public class MemoryDataStore: DataStore, ListableDataStore {
     // of the form [class name: [id: Model]]
     private var data: NSMutableDictionary = NSMutableDictionary()
     public var delegate:DataStoreDelegate?
