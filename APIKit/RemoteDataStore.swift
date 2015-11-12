@@ -98,9 +98,6 @@ public class RemoteDataStore: DataStore, ListableDataStore {
         TODO: At the moment T is only specified by type inference from the return value, which is awkward since it's a promise.
         Consider specifying as a param.
     
-        TODO: I might want to yield an intermediate response struct instead of just the bare T instance.  It could contain metadata like
-        pagination information, etc.
-    
         - Returns: A Promise parameterized by the data payload type of the response
     */
     public func request<T>(method:Alamofire.Method, path:String, parameters:AttributeDictionary?=nil, headers:[String:String]=[:]) -> Promise<Response<T>> {
@@ -110,8 +107,13 @@ public class RemoteDataStore: DataStore, ListableDataStore {
                 switch response.result {
                 case .Success:
                     if let value:Response<T> = self.constructResponse(response) {
-                        // TODO: should allow for response to be an error response, in which case we should reject (and handleError!)
-                        fulfill(value)
+                        if var error=value.error {
+                            // the request might have succeeded, but we found an error when constructing the Response object
+                            self.handleError(&error)
+                            reject(error)
+                        } else {
+                            fulfill(value)
+                        }
                     } else {
                         var error = NSError(domain: DataStoreErrorDomain, code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid response value"])
                         self.handleError(&error)
@@ -125,7 +127,7 @@ public class RemoteDataStore: DataStore, ListableDataStore {
         }
     }
     
-    // MARK: - CRUD operations
+    // MARK: - CRUD operations (DataStore protocol methods)
 
     public func create(model: Model) -> Promise<Model> {
         let parameters = self.serializeModel(model)

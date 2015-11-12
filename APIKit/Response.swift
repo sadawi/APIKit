@@ -8,6 +8,7 @@
 
 public class Response<DataType>: DictionarySerializable {
     public var data: DataType?
+    public var error: NSError?
     
     public required init() {
     }
