@@ -9,11 +9,11 @@
 import UIKit
 
 public class OAuth: Model {
-    var accessToken:String?
-    var refreshToken:String?
-    var expirationDate:NSDate?
+    public var accessToken:String?
+    public var refreshToken:String?
+    public var expirationDate:NSDate?
     
-    var expiresIn: NSTimeInterval? {
+    public var expiresIn: NSTimeInterval? {
         set {
             if let value = newValue {
                 self.expirationDate = NSDate(timeIntervalSinceNow: value)
@@ -25,8 +25,18 @@ public class OAuth: Model {
             return self.expirationDate?.timeIntervalSinceNow
         }
     }
-    var tokenType: String?
-    var scope: String?
+    public var tokenType: String?
+    public var scope: String?
+
+    public var isValid: Bool {
+        get {
+            if let expiration = self.expiresIn {
+                return expiration > 0
+            } else {
+                return true
+            }
+        }
+    }
     
     override public var dictionaryValue:[String:AnyObject] {
         get {
