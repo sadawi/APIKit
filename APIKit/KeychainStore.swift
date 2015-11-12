@@ -11,6 +11,10 @@ import PromiseKit
 public class KeychainStore: DataStore {
     public var delegate:DataStoreDelegate?
     
+    public init() {
+        
+    }
+    
     public func create(model: Model) -> Promise<Model> {
         return Promise { fulfill, reject in
         }

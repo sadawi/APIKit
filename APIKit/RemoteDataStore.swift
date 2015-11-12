@@ -29,26 +29,18 @@ public class RemoteDataStore: DataStore, ListableDataStore {
     }
 
     /**
-        Converts a Promise of type Response<AttributeDictionary> to a promise of type Model (or a subclass of Model).
-        That is, it takes a Promise that will return an API response containing a raw attribute dictionary, and wraps
-        it with logic that extracts the attribute dict and instantiates a model.
+        Creates a closure that deserializes a model and returns a Promise.
+        Useful in promise chaining as an argument to .then
     
         - Parameter modelClass: The Model subclass to be instantiated
-        - Parameter operation: A Promise that performs some operation and delivers an attribute dictionary representation of a model
         - Returns: A Promise yielding a Model instance
     */
-    public func modelOperation<T:Model>(modelClass:T.Type, operation:Promise<Response<AttributeDictionary>>) -> Promise<T>{
-        return Promise { fulfill, reject in
-            operation.then { (response:Response<AttributeDictionary>) -> () in
-                if let value=response.data, model = self.deserializeModel(modelClass, parameters: value) {
-                    fulfill(model)
-                } else {
-                    var error = NSError(domain: DataStoreErrorDomain, code: 0, userInfo: [NSLocalizedDescriptionKey: "Could not deserialize model"])
-                    self.handleError(&error)
-                    reject(error)
-                }
-                }.error { error in
-                    reject(error)
+    public func instantiateModel<T:Model>(modelClass:T.Type) -> (Response<AttributeDictionary> -> Promise<T>){
+        return { (response:Response<AttributeDictionary>) in
+            if let data = response.data, model = self.deserializeModel(modelClass, parameters: data) {
+                return Promise(model)
+            } else {
+                return self.errorPromise("Could not deserialize model")
             }
         }
     }
@@ -114,7 +106,7 @@ public class RemoteDataStore: DataStore, ListableDataStore {
     public func request<T>(method:Alamofire.Method, path:String, parameters:AttributeDictionary?=nil, headers:[String:String]=[:]) -> Promise<Response<T>> {
         let headers = self.defaultHeaders() + headers
         return Promise { fulfill, reject in
-            Alamofire.request(method, self.url(path: path), parameters: parameters, encoding: ParameterEncoding.JSON, headers: headers).responseJSON { response in
+            Alamofire.request(method, self.url(path: path), parameters: parameters, encoding: ParameterEncoding.URL, headers: headers).responseJSON { response in
                 switch response.result {
                 case .Success:
                     if let value:Response<T> = self.constructResponse(response) {
@@ -136,13 +128,13 @@ public class RemoteDataStore: DataStore, ListableDataStore {
 
     public func create(model: Model) -> Promise<Model> {
         let parameters = self.serializeModel(model)
-        return self.modelOperation(model.dynamicType, operation: self.request(.POST, path: model.dynamicType.path, parameters: parameters))
+        return self.request(.POST, path: model.dynamicType.path, parameters: parameters).then(self.instantiateModel(model.dynamicType))
     }
     
     public func update(model: Model) -> Promise<Model> {
         if let path = model.path {
             let parameters = self.serializeModel(model)
-            return self.modelOperation(model.dynamicType, operation: self.request(.PUT, path: path, parameters: parameters))
+            return self.request(.PUT, path: path, parameters: parameters).then(self.instantiateModel(model.dynamicType))
         } else {
             return self.errorPromise("No path for model")
         }
@@ -150,17 +142,17 @@ public class RemoteDataStore: DataStore, ListableDataStore {
     
     public func delete(model: Model) -> Promise<Model> {
         if let path = model.path {
-            return self.modelOperation(model.dynamicType, operation: self.request(.DELETE, path: path))
+            return self.request(.DELETE, path: path).then(self.instantiateModel(model.dynamicType))
         } else {
             return self.errorPromise("No path for model")
         }
     }
     
     public func lookup<T: Model>(modelClass:T.Type, identifier:String) -> Promise<T> {
-        let model = modelClass.init() as Model
+        let model = modelClass.init() as T
         model.identifier = identifier
-        if let path = model.path {
-            return self.modelOperation(modelClass, operation: self.request(.GET, path: path))
+        if let path = (model as Model).path {
+            return self.request(.GET, path: path).then(self.instantiateModel(model.dynamicType))
         } else {
             return self.errorPromise("No path for model")
         }
