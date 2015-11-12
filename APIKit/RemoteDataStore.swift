@@ -110,6 +110,7 @@ public class RemoteDataStore: DataStore, ListableDataStore {
                 switch response.result {
                 case .Success:
                     if let value:Response<T> = self.constructResponse(response) {
+                        // TODO: should allow for response to be an error response, in which case we should reject (and handleError!)
                         fulfill(value)
                     } else {
                         var error = NSError(domain: DataStoreErrorDomain, code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid response value"])
