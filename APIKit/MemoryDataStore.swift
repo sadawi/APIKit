@@ -10,6 +10,8 @@ import Foundation
 import PromiseKit
 
 public class MemoryDataStore: DataStore, ListableDataStore {
+    public static let sharedInstance = MemoryDataStore()
+    
     // of the form [class name: [id: Model]]
     private var data: NSMutableDictionary = NSMutableDictionary()
     public var delegate:DataStoreDelegate?

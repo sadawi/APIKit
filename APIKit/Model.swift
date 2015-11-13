@@ -19,6 +19,10 @@ public class Model: DictionarySerializable, Routable, NSCoding {
         }
     }
     
+    public class var identifierKey:String {
+        get { return "id" }
+    }
+    
     // MARK: Routable
     
     public class var path: String {
@@ -30,6 +34,7 @@ public class Model: DictionarySerializable, Routable, NSCoding {
     public override var dictionaryValue:AttributeDictionary {
         get {
             var result = super.dictionaryValue
+            
             if let id = self.identifier {
                 result["id"] = id
             }
