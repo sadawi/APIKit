@@ -38,7 +38,7 @@ public class OAuth: Model {
         }
     }
     
-    override public var dictionaryValue:[String:AnyObject] {
+    override public var dictionaryValue:AttributeDictionary {
         get {
             var result = super.dictionaryValue
             result["accessToken"]       = self.accessToken

@@ -11,7 +11,8 @@ import Foundation
 public class DictionarySerializable: NSObject {
     
     /**
-        Attempts to instantiate a new object from a dictionary representation of its attributes
+        Attempts to instantiate a new object from a dictionary representation of its attributes.
+        It's a class method to allow returning a canonical object instance for an identifier, if desired.
     */
     public class func fromDictionaryValue(dictionaryValue:AttributeDictionary) -> Self? {
         let instance = self.init()

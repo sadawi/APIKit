@@ -55,6 +55,10 @@ public class RemoteDataStore: DataStore, ListableDataStore {
         return [:]
     }
     
+    public func formatPayload(payload:AttributeDictionary) -> AttributeDictionary {
+        return payload
+    }
+    
     public func serializeModel(model:Model) -> AttributeDictionary {
         return model.dictionaryValue
     }
@@ -102,8 +106,9 @@ public class RemoteDataStore: DataStore, ListableDataStore {
     */
     public func request<T>(method:Alamofire.Method, path:String, parameters:AttributeDictionary?=nil, headers:[String:String]=[:]) -> Promise<Response<T>> {
         let headers = self.defaultHeaders() + headers
+        let url = self.url(path: path)
         return Promise { fulfill, reject in
-            Alamofire.request(method, self.url(path: path), parameters: parameters, encoding: ParameterEncoding.URL, headers: headers).responseJSON { response in
+            Alamofire.request(method, url, parameters: parameters, encoding: ParameterEncoding.URL, headers: headers).responseJSON { response in
                 switch response.result {
                 case .Success:
                     if let value:Response<T> = self.constructResponse(response) {
@@ -130,13 +135,13 @@ public class RemoteDataStore: DataStore, ListableDataStore {
     // MARK: - CRUD operations (DataStore protocol methods)
 
     public func create(model: Model) -> Promise<Model> {
-        let parameters = self.serializeModel(model)
+        let parameters = self.formatPayload(self.serializeModel(model))
         return self.request(.POST, path: model.dynamicType.path, parameters: parameters).then(self.instantiateModel(model.dynamicType))
     }
     
     public func update(model: Model) -> Promise<Model> {
         if let path = model.path {
-            let parameters = self.serializeModel(model)
+            let parameters = self.formatPayload(self.serializeModel(model))
             return self.request(.PUT, path: path, parameters: parameters).then(self.instantiateModel(model.dynamicType))
         } else {
             return self.errorPromise("No path for model")

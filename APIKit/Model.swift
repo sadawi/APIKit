@@ -10,7 +10,7 @@ import Foundation
 
 public typealias AttributeDictionary = [String:AnyObject]
 
-public class Model: DictionarySerializable, Routable, NSCoding {
+public class Model: DictionarySerializable, Routable {
     public var identifier:String?
     
     public var persisted:Bool {
@@ -23,10 +23,23 @@ public class Model: DictionarySerializable, Routable, NSCoding {
         get { return "id" }
     }
     
+    public class var name:String {
+        get {
+            if let name = NSStringFromClass(self).componentsSeparatedByString(".").last {
+                return name
+            } else {
+                return "Unknown"
+            }
+        }
+    }
+    
     // MARK: Routable
     
     public class var path: String {
-        get { return "models" }
+        get {
+            assert(false, "This must be overridden")
+            return "models"
+        }
     }
     
     // MARK: DictionarySerializable overrides
@@ -46,22 +59,22 @@ public class Model: DictionarySerializable, Routable, NSCoding {
         }
     }
     
-    // MARK: - NSCoding
-    
-    public func encodeWithCoder(aCoder: NSCoder) {
-        aCoder.setValue(self.dictionaryValue, forKey: "attributes")
-    }
-    
-    required public init?(coder aDecoder: NSCoder) {
-        super.init()
-        if let attributes = aDecoder.valueForKey("attributes") as? AttributeDictionary {
-            self.dictionaryValue = attributes
-        } else {
-            return nil
-        }
-    }
-
-    required public init() {
-    }
+//    // MARK: - NSCoding
+//    
+//    public func encodeWithCoder(aCoder: NSCoder) {
+//        aCoder.setValue(self.dictionaryValue, forKey: "attributes")
+//    }
+//    
+//    required public init?(coder aDecoder: NSCoder) {
+//        super.init()
+//        if let attributes = aDecoder.valueForKey("attributes") as? AttributeDictionary {
+//            self.dictionaryValue = attributes
+//        } else {
+//            return nil
+//        }
+//    }
+//
+//    required public init() {
+//    }
 
 }
