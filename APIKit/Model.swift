@@ -11,6 +11,8 @@ import Foundation
 public typealias AttributeDictionary = [String:AnyObject]
 
 public class Model: DictionarySerializable, Routable {
+    // Always storing id as a string (but assuming it's an Int in the API)
+    // TODO: better way to handle string vs. int identifier types
     public var identifier:String?
     
     public var persisted:Bool {
@@ -49,32 +51,16 @@ public class Model: DictionarySerializable, Routable {
             var result = super.dictionaryValue
             
             if let id = self.identifier {
-                result["id"] = id
+                result[self.dynamicType.identifierKey] = Int(id)
             }
             return result;
         }
         set {
             super.dictionaryValue = newValue
-            self.identifier = newValue["id"] as? String
+            if let value = newValue[self.dynamicType.identifierKey] as? Int {
+                self.identifier = String(value)
+            }
         }
     }
     
-//    // MARK: - NSCoding
-//    
-//    public func encodeWithCoder(aCoder: NSCoder) {
-//        aCoder.setValue(self.dictionaryValue, forKey: "attributes")
-//    }
-//    
-//    required public init?(coder aDecoder: NSCoder) {
-//        super.init()
-//        if let attributes = aDecoder.valueForKey("attributes") as? AttributeDictionary {
-//            self.dictionaryValue = attributes
-//        } else {
-//            return nil
-//        }
-//    }
-//
-//    required public init() {
-//    }
-
 }

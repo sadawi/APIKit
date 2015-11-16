@@ -65,8 +65,11 @@ public class RemoteDataStore: DataStore, ListableDataStore {
     
     public func deserializeModel<T:Model>(modelClass:T.Type, parameters:AttributeDictionary) -> T? {
         var deserialized = modelClass.fromDictionaryValue(parameters)
-        if let id = deserialized?.identifier, canonical = self.delegate?.dataStore(self, canonicalObjectForIdentifier:id) as? T {
-            deserialized = canonical
+        if let id = deserialized?.identifier {
+            // If we have a canonical object for this id, swap it in
+            if let canonical = self.delegate?.dataStore(self, canonicalObjectForIdentifier:id) as? T {
+                deserialized = canonical
+            }
             (deserialized as? Model)?.dictionaryValue = parameters
         }
         return deserialized
@@ -109,6 +112,7 @@ public class RemoteDataStore: DataStore, ListableDataStore {
         let url = self.url(path: path)
         return Promise { fulfill, reject in
             Alamofire.request(method, url, parameters: parameters, encoding: ParameterEncoding.URL, headers: headers).responseJSON { response in
+                print("RESPONSE: ", response.result.value)
                 switch response.result {
                 case .Success:
                     if let value:Response<T> = self.constructResponse(response) {
@@ -142,7 +146,7 @@ public class RemoteDataStore: DataStore, ListableDataStore {
     public func update(model: Model) -> Promise<Model> {
         if let path = model.path {
             let parameters = self.formatPayload(self.serializeModel(model))
-            return self.request(.PUT, path: path, parameters: parameters).then(self.instantiateModel(model.dynamicType))
+            return self.request(.PATCH, path: path, parameters: parameters).then(self.instantiateModel(model.dynamicType))
         } else {
             return self.errorPromise("No path for model")
         }
