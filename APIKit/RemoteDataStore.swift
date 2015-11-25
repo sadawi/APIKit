@@ -164,7 +164,7 @@ public class RemoteDataStore: DataStore, ListableDataStore {
         let model = modelClass.init() as T
         model.identifier = identifier
         if let path = (model as Model).path {
-            return self.request(.GET, path: path).then(self.instantiateModel(model.dynamicType))
+            return self.request(.GET, path: path).then(self.instantiateModel(modelClass))
         } else {
             return self.errorPromise("No path for model")
         }
