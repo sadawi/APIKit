@@ -84,6 +84,7 @@ class FieldTests: XCTestCase {
         
         // Setting c.name to a constant removes the observation
         d.name <-- "Rebecca"
+        XCTAssertEqual(d.name.value, "Rebecca")
         XCTAssertNotEqual(c.name.value, d.name.value)
 
         c.name <-- d.name

@@ -35,6 +35,16 @@ public class Field<T:Equatable>: FieldType, FieldObserver {
     public var name:String?
     public var allowedValues:[T] = []
     
+    private weak var observedField:Field<T>? {
+        didSet {
+            if self.observedField == nil {
+                if let oldField = oldValue {
+                    oldField.removeObserver(self)
+                }
+            }
+        }
+    }
+    
     private var observers:NSMutableSet = NSMutableSet()
     private var blockObservers:[(Field<T> -> Void)] = []
     
@@ -59,6 +69,9 @@ public class Field<T:Equatable>: FieldType, FieldObserver {
     
     public func addObserver(observer:FieldObserver) {
         self.observers.addObject(observer)
+        if let observerField = observer as? Field<T> {
+            observerField.observedField = self
+        }
     }
     
     public func observe(action:(Field<T> -> Void)) {
@@ -67,6 +80,9 @@ public class Field<T:Equatable>: FieldType, FieldObserver {
     
     public func removeObserver(observer:FieldObserver) {
         self.observers.removeObject(observer)
+        if let observerField = observer as? Field<T> {
+            observerField.observedField = nil
+        }
     }
     
     public func fieldValueChanged(field:FieldType) {
@@ -78,24 +94,16 @@ public class Field<T:Equatable>: FieldType, FieldObserver {
 
 
 infix operator <-- { associativity left precedence 95 }
-infix operator --> { associativity left precedence 95 }
 infix operator <--> { associativity left precedence 95 }
 
 public func <--<T>(left:Field<T>, right:T?) {
     left.value = right
+    left.observedField = nil
 }
 
 public func <--<T>(left:Field<T>, right:Field<T>) {
     right.addObserver(left)
     left.value = right.value
-}
-
-public func --><T>(right:T?, left:Field<T>) {
-    left.value = right
-}
-
-public func --><T>(left:Field<T>, right:Field<T>) {
-    left.addObserver(right)
 }
 
 public func <--><T>(left: Field<T>, right: Field<T>) {
