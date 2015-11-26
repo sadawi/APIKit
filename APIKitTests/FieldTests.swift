@@ -38,13 +38,6 @@ class FieldTests: XCTestCase {
         let entity = Entity()
         entity.name <-- "Bob"
         XCTAssertEqual(entity.name.value, "Bob")
-        
-//        "John" --> entity.name
-//        XCTAssertEqual(entity.name.value, "John")
-        
-        //        let view = View()
-        //        view <-- entity.name
-        //        XCTAssertEqual(entity.name.value, view.value)
     }
     
     func testObservation() {
@@ -61,29 +54,43 @@ class FieldTests: XCTestCase {
         entity.name <-- "NEW VALUE"
         XCTAssertEqual(value, "NEW VALUE")
     }
-    
-//    func testBinding() {
-//        let view = View()
-//        let entity = Entity()
-//        
-//        view <--> entity.name
-//        
-//        view.value = "viewValue"
-//        entity.name.value = "nameValue"
-//        
-//        view.value = "new viewValue"
-//        XCTAssertEqual(view.value, entity.name.value)
-//        
-//        entity.name.value = "new nameValue"
-//        XCTAssertEqual(view.value, entity.tname.value)
-//    }
-    
-    
-    func testPerformanceExample() {
-        // This is an example of a performance test case.
-        self.measureBlock {
-            // Put the code you want to measure the time of here.
-        }
+
+    func testBinding() {
+        let a = Entity()
+        let b = Entity()
+        
+        a.name <-- "John"
+        b.name <-- "Bob"
+        
+        XCTAssertNotEqual(a.name.value, b.name.value)
+        
+        a.name <--> b.name
+        a.name <-- "Martha"
+        
+        XCTAssertEqual(a.name.value, b.name.value)
+        
+        let c = Entity()
+        let d = Entity()
+        c.name <-- "Alice"
+        d.name <-- "Joan"
+        
+        XCTAssertNotEqual(c.name.value, d.name.value)
+        
+        c.name <-- d.name
+        XCTAssertEqual(c.name.value, d.name.value)
+        
+        c.name <-- "Kevin"
+        XCTAssertNotEqual(c.name.value, d.name.value)
+        
+        // Setting c.name to a constant removes the observation
+        d.name <-- "Rebecca"
+        XCTAssertNotEqual(c.name.value, d.name.value)
+
+        c.name <-- d.name
+        d.name <-- "Rebecca"
+        XCTAssertEqual(c.name.value, d.name.value)
+
     }
+    
     
 }

@@ -8,8 +8,6 @@
 
 import Foundation
 
-//typealias ObservationAction = (Field<T> -> Void)
-
 public enum FieldState {
     case NotLoaded
     case Loading
@@ -25,17 +23,18 @@ public protocol FieldObserver:AnyObject {
     func fieldValueChanged(field:FieldType)
 }
 
-public class Field<T>: FieldType {
+public class Field<T:Equatable>: FieldType, FieldObserver {
     public var value:T? {
         didSet {
-            self.valueChanged()
+            if oldValue != self.value {
+                self.valueChanged()
+            }
         }
     }
     public var state:FieldState = .NotLoaded
     public var name:String?
     public var allowedValues:[T] = []
     
-    // TODO: Set
     private var observers:NSMutableSet = NSMutableSet()
     private var blockObservers:[(Field<T> -> Void)] = []
     
@@ -69,27 +68,37 @@ public class Field<T>: FieldType {
     public func removeObserver(observer:FieldObserver) {
         self.observers.removeObject(observer)
     }
+    
+    public func fieldValueChanged(field:FieldType) {
+        if let observedField = field as? Field<T> {
+            self.value = observedField.value
+        }
+    }
 }
 
 
 infix operator <-- { associativity left precedence 95 }
-infix operator <== { associativity left precedence 95 }
-//infix operator --> { associativity left precedence 95 }
+infix operator --> { associativity left precedence 95 }
 infix operator <--> { associativity left precedence 95 }
 
 public func <--<T>(left:Field<T>, right:T?) {
     left.value = right
 }
 
+public func <--<T>(left:Field<T>, right:Field<T>) {
+    right.addObserver(left)
+    left.value = right.value
+}
 
-//public func <--<T>(left:T?, right:Field<T>) {
-//    left = right.value
-//}
+public func --><T>(right:T?, left:Field<T>) {
+    left.value = right
+}
 
-//public func --><T>(left:T?, right:Field<T>) {
-//    right.value = left
-//}
+public func --><T>(left:Field<T>, right:Field<T>) {
+    left.addObserver(right)
+}
 
 public func <--><T>(left: Field<T>, right: Field<T>) {
-    
+    left.addObserver(right)
+    right.addObserver(left)
 }
