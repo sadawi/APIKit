@@ -12,7 +12,7 @@ public enum FieldState {
     case NotLoaded
     case Loading
     case Loaded
-    case Error(NSError)
+    case Error
 }
 
 public protocol FieldType {
@@ -27,12 +27,14 @@ public class Field<T:Equatable>: FieldType, FieldObserver, Equatable {
     
     public var value:T? {
         didSet {
+            self.state = .Loaded
             if oldValue != self.value {
                 self.valueChanged()
             }
         }
     }
     public var state:FieldState = .NotLoaded
+    public var error:ErrorType?
     public var name:String?
     public var allowedValues:[T] = []
     
@@ -126,3 +128,10 @@ public func ==<T>(left: Field<T>, right: Field<T>) -> Bool {
     return left.value == right.value
 }
 
+public func ==<T>(left: Field<T>, right: T) -> Bool {
+    return left.value == right
+}
+
+public func ==<T>(left: T, right: Field<T>) -> Bool {
+    return left == right.value
+}

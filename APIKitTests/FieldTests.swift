@@ -9,7 +9,7 @@
 import XCTest
 
 class Entity:Model {
-    let name:Field<String> = Field()
+    let name = Field<String>()
 }
 
 class View:FieldObserver {
@@ -34,10 +34,18 @@ class FieldTests: XCTestCase {
         super.tearDown()
     }
     
+    func testStates() {
+        let entity = Entity()
+        XCTAssert(entity.name.state == .NotLoaded)
+    }
+    
     func testOperators() {
         let entity = Entity()
         entity.name <-- "Bob"
         XCTAssertEqual(entity.name.value, "Bob")
+        XCTAssertTrue(entity.name == "Bob")
+        XCTAssertFalse(entity.name == "Bobb")
+        XCTAssertTrue("Bob" == entity.name)
     }
     
     func testObservation() {
