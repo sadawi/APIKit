@@ -23,7 +23,8 @@ public protocol FieldObserver:AnyObject {
     func fieldValueChanged(field:FieldType)
 }
 
-public class Field<T:Equatable>: FieldType, FieldObserver {
+public class Field<T:Equatable>: FieldType, FieldObserver, Equatable {
+    
     public var value:T? {
         didSet {
             if oldValue != self.value {
@@ -120,3 +121,8 @@ public func <--><T>(left: Field<T>, right: Field<T>) {
     left.value = right.value
     right.addObserver(left)
 }
+
+public func ==<T>(left: Field<T>, right: Field<T>) -> Bool {
+    return left.value == right.value
+}
+

@@ -56,10 +56,15 @@ class FieldTests: XCTestCase {
     func testBinding() {
         let a = Entity()
         let b = Entity()
-        
+
         a.name <-- "John"
-        b.name <-- "Bob"
+        b.name <-- "John"
+        XCTAssertTrue(a.name == b.name)
         
+        b.name <-- "Bob"
+
+        XCTAssertFalse(a.name == b.name)
+
         XCTAssertNotEqual(a.name.value, b.name.value)
         
         a.name <--> b.name
