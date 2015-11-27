@@ -48,7 +48,7 @@ class FieldTests: XCTestCase {
         XCTAssertEqual(view.value, "Alice")
         
         var value:String = "test"
-        entity.name.observe { field in
+        entity.name --> { field in
             value = field.value!
         }
         entity.name <-- "NEW VALUE"
