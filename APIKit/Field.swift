@@ -117,5 +117,6 @@ public func --><T>(observedField:Field<T>, onChange:(Field<T> -> Void)) {
 
 public func <--><T>(left: Field<T>, right: Field<T>) {
     left.addObserver(right)
+    left.value = right.value
     right.addObserver(left)
 }

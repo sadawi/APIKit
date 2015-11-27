@@ -48,9 +48,7 @@ class FieldTests: XCTestCase {
         XCTAssertEqual(view.value, "Alice")
         
         var value:String = "test"
-        entity.name --> { field in
-            value = field.value!
-        }
+        entity.name --> { value = $0.value! }
         entity.name <-- "NEW VALUE"
         XCTAssertEqual(value, "NEW VALUE")
     }
@@ -65,6 +63,10 @@ class FieldTests: XCTestCase {
         XCTAssertNotEqual(a.name.value, b.name.value)
         
         a.name <--> b.name
+        
+        XCTAssertEqual(a.name.value, "Bob")
+        XCTAssertEqual(b.name.value, "Bob")
+        
         a.name <-- "Martha"
         
         XCTAssertEqual(a.name.value, b.name.value)
