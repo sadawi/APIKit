@@ -41,5 +41,6 @@ s.resource_bundles = {
 s.dependency 'Alamofire', '~> 3.0'
 s.dependency 'PromiseKit', '~> 3.0'
 s.dependency 'SwiftyJSON', '~> 2.3.0'
+s.dependency 'MagneticFields'
 
 end
