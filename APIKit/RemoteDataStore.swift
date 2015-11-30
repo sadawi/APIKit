@@ -110,6 +110,7 @@ public class RemoteDataStore: DataStore, ListableDataStore {
     public func request<T>(method:Alamofire.Method, path:String, parameters:AttributeDictionary?=nil, headers:[String:String]=[:]) -> Promise<Response<T>> {
         let headers = self.defaultHeaders() + headers
         let url = self.url(path: path)
+//        let parameters = parameters as? [String:AnyObject]
         return Promise { fulfill, reject in
             Alamofire.request(method, url, parameters: parameters, encoding: ParameterEncoding.URL, headers: headers).responseJSON { response in
                 print("RESPONSE: ", response.result.value)
@@ -174,7 +175,7 @@ public class RemoteDataStore: DataStore, ListableDataStore {
         return self.list(modelClass, parameters: nil)
     }
     
-    public func list<T: Model>(modelClass:T.Type, parameters:AttributeDictionary?) -> Promise<[T]> {
+    public func list<T: Model>(modelClass:T.Type, parameters:[String:AnyObject]?) -> Promise<[T]> {
         return Promise { fulfill, reject in
             self.request(.GET, path: modelClass.path, parameters: parameters).then { (response:Response<[AttributeDictionary]>) -> () in
                 // TODO: any of the individual models could fail to deserialize, and we're just silently ignoring them.

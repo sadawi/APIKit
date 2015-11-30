@@ -8,6 +8,7 @@
 
 import XCTest
 import PromiseKit
+import MagneticFields
 
 @testable import APIKit
 
@@ -88,6 +89,34 @@ class APIKitTests: XCTestCase {
         self.measureBlock {
             // Put the code you want to measure the time of here.
         }
+    }
+
+    class Company: FieldModel {
+        let name = Field<String>()
+        let size = Field<Int>()
+        let parentCompany = Field<Company>()
+    }
+    
+    func testFieldModel() {
+        let co = Company()
+        co.name.value = "The Widget Company"
+        co.size.value = 22
+        
+        let fields = co.fields()
+        XCTAssertNotNil(fields["name"])
+        
+        let co2 = Company()
+        co2.name.value = "Parent Company"
+        co.parentCompany.value = co2
+
+        let dict = co.dictionaryValue
+        print(dict)
+        
+        XCTAssertEqual(dict["name"] as? String, "The Widget Company")
+        XCTAssertEqual(dict["size"] as? Int, 22)
+        let parentDict = dict["parentCompany"] as! AttributeDictionary
+        XCTAssertNotNil(parentDict)
+        XCTAssertEqual(parentDict["name"] as? String, "Parent Company")
     }
     
 }
