@@ -39,6 +39,7 @@
 		225DE81E1BEEC4E3009698FC /* RemoteDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 225DE80D1BEEB9FE009698FC /* RemoteDataStore.swift */; settings = {ASSET_TAGS = (); }; };
 		22D008001C0AC9F80094F9B9 /* FieldModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22D007FF1C0AC9F80094F9B9 /* FieldModel.swift */; settings = {ASSET_TAGS = (); }; };
 		22D008011C0AC9FE0094F9B9 /* FieldModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22D007FF1C0AC9F80094F9B9 /* FieldModel.swift */; settings = {ASSET_TAGS = (); }; };
+		22D008531C0E4A840094F9B9 /* CompoundError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22D008521C0E4A840094F9B9 /* CompoundError.swift */; settings = {ASSET_TAGS = (); }; };
 		3379611099364D616E5921CF /* Pods_APIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA64AEC3AC528E3B53B826E1 /* Pods_APIKit.framework */; };
 /* End PBXBuildFile section */
 
@@ -76,6 +77,7 @@
 		225DE8111BEEBABE009698FC /* Model.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Model.swift; sourceTree = "<group>"; };
 		225DE8151BEEC0D5009698FC /* ModelManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ModelManager.swift; sourceTree = "<group>"; };
 		22D007FF1C0AC9F80094F9B9 /* FieldModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FieldModel.swift; sourceTree = "<group>"; };
+		22D008521C0E4A840094F9B9 /* CompoundError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CompoundError.swift; sourceTree = "<group>"; };
 		4449023E723EA0BF4A2BA99C /* Pods-APIKit.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-APIKit.debug.xcconfig"; path = "Pods/Target Support Files/Pods-APIKit/Pods-APIKit.debug.xcconfig"; sourceTree = "<group>"; };
 		5A96EBE05329483E5F866082 /* Pods-APIKit.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-APIKit.release.xcconfig"; path = "Pods/Target Support Files/Pods-APIKit/Pods-APIKit.release.xcconfig"; sourceTree = "<group>"; };
 		FA64AEC3AC528E3B53B826E1 /* Pods_APIKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_APIKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -181,6 +183,7 @@
 		225DE8101BEEBA9A009698FC /* models */ = {
 			isa = PBXGroup;
 			children = (
+				22D008521C0E4A840094F9B9 /* CompoundError.swift */,
 				225DE8111BEEBABE009698FC /* Model.swift */,
 				2235AEF31BF3C0A600A730F0 /* Response.swift */,
 				22D007FF1C0AC9F80094F9B9 /* FieldModel.swift */,
@@ -361,6 +364,7 @@
 				2235AED81BEFD5B800A730F0 /* DictionarySerializable.swift in Sources */,
 				225DE80E1BEEB9FE009698FC /* RemoteDataStore.swift in Sources */,
 				225DE8121BEEBABE009698FC /* Model.swift in Sources */,
+				22D008531C0E4A840094F9B9 /* CompoundError.swift in Sources */,
 				225DE8161BEEC0D5009698FC /* ModelManager.swift in Sources */,
 				2235AEF01BF27E4C00A730F0 /* OAuthManager.swift in Sources */,
 			);

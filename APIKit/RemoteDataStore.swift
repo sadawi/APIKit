@@ -85,6 +85,7 @@ public class RemoteDataStore: DataStore, ListableDataStore {
         Override this to allow for an intermediate "data" key, for example.
     
         Note: T is only specified by type inference from the return value.
+        Note: errors aren't processed from the response.  Subclasses should handle that for a specific API response format.
     
         - Parameter apiResponse: The JSON response object from an Alamofire request
         - Returns: A Response object with its payload cast to the specified type
