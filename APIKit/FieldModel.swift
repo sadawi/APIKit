@@ -21,19 +21,19 @@ public class FieldModel: Model {
         return result
     }
     
-    public override var dictionaryValue:AttributeDictionary {
-        get {
-            var result:AttributeDictionary = [:]
-            for (name, field) in self.fields() {
-                var resultValue = field.anyObjectValue
-                if let value = resultValue as? DictionarySerializable {
-                    resultValue = value.dictionaryValue
-                }
-                result[name] = resultValue
-            }
-            return result
-        }
-        set {
-        }
-    }
+//    public override var dictionaryValue:AttributeDictionary {
+//        get {
+//            var result:AttributeDictionary = [:]
+//            for (name, field) in self.fields() {
+//                var resultValue = field.anyObjectValue
+//                if let value = resultValue as? DictionarySerializable {
+//                    resultValue = value.dictionaryValue
+//                }
+//                result[name] = resultValue
+//            }
+//            return result
+//        }
+//        set {
+//        }
+//    }
 }
