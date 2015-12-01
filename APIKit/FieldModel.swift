@@ -21,6 +21,22 @@ public class FieldModel: Model {
         return result
     }
     
+    /**
+        Look at the instance's fields, do some introspection and processing.
+    */
+    func processFields() {
+        for (key, field) in self.fields() {
+            if field.key == nil {
+                field.key = key
+            }
+        }
+    }
+    
+    public required init() {
+        super.init()
+        self.processFields()
+    }
+
 //    public override var dictionaryValue:AttributeDictionary {
 //        get {
 //            var result:AttributeDictionary = [:]
