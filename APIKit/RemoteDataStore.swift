@@ -45,6 +45,8 @@ public class RemoteDataStore: DataStore, ListableDataStore {
         }
     }
     
+//    public func handleModelError<T:Model>(modelClass:T.Type) -> 
+    
     // MARK: - Helper methods that subclasses might want to override
     
     private func url(path path:String) -> NSURL {
@@ -75,7 +77,7 @@ public class RemoteDataStore: DataStore, ListableDataStore {
         return deserialized
     }
     
-    public func handleError(inout error:NSError) {
+    public func handleError(inout error:NSError, model:Model?=nil) {
         // Override
     }
     
@@ -108,7 +110,7 @@ public class RemoteDataStore: DataStore, ListableDataStore {
     
         - Returns: A Promise parameterized by the data payload type of the response
     */
-    public func request<T>(method:Alamofire.Method, path:String, parameters:AttributeDictionary?=nil, headers:[String:String]=[:]) -> Promise<Response<T>> {
+    public func request<T>(method:Alamofire.Method, path:String, parameters:AttributeDictionary?=nil, headers:[String:String]=[:], model:Model?=nil) -> Promise<Response<T>> {
         let headers = self.defaultHeaders() + headers
         let url = self.url(path: path)
 //        let parameters = parameters as? [String:AnyObject]
@@ -120,7 +122,7 @@ public class RemoteDataStore: DataStore, ListableDataStore {
                     if let value:Response<T> = self.constructResponse(response) {
                         if var error=value.error {
                             // the request might have succeeded, but we found an error when constructing the Response object
-                            self.handleError(&error)
+                            self.handleError(&error, model:model)
                             reject(error)
                         } else {
                             fulfill(value)
@@ -131,7 +133,7 @@ public class RemoteDataStore: DataStore, ListableDataStore {
                         reject(error)
                     }
                 case .Failure(var error):
-                    self.handleError(&error)
+                    self.handleError(&error, model:model)
                     reject(error)
                 }
             }
@@ -142,13 +144,13 @@ public class RemoteDataStore: DataStore, ListableDataStore {
 
     public func create(model: Model) -> Promise<Model> {
         let parameters = self.formatPayload(self.serializeModel(model))
-        return self.request(.POST, path: model.dynamicType.path, parameters: parameters).then(self.instantiateModel(model.dynamicType))
+        return self.request(.POST, path: model.dynamicType.path, parameters: parameters, model:model).then(self.instantiateModel(model.dynamicType))
     }
     
     public func update(model: Model) -> Promise<Model> {
         if let path = model.path {
             let parameters = self.formatPayload(self.serializeModel(model))
-            return self.request(.PATCH, path: path, parameters: parameters).then(self.instantiateModel(model.dynamicType))
+            return self.request(.PATCH, path: path, parameters: parameters, model:model).then(self.instantiateModel(model.dynamicType))
         } else {
             return self.errorPromise("No path for model")
         }

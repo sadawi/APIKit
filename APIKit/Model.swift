@@ -14,7 +14,7 @@ public class Model: DictionarySerializable, Routable {
     // Always storing id as a string (but assuming it's an Int in the API)
     // TODO: better way to handle string vs. int identifier types
     public var identifier:String?
-    
+        
     public var persisted:Bool {
         get {
             return self.identifier != nil

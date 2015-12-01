@@ -10,6 +10,17 @@ import Foundation
 import MagneticFields
 
 public class FieldModel: Model {
+    public func addError(keyPath path:String, message:String) {
+        if let field = self.fieldForKeyPath(path) {
+            field.addValidationError(message)
+        }
+    }
+    
+    public func fieldForKeyPath(path:String) -> FieldType? {
+        // TODO: nested keypaths
+        return self.fields()[path]
+    }
+    
     public func fields() -> [String:FieldType] {
         var result:[String:FieldType] = [:]
         let mirror = Mirror(reflecting: self)
