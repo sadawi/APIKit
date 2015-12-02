@@ -63,10 +63,19 @@ public class MemoryDataStore: DataStore, ListableDataStore {
             fulfill(model)
         }
     }
+    
+    /**
+        A synchronous variant of lookup that does not return a promise.
+    */
+    public func lookupImmediately<T: Model>(modelClass:T.Type, identifier:String) -> T? {
+        let collection = self.collectionForClass(modelClass)
+        return collection?[identifier] as? T
+    }
+
+    
     public func lookup<T: Model>(modelClass:T.Type, identifier:String) -> Promise<T> {
         return Promise { fulfill, reject in
-            let collection = self.collectionForClass(modelClass)
-            if let result = collection?[identifier] as? T {
+            if let result = self.lookupImmediately(modelClass, identifier: identifier) {
                 fulfill(result)
             } else {
                 reject(NSError(domain: DataStoreErrorDomain, code: 0, userInfo: [NSLocalizedDescriptionKey: "Model not found with id \(identifier)"]))

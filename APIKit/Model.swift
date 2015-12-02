@@ -44,6 +44,10 @@ public class Model: DictionarySerializable, Routable {
         }
     }
     
+    public func prepareForSave() {
+        // Nothing yet.
+    }
+    
     // MARK: DictionarySerializable overrides
     
     public override var dictionaryValue:AttributeDictionary {

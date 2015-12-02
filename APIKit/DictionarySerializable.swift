@@ -8,7 +8,7 @@
 
 import Foundation
 
-public class DictionarySerializable: NSObject {
+public class DictionarySerializable: NSObject, NSCopying {
     
     /**
         Attempts to instantiate a new object from a dictionary representation of its attributes.
@@ -32,6 +32,10 @@ public class DictionarySerializable: NSObject {
         }
         set {
         }
+    }
+    
+    public func copyWithZone(zone: NSZone) -> AnyObject {
+        return self.dynamicType.fromDictionaryValue(self.dictionaryValue)!
     }
     
 }

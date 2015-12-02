@@ -66,13 +66,19 @@ public class RemoteDataStore: DataStore, ListableDataStore {
     }
     
     public func deserializeModel<T:Model>(modelClass:T.Type, parameters:AttributeDictionary) -> T? {
+        // TODO: I guess it would be more efficient to lookup the canonical object before instantiating at all.
+        // But that requires identifier key knowledge that lives in the model class at the moment.
+        
         var deserialized = modelClass.fromDictionaryValue(parameters)
         if let id = deserialized?.identifier {
             // If we have a canonical object for this id, swap it in
-            if let canonical = self.delegate?.dataStore(self, canonicalObjectForIdentifier:id) as? T {
+            if let canonical = self.delegate?.dataStore(self, canonicalObjectForIdentifier:id, modelClass:modelClass) as? T {
+                print("reusing existing model with id \(canonical.identifier)")
                 deserialized = canonical
+                (deserialized as? Model)?.dictionaryValue = parameters
+            } else if let deserialized = deserialized {
+                self.delegate?.dataStore(self, didInstantiateModel: deserialized)
             }
-            (deserialized as? Model)?.dictionaryValue = parameters
         }
         return deserialized
     }
@@ -116,7 +122,7 @@ public class RemoteDataStore: DataStore, ListableDataStore {
 //        let parameters = parameters as? [String:AnyObject]
         return Promise { fulfill, reject in
             Alamofire.request(method, url, parameters: parameters, encoding: ParameterEncoding.URL, headers: headers).responseJSON { response in
-                print("RESPONSE: ", response.result.value)
+//                print("RESPONSE: ", response.result.value)
                 switch response.result {
                 case .Success:
                     if let value:Response<T> = self.constructResponse(response) {
@@ -143,11 +149,13 @@ public class RemoteDataStore: DataStore, ListableDataStore {
     // MARK: - CRUD operations (DataStore protocol methods)
 
     public func create(model: Model) -> Promise<Model> {
+        model.prepareForSave()
         let parameters = self.formatPayload(self.serializeModel(model))
         return self.request(.POST, path: model.dynamicType.path, parameters: parameters, model:model).then(self.instantiateModel(model.dynamicType))
     }
     
     public func update(model: Model) -> Promise<Model> {
+        model.prepareForSave()
         if let path = model.path {
             let parameters = self.formatPayload(self.serializeModel(model))
             return self.request(.PATCH, path: path, parameters: parameters, model:model).then(self.instantiateModel(model.dynamicType))

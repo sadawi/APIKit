@@ -47,6 +47,16 @@ public class FieldModel: Model {
         super.init()
         self.processFields()
     }
+    
+    public override func prepareForSave() {
+        self.resetValidationState()
+    }
+    
+    public func resetValidationState() {
+        for (_, field) in self.fields() {
+            field.resetValidationState()
+        }
+    }
 
 //    public override var dictionaryValue:AttributeDictionary {
 //        get {
