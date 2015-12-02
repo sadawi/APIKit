@@ -44,9 +44,12 @@ public class Model: DictionarySerializable, Routable {
         }
     }
     
-    public func prepareForSave() {
+    public func beforeSave() {
         // Nothing yet.
     }
+    
+    public func afterCreate() { }
+    public func afterDelete() { }
     
     // MARK: DictionarySerializable overrides
     

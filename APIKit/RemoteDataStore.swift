@@ -149,13 +149,16 @@ public class RemoteDataStore: DataStore, ListableDataStore {
     // MARK: - CRUD operations (DataStore protocol methods)
 
     public func create(model: Model) -> Promise<Model> {
-        model.prepareForSave()
+        model.beforeSave()
         let parameters = self.formatPayload(self.serializeModel(model))
-        return self.request(.POST, path: model.dynamicType.path, parameters: parameters, model:model).then(self.instantiateModel(model.dynamicType))
+        return self.request(.POST, path: model.dynamicType.path, parameters: parameters, model:model).then(self.instantiateModel(model.dynamicType)).then { model in
+            model.afterCreate()
+            return Promise(model)
+        }
     }
     
     public func update(model: Model) -> Promise<Model> {
-        model.prepareForSave()
+        model.beforeSave()
         if let path = model.path {
             let parameters = self.formatPayload(self.serializeModel(model))
             return self.request(.PATCH, path: path, parameters: parameters, model:model).then(self.instantiateModel(model.dynamicType))
@@ -166,7 +169,10 @@ public class RemoteDataStore: DataStore, ListableDataStore {
     
     public func delete(model: Model) -> Promise<Model> {
         if let path = model.path {
-            return self.request(.DELETE, path: path).then(self.instantiateModel(model.dynamicType))
+            return self.request(.DELETE, path: path).then { (response:Response<Model>) -> Promise<Model> in
+                model.afterDelete()
+                return Promise(model)
+            }
         } else {
             return self.errorPromise("No path for model")
         }

@@ -48,7 +48,7 @@ public class FieldModel: Model {
         self.processFields()
     }
     
-    public override func prepareForSave() {
+    public override func beforeSave() {
         self.resetValidationState()
     }
     
