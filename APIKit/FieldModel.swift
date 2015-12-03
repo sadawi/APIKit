@@ -15,10 +15,36 @@ public class FieldModel: Model {
             field.addValidationError(message)
         }
     }
-    
+
+    public func fieldForKeyPath(components:[String]) -> FieldType? {
+        guard components.count > 0 else { return nil }
+        
+        let fields = self.fields()
+        if let firstField = fields[components[0]] {
+            let remainingComponents = Array(components[1..<components.count])
+            if remainingComponents.count == 0 {
+                // No more components.  Just return the field
+                return firstField
+            } else if let firstValue = firstField.anyValue as? FieldModel {
+                // There are more components remaining, and we can keep traversing key paths
+                return firstValue.fieldForKeyPath(remainingComponents)
+            }
+        }
+        return nil
+    }
+
     public func fieldForKeyPath(path:String) -> FieldType? {
-        // TODO: nested keypaths
-        return self.fields()[path]
+        return fieldForKeyPath(self.componentsForKeyPath(path))
+    }
+
+    /**
+        Splits a field keypath into an array of field names to be traversed.
+        For example, "address.street" might be split into ["address", "street"]
+        
+        To change the default behavior, you'll probably want to subclass.
+    */
+    public func componentsForKeyPath(path:String) -> [String] {
+        return path.componentsSeparatedByString(".")
     }
     
     public func fields() -> [String:FieldType] {
