@@ -81,6 +81,11 @@ public class FieldModel: Model {
     public func resetValidationState() {
         for (_, field) in self.fields() {
             field.resetValidationState()
+            
+            // And all the way down!
+            if let value = field.anyValue as? FieldModel {
+                value.resetValidationState()
+            }
         }
     }
 
