@@ -79,7 +79,7 @@ public class FieldModel: Model {
     }
     
     public func validate() -> Bool {
-//        self.resetValidationState()
+        self.resetValidationState()
         
         var allValid = true
         self.visitAllFields { field in
