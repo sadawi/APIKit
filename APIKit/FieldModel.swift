@@ -78,13 +78,30 @@ public class FieldModel: Model {
         self.resetValidationState()
     }
     
+    public func validate() -> Bool {
+//        self.resetValidationState()
+        
+        var allValid = true
+        self.visitAllFields { field in
+            // Make sure to call validate() on each field (don't short circuit if false)
+            let valid = (field.validate() == .Valid)
+            
+            allValid = allValid && valid
+        }
+        return allValid
+    }
+    
     public func resetValidationState() {
+        self.visitAllFields { $0.resetValidationState() }
+    }
+    
+    public func visitAllFields(action:(FieldType -> Void)) {
         for (_, field) in self.fields() {
-            field.resetValidationState()
+            action(field)
             
             // And all the way down!
             if let value = field.anyValue as? FieldModel {
-                value.resetValidationState()
+                value.visitAllFields(action)
             }
         }
     }
