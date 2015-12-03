@@ -189,10 +189,10 @@ public class RemoteDataStore: DataStore, ListableDataStore {
     }
 
     public func list<T: Model>(modelClass:T.Type) -> Promise<[T]> {
-        return self.list(modelClass, parameters: nil)
+        return self.search(modelClass, parameters: nil)
     }
     
-    public func list<T: Model>(modelClass:T.Type, parameters:[String:AnyObject]?) -> Promise<[T]> {
+    public func search<T: Model>(modelClass:T.Type, parameters:[String:AnyObject]?) -> Promise<[T]> {
         return Promise { fulfill, reject in
             self.request(.GET, path: modelClass.path, parameters: parameters).then { (response:Response<[AttributeDictionary]>) -> () in
                 // TODO: any of the individual models could fail to deserialize, and we're just silently ignoring them.
