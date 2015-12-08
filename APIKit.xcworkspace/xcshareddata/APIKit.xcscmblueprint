@@ -1,0 +1,30 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "D6CD5A2B3D8D3AA9DAB1F7FC53A2A0ED3F01C436",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "D6CD5A2B3D8D3AA9DAB1F7FC53A2A0ED3F01C436" : 0,
+    "3AB656BB72AD063E8969AE1DC4DA7BB2EC1B9A47" : 0
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "7D51F432-342A-416D-9E1B-8198E21D8E47",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "D6CD5A2B3D8D3AA9DAB1F7FC53A2A0ED3F01C436" : "APIKit\/",
+    "3AB656BB72AD063E8969AE1DC4DA7BB2EC1B9A47" : "MagneticFields\/"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "APIKit",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "APIKit.xcworkspace",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "github.com:sadawi\/MagneticFields.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "3AB656BB72AD063E8969AE1DC4DA7BB2EC1B9A47"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "github.com:sadawi\/APIKit.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "D6CD5A2B3D8D3AA9DAB1F7FC53A2A0ED3F01C436"
+    }
+  ]
+}

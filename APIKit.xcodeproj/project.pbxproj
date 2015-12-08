@@ -37,9 +37,13 @@
 		225DE81C1BEEC4E3009698FC /* MemoryDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 225DE8061BEEB04D009698FC /* MemoryDataStore.swift */; settings = {ASSET_TAGS = (); }; };
 		225DE81D1BEEC4E3009698FC /* DataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 225DE80B1BEEB9CF009698FC /* DataStore.swift */; settings = {ASSET_TAGS = (); }; };
 		225DE81E1BEEC4E3009698FC /* RemoteDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 225DE80D1BEEB9FE009698FC /* RemoteDataStore.swift */; settings = {ASSET_TAGS = (); }; };
+		22B71E791C17757000EA7FD8 /* FieldModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22B71E781C17757000EA7FD8 /* FieldModelTests.swift */; settings = {ASSET_TAGS = (); }; };
+		22B71E7B1C1777B700EA7FD8 /* ModelValueTransformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22B71E7A1C1777B700EA7FD8 /* ModelValueTransformer.swift */; settings = {ASSET_TAGS = (); }; };
+		22B71E7E1C1777F300EA7FD8 /* ModelValueTransformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22B71E7A1C1777B700EA7FD8 /* ModelValueTransformer.swift */; settings = {ASSET_TAGS = (); }; };
+		22B71E831C17819100EA7FD8 /* ModelField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22B71E821C17819100EA7FD8 /* ModelField.swift */; settings = {ASSET_TAGS = (); }; };
+		22B71E841C17819100EA7FD8 /* ModelField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22B71E821C17819100EA7FD8 /* ModelField.swift */; settings = {ASSET_TAGS = (); }; };
 		22D008001C0AC9F80094F9B9 /* FieldModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22D007FF1C0AC9F80094F9B9 /* FieldModel.swift */; settings = {ASSET_TAGS = (); }; };
 		22D008011C0AC9FE0094F9B9 /* FieldModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22D007FF1C0AC9F80094F9B9 /* FieldModel.swift */; settings = {ASSET_TAGS = (); }; };
-		22D008531C0E4A840094F9B9 /* CompoundError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22D008521C0E4A840094F9B9 /* CompoundError.swift */; settings = {ASSET_TAGS = (); }; };
 		3379611099364D616E5921CF /* Pods_APIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA64AEC3AC528E3B53B826E1 /* Pods_APIKit.framework */; };
 /* End PBXBuildFile section */
 
@@ -76,8 +80,10 @@
 		225DE80D1BEEB9FE009698FC /* RemoteDataStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RemoteDataStore.swift; sourceTree = "<group>"; };
 		225DE8111BEEBABE009698FC /* Model.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Model.swift; sourceTree = "<group>"; };
 		225DE8151BEEC0D5009698FC /* ModelManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ModelManager.swift; sourceTree = "<group>"; };
+		22B71E781C17757000EA7FD8 /* FieldModelTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FieldModelTests.swift; sourceTree = "<group>"; };
+		22B71E7A1C1777B700EA7FD8 /* ModelValueTransformer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ModelValueTransformer.swift; sourceTree = "<group>"; };
+		22B71E821C17819100EA7FD8 /* ModelField.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ModelField.swift; sourceTree = "<group>"; };
 		22D007FF1C0AC9F80094F9B9 /* FieldModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FieldModel.swift; sourceTree = "<group>"; };
-		22D008521C0E4A840094F9B9 /* CompoundError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CompoundError.swift; sourceTree = "<group>"; };
 		4449023E723EA0BF4A2BA99C /* Pods-APIKit.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-APIKit.debug.xcconfig"; path = "Pods/Target Support Files/Pods-APIKit/Pods-APIKit.debug.xcconfig"; sourceTree = "<group>"; };
 		5A96EBE05329483E5F866082 /* Pods-APIKit.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-APIKit.release.xcconfig"; path = "Pods/Target Support Files/Pods-APIKit/Pods-APIKit.release.xcconfig"; sourceTree = "<group>"; };
 		FA64AEC3AC528E3B53B826E1 /* Pods_APIKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_APIKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -162,6 +168,7 @@
 			isa = PBXGroup;
 			children = (
 				225DE7F51BEE8069009698FC /* APIKitTests.swift */,
+				22B71E781C17757000EA7FD8 /* FieldModelTests.swift */,
 				225DE7F71BEE8069009698FC /* Info.plist */,
 			);
 			path = APIKitTests;
@@ -183,10 +190,11 @@
 		225DE8101BEEBA9A009698FC /* models */ = {
 			isa = PBXGroup;
 			children = (
-				22D008521C0E4A840094F9B9 /* CompoundError.swift */,
+				22B71E7A1C1777B700EA7FD8 /* ModelValueTransformer.swift */,
 				225DE8111BEEBABE009698FC /* Model.swift */,
 				2235AEF31BF3C0A600A730F0 /* Response.swift */,
 				22D007FF1C0AC9F80094F9B9 /* FieldModel.swift */,
+				22B71E821C17819100EA7FD8 /* ModelField.swift */,
 			);
 			name = models;
 			sourceTree = "<group>";
@@ -354,17 +362,18 @@
 				2235AEDB1BEFE00E00A730F0 /* DictionaryExtension.swift in Sources */,
 				225DE80C1BEEB9CF009698FC /* DataStore.swift in Sources */,
 				22D008001C0AC9F80094F9B9 /* FieldModel.swift in Sources */,
+				22B71E831C17819100EA7FD8 /* ModelField.swift in Sources */,
 				2235AED61BEFD4AD00A730F0 /* Routable.swift in Sources */,
 				2235AEEE1BF27E3200A730F0 /* KeychainStore.swift in Sources */,
 				225DE8071BEEB04D009698FC /* MemoryDataStore.swift in Sources */,
 				2235AEE61BF1057200A730F0 /* DataStoreDelegate.swift in Sources */,
+				22B71E7B1C1777B700EA7FD8 /* ModelValueTransformer.swift in Sources */,
 				2235AEF41BF3C0A600A730F0 /* Response.swift in Sources */,
 				22080E311BEED3A200A633AA /* CompoundDataStore.swift in Sources */,
 				2235AEE91BF26A0700A730F0 /* OAuth.swift in Sources */,
 				2235AED81BEFD5B800A730F0 /* DictionarySerializable.swift in Sources */,
 				225DE80E1BEEB9FE009698FC /* RemoteDataStore.swift in Sources */,
 				225DE8121BEEBABE009698FC /* Model.swift in Sources */,
-				22D008531C0E4A840094F9B9 /* CompoundError.swift in Sources */,
 				225DE8161BEEC0D5009698FC /* ModelManager.swift in Sources */,
 				2235AEF01BF27E4C00A730F0 /* OAuthManager.swift in Sources */,
 			);
@@ -377,11 +386,14 @@
 				2235AEDE1BF008FA00A730F0 /* DictionaryExtension.swift in Sources */,
 				2235AEF21BF27E5100A730F0 /* KeychainStore.swift in Sources */,
 				22D008011C0AC9FE0094F9B9 /* FieldModel.swift in Sources */,
+				22B71E7E1C1777F300EA7FD8 /* ModelValueTransformer.swift in Sources */,
 				2235AEF11BF27E4F00A730F0 /* OAuthManager.swift in Sources */,
 				225DE81C1BEEC4E3009698FC /* MemoryDataStore.swift in Sources */,
 				2235AEE71BF10D9300A730F0 /* DataStoreDelegate.swift in Sources */,
 				2235AEDC1BF008E400A730F0 /* DictionarySerializable.swift in Sources */,
+				22B71E841C17819100EA7FD8 /* ModelField.swift in Sources */,
 				2235AEF51BF3C89E00A730F0 /* Response.swift in Sources */,
+				22B71E791C17757000EA7FD8 /* FieldModelTests.swift in Sources */,
 				225DE8171BEEC4D8009698FC /* Model.swift in Sources */,
 				225DE8181BEEC4DC009698FC /* ModelManager.swift in Sources */,
 				225DE81D1BEEC4E3009698FC /* DataStore.swift in Sources */,

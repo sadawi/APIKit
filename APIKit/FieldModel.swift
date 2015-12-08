@@ -9,6 +9,10 @@
 import Foundation
 import MagneticFields
 
+extension FieldType {
+    
+}
+
 public class FieldModel: Model {
     public func addError(keyPath path:String, message:String) {
         if let field = self.fieldForKeyPath(path) {
@@ -66,8 +70,14 @@ public class FieldModel: Model {
             if field.key == nil {
                 field.key = key
             }
+//            field.owner = self
+//            field.buildSerializer()
         }
     }
+    
+//    public func serializerForField(field:FieldType) -> FieldSerializerType {
+//        return DictionaryFieldSerializer<T>()
+//    }
     
     public required init() {
         super.init()
@@ -105,20 +115,20 @@ public class FieldModel: Model {
             }
         }
     }
-
-//    public override var dictionaryValue:AttributeDictionary {
-//        get {
-//            var result:AttributeDictionary = [:]
-//            for (name, field) in self.fields() {
-//                var resultValue = field.anyObjectValue
-//                if let value = resultValue as? DictionarySerializable {
-//                    resultValue = value.dictionaryValue
-//                }
-//                result[name] = resultValue
-//            }
-//            return result
-//        }
-//        set {
-//        }
-//    }
+    
+    public override var dictionaryValue:AttributeDictionary {
+        get {
+            var result:AttributeDictionary = [:]
+            for (name, field) in self.fields() {
+                field.writeToDictionary(&result, name: field.key ?? name)
+            }
+            return result
+        }
+        set {
+            super.dictionaryValue = newValue
+            for (name, field) in self.fields() {
+                field.readFromDictionary(newValue, name: field.key ?? name)
+            }
+        }
+    }
 }
