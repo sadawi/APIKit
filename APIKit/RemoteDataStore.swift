@@ -87,10 +87,11 @@ public class RemoteDataStore: DataStore, ListableDataStore {
         if let id = deserialized?.identifier {
             // If we have a canonical object for this id, swap it in
             if let canonical = self.delegate?.dataStore(self, canonicalObjectForIdentifier:id, modelClass:modelClass) as? T {
-                print("reusing existing model with id \(canonical.identifier)")
+                print("reusing existing \(modelClass) with id \(canonical.identifier)")
                 deserialized = canonical
                 (deserialized as? Model)?.dictionaryValue = parameters
             } else if let deserialized = deserialized {
+                print("did instantiate \(modelClass) with id \(deserialized.identifier)")
                 self.delegate?.dataStore(self, didInstantiateModel: deserialized)
             }
         }
