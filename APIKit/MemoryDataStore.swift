@@ -37,6 +37,7 @@ public class MemoryDataStore: DataStore, ListableDataStore {
         return NSUUID().UUIDString
     }
     
+    // TODO: think more about how to safely create identifiers, when the ID field can be arbitrary type.
     public func create(model: Model) -> Promise<Model> {
         return Promise { fulfill, reject in
             let id = self.generateIdentifier()

@@ -9,7 +9,7 @@
 import Foundation
 import MagneticFields
 
-public class ModelField<T: FieldModel>: Field<T> {
+public class ModelField<T: Model>: Field<T> {
     public override init(value:T?=nil, name:String?=nil, priority:Int=0, key:String?=nil) {
         super.init(value: value, name: name, priority: priority)
     }

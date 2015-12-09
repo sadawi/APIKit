@@ -9,7 +9,7 @@
 import Foundation
 import MagneticFields
 
-public class ModelValueTransformer<T: FieldModel>: ValueTransformer<T> {
+public class ModelValueTransformer<T: Model>: ValueTransformer<T> {
     public init() {
         super.init(importAction: { value in
             if let value = value as? AttributeDictionary {
@@ -20,8 +20,8 @@ public class ModelValueTransformer<T: FieldModel>: ValueTransformer<T> {
             },
             exportAction: { value in
                 
-            // Why do I have to cast it to FieldModel?  T is already a FieldModel.
-            if let value = value as? FieldModel {
+            // Why do I have to cast it to Model?  T is already a Model.
+            if let value = value as? Model {
                 return value.dictionaryValue
             } else {
                 return nil
