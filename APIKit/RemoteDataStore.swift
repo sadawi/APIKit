@@ -45,7 +45,21 @@ public class RemoteDataStore: DataStore, ListableDataStore {
         }
     }
     
-//    public func handleModelError<T:Model>(modelClass:T.Type) -> 
+    public func instantiateModels<T:Model>(modelClass:T.Type) -> (Response<[AttributeDictionary]> -> Promise<[T]>) {
+        return { (response:Response<[AttributeDictionary]>) in
+            // TODO: any of the individual models could fail to deserialize, and we're just silently ignoring them.
+            // Not sure what the right behavior should be.
+            if let values = response.data {
+                let models = values.map{ self.deserializeModel(modelClass, parameters: $0) }.flatMap{$0}
+                return Promise(models)
+            } else {
+                return Promise([])
+            }
+        }
+    }
+    
+    
+//    public func handleModelError<T:Model>(modelClass:T.Type) ->
     
     // MARK: - Helper methods that subclasses might want to override
     
@@ -193,19 +207,21 @@ public class RemoteDataStore: DataStore, ListableDataStore {
     }
     
     public func search<T: Model>(modelClass:T.Type, parameters:[String:AnyObject]?) -> Promise<[T]> {
-        return Promise { fulfill, reject in
-            self.request(.GET, path: modelClass.path, parameters: parameters).then { (response:Response<[AttributeDictionary]>) -> () in
-                // TODO: any of the individual models could fail to deserialize, and we're just silently ignoring them.
-                // Not sure what the right behavior should be.
-                if let values = response.data {
-                    let models = values.map{ self.deserializeModel(modelClass, parameters: $0) }.flatMap{$0}
-                    fulfill(models)
-                } else {
-                    fulfill([])
-                }
-                }.error { error in
-                    reject(error)
-            }
-        }
+        return self.request(.GET, path: modelClass.path, parameters: parameters).then(self.instantiateModels(modelClass))
+
+//        return Promise { fulfill, reject in
+//            self.request(.GET, path: modelClass.path, parameters: parameters).then { (response:Response<[AttributeDictionary]>) -> () in
+//                // TODO: any of the individual models could fail to deserialize, and we're just silently ignoring them.
+//                // Not sure what the right behavior should be.
+//                if let values = response.data {
+//                    let models = values.map{ self.deserializeModel(modelClass, parameters: $0) }.flatMap{$0}
+//                    fulfill(models)
+//                } else {
+//                    fulfill([])
+//                }
+//                }.error { error in
+//                    reject(error)
+//            }
+//        }
     }
 }
