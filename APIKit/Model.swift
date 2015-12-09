@@ -124,11 +124,12 @@ public class Model: DictionarySerializable, Routable {
     public func fields() -> [String:FieldType] {
         var result:[String:FieldType] = [:]
         let mirror = Mirror(reflecting: self)
-        for child in mirror.children {
+        mirror.eachChild { child in
             if let label = child.label, value = child.value as? FieldType {
                 result[label] = value
             }
         }
+        
         return result
     }
     
