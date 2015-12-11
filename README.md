@@ -39,6 +39,11 @@ TODO
 
 All models automatically convert to and from a dictionary representation through the `dictionaryValue` property.
 
+```
+person.dictionaryValue
+// --> ["name": "Bob", "tags": ["red", "blue", "green"]]
+```
+
 Dictionary keys default to a string version of each field's property name, but you can customize it by specifying a 
 `key` initialization argument.  
 
