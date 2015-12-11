@@ -28,8 +28,7 @@ and validation to work properly.
 ### Identifiers
 
 For consistency, all models have a `String?` `identifier` property.  It is expected to be computed from a field 
-of either `String` or `Int` type, which you can specify by overriding the `identifierField` var.  
-By default, it'll be `nil`.
+of either `String` or `Int` type, which you can specify by overriding the `identifierField` var.  By default, it'll be `nil`.
 
 ### Validation
 
