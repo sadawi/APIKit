@@ -94,7 +94,7 @@ Resource paths are specified in your models (the `Routable` protocol).
 
 It's often useful for each model object to have a canonical instance.  Each `Person` with id `10` should be the same object in memory, for example, no matter where it is in an object graph or where it was loaded from.
 
-You can achieve this by using a MemoryDataStore as your canonical object registry, and setting up a `DataStoreDelegate` for your other data stores that manages the link.
+You can achieve this by using a `MemoryDataStore` as your canonical object registry, and setting up a `DataStoreDelegate` for your other data stores that manages the link.
 
 So, for example, in your `RemoteDataStore`'s delegate:
 
