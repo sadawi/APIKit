@@ -59,7 +59,7 @@ docs for full details):
 let birthday = Field<NSDate>().transform(MyCustomDateTransformer())
 ```
 
-If your field's value is a subclass of `Model`, the `ModelField` subclass automatically uses `ModelValueTransformer`:
+If your field's value is a subclass of `Model`, you can use the `ModelField` subclass.  Among other things, it automatically uses a `ModelValueTransformer`.
 
 ```swift
 let companies = *ModelField<Company>()
