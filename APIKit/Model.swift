@@ -196,7 +196,7 @@ public class Model: DictionarySerializable, Routable {
             var result:AttributeDictionary = [:]
             let include = self.fieldsForDictionaryValue()
             for (name, field) in self.fields() {
-                if include.contains({ $0 === field }) {
+                if include.contains({ $0 === field }) && field.state == .Set {
                     field.writeToDictionary(&result, name: field.key ?? name)
                 }
             }
