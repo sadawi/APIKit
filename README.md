@@ -105,7 +105,7 @@ var memoryDataStore = MemoryDataStore()
 // MARK: - DataStoreDelegate methods
 
 func dataStore(dataStore:DataStore, didInstantiateModel model:Model) {
-    self.memoryDataStore.save(model)
+  self.memoryDataStore.save(model)
 }
 
 func dataStore(dataStore:DataStore, canonicalObjectForIdentifier identifier:String, modelClass:AnyClass) -> Model? {
