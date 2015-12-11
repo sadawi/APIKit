@@ -67,7 +67,7 @@ let companies = *ModelField<Company>()
 
 ## Data Stores
 
-This library provides a promise-based interface for abstract data stores, specified in the `DataStore` protocol, as well as several concrete implementations.
+This library provides a [Promise](https://github.com/mxcl/PromiseKit)-based interface for abstract data stores, specified in the `DataStore` protocol, as well as several concrete implementations.
 
 ```swift
 func create<T: Model>(model:T) -> Promise<T>
