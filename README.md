@@ -67,4 +67,26 @@ let companies = *ModelField<Company>()
 
 ## Data Stores
 
-TODO
+This library provides a promise-based interface for abstract data stores, specified in the `DataStore` protocol, as well as several concrete implementations.
+
+```swift
+func create<T: Model>(model:T) -> Promise<T>
+func update<T: Model>(model:T) -> Promise<T>
+func delete<T: Model>(model:T) -> Promise<T>
+func lookup<T: Model>(modelClass:T.Type, identifier:String) -> Promise<T>
+func list<T: Model>(modelClass:T.Type) -> Promise<[T]>
+```
+
+### MemoryDataStore
+
+This stores models in memory.  It adds a `lookupImmediately` method for synchronous identifier-based lookups.
+
+### RemoteDataStore
+
+This is intended as a base class for your RESTful server interface.  It includes a number of overridable hooks that you can customize for your particular needs, like:
+
+* `defaultHeaders`
+* `handleError`
+* `constructResponse`
+
+Resource paths are specified in your models (the `Routable` protocol).
