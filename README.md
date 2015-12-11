@@ -36,7 +36,7 @@ TODO
 
 ### Serialization
 
-All models automatically convert to and from a dictionary representation through the `dictionaryValue` property.
+All models automatically convert to and from a dictionary representation of their `Field`s through the `dictionaryValue` property.
 
 ```
 person.dictionaryValue
