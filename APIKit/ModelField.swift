@@ -18,14 +18,3 @@ public class ModelField<T: Model>: Field<T> {
         return ModelValueTransformer<T>()
     }
 }
-
-// Not sure about the right hierarchy here.
-public class ModelArrayField<T: Model>: ArrayField<T> {
-    public override init(value:[T]?=nil, name:String?=nil, priority:Int=0, key:String?=nil) {
-        super.init(value: value, name: name, priority: priority, key: key)
-    }
-    
-    public override func defaultValueTransformer() -> ValueTransformer<T> {
-        return ModelValueTransformer<T>()
-    }
-}
