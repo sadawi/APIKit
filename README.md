@@ -64,6 +64,8 @@ If your field's value is a subclass of `Model`, you can use the `ModelField` sub
 let companies = *ModelField<Company>()
 ```
 
+If you don't want to serialize all fields, you can override `fieldsForDictionaryValue()` to whitelist the ones you do want.
+
 ## Data Stores
 
 This library provides a [Promise](https://github.com/mxcl/PromiseKit)-based interface for abstract data stores, specified in the `DataStore` protocol, as well as several concrete implementations.
