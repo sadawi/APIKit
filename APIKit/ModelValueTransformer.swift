@@ -10,7 +10,7 @@ import Foundation
 import MagneticFields
 
 public class ModelValueTransformer<T: Model>: ValueTransformer<T> {
-    public init() {
+    public override init() {
         super.init(importAction: { value in
             if let value = value as? AttributeDictionary {
                 return T.fromDictionaryValue(value)
