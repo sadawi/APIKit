@@ -210,7 +210,6 @@ public class RemoteDataStore: DataStore, ListableDataStore {
      - parameter parameters: Request parameters to pass along in the request.
      */
     public func list<T: Model>(modelClass:T.Type, path:String?=nil, parameters:[String:AnyObject]?) -> Promise<[T]> {
-        return self.requestModels(modelClass, path: path ?? modelClass.path, parameters: parameters)
+        return self.request(.GET, path: path ?? modelClass.path, parameters: parameters).then(self.instantiateModels(modelClass))
     }
-    
 }
