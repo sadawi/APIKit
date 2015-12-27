@@ -12,29 +12,26 @@ import PromiseKit
 public class RemoteDataStore: DataStore, ListableDataStore {
     public var baseURL:NSURL
     public var delegate:DataStoreDelegate?
-
+    
     public init(baseURL:NSURL) {
         self.baseURL = baseURL
     }
     
-    // MARK: - Helpers
-    
     /**
-        Parameter message: A localized error message
-    
-        Returns: An immediately failing promise
-    */
+     parameter message: A localized error message
+     returns: An immediately failing promise
+     */
     private func errorPromise<T:Model>(message:String) -> Promise<T> {
         return Promise(error: NSError(domain: DataStoreErrorDomain, code: 0, userInfo: [NSLocalizedDescriptionKey: message]))
     }
-
-    /**
-        Creates a closure that deserializes a model and returns a Promise.
-        Useful in promise chaining as an argument to .then
     
-        - Parameter modelClass: The Model subclass to be instantiated
-        - Returns: A Promise yielding a Model instance
-    */
+    /**
+     Creates a closure that deserializes a model and returns a Promise.
+     Useful in promise chaining as an argument to .then
+     
+     - parameter modelClass: The Model subclass to be instantiated
+     - returns: A Promise yielding a Model instance
+     */
     public func instantiateModel<T:Model>(modelClass:T.Type) -> (Response<AttributeDictionary> -> Promise<T>){
         return { (response:Response<AttributeDictionary>) in
             if let data = response.data, model = self.deserializeModel(modelClass, parameters: data) {
@@ -59,7 +56,7 @@ public class RemoteDataStore: DataStore, ListableDataStore {
     }
     
     
-//    public func handleModelError<T:Model>(modelClass:T.Type) ->
+    //    public func handleModelError<T:Model>(modelClass:T.Type) ->
     
     // MARK: - Helper methods that subclasses might want to override
     
@@ -103,41 +100,39 @@ public class RemoteDataStore: DataStore, ListableDataStore {
     }
     
     /**
-        Retrieves the data payload from the Alamofire response and attempts to cast it to the correct type.
-    
-        Override this to allow for an intermediate "data" key, for example.
-    
-        Note: T is only specified by type inference from the return value.
-        Note: errors aren't processed from the response.  Subclasses should handle that for a specific API response format.
-    
-        - Parameter apiResponse: The JSON response object from an Alamofire request
-        - Returns: A Response object with its payload cast to the specified type
-    */
+     Retrieves the data payload from the Alamofire response and attempts to cast it to the correct type.
+     
+     Override this to allow for an intermediate "data" key, for example.
+     
+     Note: T is only specified by type inference from the return value.
+     Note: errors aren't processed from the response.  Subclasses should handle that for a specific API response format.
+     
+     - parameter apiResponse: The JSON response object from an Alamofire request
+     - returns: A Response object with its payload cast to the specified type
+     */
     public func constructResponse<T>(apiResponse:Alamofire.Response<AnyObject,NSError>) -> Response<T>? {
         let response = Response<T>()
         response.data = apiResponse.result.value as? T
         return response
     }
-
-
+    
+    
     // MARK: - Generic requests
     
     /**
-        The core request method, basically a Promise wrapper around an Alamofire.request call
-        Parameterized by the T, the expected data payload type (typically either a dictionary or an array of dictionaries)
+    The core request method, basically a Promise wrapper around an Alamofire.request call
+    Parameterized by the T, the expected data payload type (typically either a dictionary or an array of dictionaries)
     
-        TODO: At the moment T is only specified by type inference from the return value, which is awkward since it's a promise.
-        Consider specifying as a param.
+    TODO: At the moment T is only specified by type inference from the return value, which is awkward since it's a promise.
+    Consider specifying as a param.
     
-        - Returns: A Promise parameterized by the data payload type of the response
+    - returns: A Promise parameterized by the data payload type of the response
     */
     public func request<T>(method:Alamofire.Method, path:String, parameters:AttributeDictionary?=nil, headers:[String:String]=[:], model:Model?=nil) -> Promise<Response<T>> {
         let headers = self.defaultHeaders() + headers
         let url = self.url(path: path)
-//        let parameters = parameters as? [String:AnyObject]
         return Promise { fulfill, reject in
             Alamofire.request(method, url, parameters: parameters, encoding: ParameterEncoding.URL, headers: headers).responseJSON { response in
-//                print("RESPONSE: ", response.result.value)
                 switch response.result {
                 case .Success:
                     if let value:Response<T> = self.constructResponse(response) {
@@ -162,7 +157,7 @@ public class RemoteDataStore: DataStore, ListableDataStore {
     }
     
     // MARK: - CRUD operations (DataStore protocol methods)
-
+    
     public func create(model: Model) -> Promise<Model> {
         model.beforeSave()
         let parameters = self.formatPayload(self.serializeModel(model))
@@ -202,27 +197,20 @@ public class RemoteDataStore: DataStore, ListableDataStore {
             return self.errorPromise("No path for model")
         }
     }
-
+    
     public func list<T: Model>(modelClass:T.Type) -> Promise<[T]> {
-        return self.search(modelClass, parameters: nil)
+        return self.list(modelClass, parameters: nil)
     }
     
-    public func search<T: Model>(modelClass:T.Type, parameters:[String:AnyObject]?) -> Promise<[T]> {
-        return self.request(.GET, path: modelClass.path, parameters: parameters).then(self.instantiateModels(modelClass))
-
-//        return Promise { fulfill, reject in
-//            self.request(.GET, path: modelClass.path, parameters: parameters).then { (response:Response<[AttributeDictionary]>) -> () in
-//                // TODO: any of the individual models could fail to deserialize, and we're just silently ignoring them.
-//                // Not sure what the right behavior should be.
-//                if let values = response.data {
-//                    let models = values.map{ self.deserializeModel(modelClass, parameters: $0) }.flatMap{$0}
-//                    fulfill(models)
-//                } else {
-//                    fulfill([])
-//                }
-//                }.error { error in
-//                    reject(error)
-//            }
-//        }
+    /**
+     Retrieves a list of models, with customization of the request path and parameters.
+     
+     - parameter modelClass: The model class to instantiate
+     - parameter path: An optional path.  Defaults to modelClass.path
+     - parameter parameters: Request parameters to pass along in the request.
+     */
+    public func list<T: Model>(modelClass:T.Type, path:String?=nil, parameters:[String:AnyObject]?) -> Promise<[T]> {
+        return self.requestModels(modelClass, path: path ?? modelClass.path, parameters: parameters)
     }
+    
 }

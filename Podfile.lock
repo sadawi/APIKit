@@ -1,6 +1,6 @@
 PODS:
   - Alamofire (3.1.2)
-  - MagneticFields (0.0.1)
+  - MagneticFields (0.1.0)
   - OMGHTTPURLRQ (3.0.2):
     - OMGHTTPURLRQ/RQ (= 3.0.2)
   - OMGHTTPURLRQ/FormURLEncode (3.0.2)
@@ -34,7 +34,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Alamofire: 7c16ca65f3c7e681fd925fd7f2dec7747ff96855
-  MagneticFields: 0689aff25398f9c3628943fa6d9b76b0bb0de0b6
+  MagneticFields: 119fd37cf2ffba32ce86c09f3f4a3011f680b35d
   OMGHTTPURLRQ: 8376dc887d76a5a7e2a67881dc788f917a2f437c
   PromiseKit: 665540a1eb43156446872dcf49ed7dee6ebbe13b
   SwiftyJSON: 592b53bee5ef3dd9b3bebc6b9cb7ee35426ae8c3
