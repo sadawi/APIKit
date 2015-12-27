@@ -37,6 +37,8 @@
 		225DE81C1BEEC4E3009698FC /* MemoryDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 225DE8061BEEB04D009698FC /* MemoryDataStore.swift */; };
 		225DE81D1BEEC4E3009698FC /* DataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 225DE80B1BEEB9CF009698FC /* DataStore.swift */; };
 		225DE81E1BEEC4E3009698FC /* RemoteDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 225DE80D1BEEB9FE009698FC /* RemoteDataStore.swift */; };
+		22B124041C30589600070629 /* Mirror+Super.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22B124031C30589600070629 /* Mirror+Super.swift */; };
+		22B124051C30589600070629 /* Mirror+Super.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22B124031C30589600070629 /* Mirror+Super.swift */; };
 		22B71E791C17757000EA7FD8 /* FieldModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22B71E781C17757000EA7FD8 /* FieldModelTests.swift */; };
 		22B71E7B1C1777B700EA7FD8 /* ModelValueTransformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22B71E7A1C1777B700EA7FD8 /* ModelValueTransformer.swift */; };
 		22B71E7E1C1777F300EA7FD8 /* ModelValueTransformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22B71E7A1C1777B700EA7FD8 /* ModelValueTransformer.swift */; };
@@ -78,6 +80,7 @@
 		225DE80D1BEEB9FE009698FC /* RemoteDataStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RemoteDataStore.swift; sourceTree = "<group>"; };
 		225DE8111BEEBABE009698FC /* Model.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Model.swift; sourceTree = "<group>"; };
 		225DE8151BEEC0D5009698FC /* ModelManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ModelManager.swift; sourceTree = "<group>"; };
+		22B124031C30589600070629 /* Mirror+Super.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Mirror+Super.swift"; sourceTree = "<group>"; };
 		22B71E781C17757000EA7FD8 /* FieldModelTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FieldModelTests.swift; sourceTree = "<group>"; };
 		22B71E7A1C1777B700EA7FD8 /* ModelValueTransformer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ModelValueTransformer.swift; sourceTree = "<group>"; };
 		22B71E821C17819100EA7FD8 /* ModelField.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ModelField.swift; sourceTree = "<group>"; };
@@ -187,6 +190,7 @@
 		225DE8101BEEBA9A009698FC /* models */ = {
 			isa = PBXGroup;
 			children = (
+				22B124031C30589600070629 /* Mirror+Super.swift */,
 				22B71E7A1C1777B700EA7FD8 /* ModelValueTransformer.swift */,
 				225DE8111BEEBABE009698FC /* Model.swift */,
 				2235AEF31BF3C0A600A730F0 /* Response.swift */,
@@ -362,6 +366,7 @@
 				2235AEEE1BF27E3200A730F0 /* KeychainStore.swift in Sources */,
 				225DE8071BEEB04D009698FC /* MemoryDataStore.swift in Sources */,
 				2235AEE61BF1057200A730F0 /* DataStoreDelegate.swift in Sources */,
+				22B124041C30589600070629 /* Mirror+Super.swift in Sources */,
 				22B71E7B1C1777B700EA7FD8 /* ModelValueTransformer.swift in Sources */,
 				2235AEF41BF3C0A600A730F0 /* Response.swift in Sources */,
 				22080E311BEED3A200A633AA /* CompoundDataStore.swift in Sources */,
@@ -382,6 +387,7 @@
 				2235AEF21BF27E5100A730F0 /* KeychainStore.swift in Sources */,
 				22B71E7E1C1777F300EA7FD8 /* ModelValueTransformer.swift in Sources */,
 				2235AEF11BF27E4F00A730F0 /* OAuthManager.swift in Sources */,
+				22B124051C30589600070629 /* Mirror+Super.swift in Sources */,
 				225DE81C1BEEC4E3009698FC /* MemoryDataStore.swift in Sources */,
 				2235AEE71BF10D9300A730F0 /* DataStoreDelegate.swift in Sources */,
 				2235AEDC1BF008E400A730F0 /* DictionarySerializable.swift in Sources */,
