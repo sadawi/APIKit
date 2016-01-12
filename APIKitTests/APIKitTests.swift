@@ -53,8 +53,6 @@ class APIKitTests: XCTestCase {
         super.setUp()
         
         let store = MemoryDataStore()
-        store << Person(name: "Bob", age: 44)
-        store << Person(name: "Alice", age: 55)
 
         ModelManager.sharedInstance.dataStore = store
     }
@@ -63,6 +61,7 @@ class APIKitTests: XCTestCase {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
         super.tearDown()
     }
+
     
     func testResource() {
         let didSave = expectationWithDescription("save")
