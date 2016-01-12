@@ -21,7 +21,7 @@ class FieldModelTests: XCTestCase {
         super.tearDown()
     }
     
-    class Company: FieldModel {
+    class Company: Model {
         let name = Field<String>()
         let size = Field<Int>()
         let parentCompany = Field<Company>().transform(ModelValueTransformer<Company>())
