@@ -13,9 +13,9 @@ import MagneticFields
 @testable import APIKit
 
 class Person:Model {
-    let id = Field<String>()
-    let name = Field<String>()
-    let age = Field<Int>()
+    let id      = Field<String>()
+    let name    = Field<String>()
+    let age     = Field<Int>()
     
     required init() { }
     
@@ -30,9 +30,10 @@ class Person:Model {
 }
 
 class Pet:Model {
-    let id = Field<String>()
-    let name = Field<String>()
+    let id      = Field<String>()
+    let name    = Field<String>()
     let species = Field<String>()
+    let owner   = ModelField<Person>()
     
     required init() { }
 
@@ -62,15 +63,6 @@ class APIKitTests: XCTestCase {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
         super.tearDown()
     }
-    
-//    func testResources() {
-//        let expectation = expectationWithDescription("Waiting")
-//        ModelManager.sharedInstance.dataStore.list(Person).then { results -> () in
-//            XCTAssertEqual(2, results.count)
-//            expectation.fulfill()
-//        }
-//        self.waitForExpectationsWithTimeout(1, handler:nil)
-//    }
     
     func testResource() {
         let didSave = expectationWithDescription("save")
