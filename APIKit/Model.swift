@@ -51,6 +51,8 @@ public class Model: DictionarySerializable, Routable {
     // TODO: permissions
     public var editable:Bool = true
     
+    public var shell:Bool = false
+    
     public var persisted:Bool {
         get {
             return self.identifier != nil

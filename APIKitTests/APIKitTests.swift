@@ -62,6 +62,23 @@ class APIKitTests: XCTestCase {
         super.tearDown()
     }
 
+    func testFaults() {
+        let didSave = expectationWithDescription("save")
+        
+        let phil = Person(name: "Phil", age: 33)
+        ModelManager.sharedInstance.dataStore.save(phil).then { model -> Void in
+            // Fails because 555 is not a valid owner id (should be string)
+            let grazi0 = Pet.fromDictionaryValue(["name": "Grazi", "owner": 555])
+            XCTAssertNil(grazi0?.owner.value?.id.value)
+
+            let grazi1 = Pet.fromDictionaryValue(["name": "Grazi", "owner": phil.id.value!])
+            XCTAssertEqual(grazi1?.owner.value?.id.value, phil.id.value)
+            
+            didSave.fulfill()
+        }
+        
+        self.waitForExpectationsWithTimeout(1, handler:nil)
+    }
     
     func testResource() {
         let didSave = expectationWithDescription("save")

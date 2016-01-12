@@ -15,6 +15,15 @@ public class ModelValueTransformer<T: Model>: ValueTransformer<T> {
             if let value = value as? AttributeDictionary {
                 return T.fromDictionaryValue(value)
             } else {
+                // Attempt to initialize an object with just an id value
+                let dummy = T()
+                if let idField = dummy.identifierField, idKey = idField.key, value = value {
+                    let attributes = [idKey: value]
+                    if let shell = T.fromDictionaryValue(attributes), _ = shell.identifier {
+                        shell.shell = true
+                        return shell
+                    }
+                }
                 return nil
             }
             },
