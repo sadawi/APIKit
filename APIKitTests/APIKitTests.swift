@@ -13,26 +13,36 @@ import MagneticFields
 @testable import APIKit
 
 class Person:Model {
-    var name:String?
-    var age:Int?
+    let id = Field<String>()
+    let name = Field<String>()
+    let age = Field<Int>()
     
     required init() { }
     
+    override var identifierField:FieldType {
+        return self.id
+    }
+    
     init(name:String?, age:Int?) {
-        self.name = name
-        self.age = age
+        self.name.value = name
+        self.age.value = age
     }
 }
 
 class Pet:Model {
-    var name:String?
-    var species:String?
+    let id = Field<String>()
+    let name = Field<String>()
+    let species = Field<String>()
     
     required init() { }
+
+    override var identifierField:FieldType {
+        return self.id
+    }
     
     init(name:String?, species:String?) {
-        self.name = name
-        self.species = species
+        self.name.value = name
+        self.species.value = species
     }
 }
 
@@ -53,14 +63,14 @@ class APIKitTests: XCTestCase {
         super.tearDown()
     }
     
-    func testResources() {
+//    func testResources() {
 //        let expectation = expectationWithDescription("Waiting")
 //        ModelManager.sharedInstance.dataStore.list(Person).then { results -> () in
 //            XCTAssertEqual(2, results.count)
 //            expectation.fulfill()
 //        }
 //        self.waitForExpectationsWithTimeout(1, handler:nil)
-    }
+//    }
     
     func testResource() {
         let didSave = expectationWithDescription("save")
