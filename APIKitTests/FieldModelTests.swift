@@ -24,7 +24,7 @@ class FieldModelTests: XCTestCase {
     class Company: Model {
         let name = Field<String>()
         let size = Field<Int>()
-        let parentCompany = Field<Company>().transform(ModelValueTransformer<Company>())
+        let parentCompany = ModelField<Company>()
     }
     
     func testFieldModel() {

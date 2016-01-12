@@ -215,4 +215,14 @@ public class Model: DictionarySerializable, Routable {
         }
     }
     
+    public var shellFields: [FieldType] {
+        var results:[FieldType] = []
+        for (_, field) in self.fields() {
+            if (field.anyObjectValue as? Model)?.shell == true {
+                results.append(field)
+            }
+        }
+        return results
+    }
+    
 }

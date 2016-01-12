@@ -74,6 +74,9 @@ class APIKitTests: XCTestCase {
             let grazi1 = Pet.fromDictionaryValue(["name": "Grazi", "owner": phil.id.value!])
             XCTAssertEqual(grazi1?.owner.value?.id.value, phil.id.value)
             
+            let shells = grazi1!.shellFields
+            XCTAssertEqual(1, shells.count)
+            
             didSave.fulfill()
         }
         
