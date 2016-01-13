@@ -10,6 +10,7 @@ import Foundation
 import MagneticFields
 
 public typealias AttributeDictionary = [String:AnyObject]
+public typealias Identifier = String
 
 public class Model: DictionarySerializable, Routable {
     /**
@@ -25,11 +26,11 @@ public class Model: DictionarySerializable, Routable {
      Attempts to find the identifier as a String or Int, and cast it to a String
      (because it's useful to have an identifier with known type!)
      */
-    public var identifier:String? {
+    public var identifier:Identifier? {
         get {
             let value = self.identifierField?.anyObjectValue
             
-            if let value = value as? String {
+            if let value = value as? Identifier {
                 return value
             } else if let value = value as? Int {
                 return String(value)
@@ -182,13 +183,15 @@ public class Model: DictionarySerializable, Routable {
         self.visitAllFields { $0.resetValidationState() }
     }
     
-    public func visitAllFields(action:(FieldType -> Void)) {
+    public func visitAllFields(recursive recursive:Bool = true, action:(FieldType -> Void)) {
         for (_, field) in self.fields() {
             action(field)
             
-            // And all the way down!
-            if let value = field.anyValue as? Model {
-                value.visitAllFields(action)
+            if recursive {
+                // And all the way down!
+                if let value = field.anyValue as? Model {
+                    value.visitAllFields(recursive: recursive, action: action)
+                }
             }
         }
     }
@@ -215,14 +218,44 @@ public class Model: DictionarySerializable, Routable {
         }
     }
     
-    public var shellFields: [FieldType] {
+    // MARK: - Shells
+    
+    public func shells(recursive recursive:Bool = false) -> [Model] {
+        let results = NSMutableSet()
+        results.addObjectsFromArray(self.shellFields().map{$0.anyObjectValue as! Model})
+        return results.allObjects as! [Model]
+    }
+    
+    /**
+    Finds all the fields whose value is a shell (i.e., just an identifier)
+    */
+    public func shellFields(recursive recursive:Bool = false) -> [FieldType] {
         var results:[FieldType] = []
-        for (_, field) in self.fields() {
-            if (field.anyObjectValue as? Model)?.shell == true {
+        self.visitAllFields(recursive: recursive) { field in
+            if let model = field.anyObjectValue as? Model where model.shell == true {
                 results.append(field)
             }
         }
+        
         return results
+    }
+    
+    
+    /**
+     Attempts to turn all the shells into full objects.
+     
+     - parameter lookup: A closure to be used to look up a model from its shell.  Must be a synchronous operation!
+     */
+    public func fillShells(recursive recursive:Bool = false, lookup: (Model -> Model?)) {
+        for field in self.shellFields() {
+            if let shellValue = field.anyObjectValue as? Model, model = lookup(shellValue) {
+                if recursive {
+                     // Recursively fill the new model's shells, too
+                    model.fillShells(recursive: true, lookup: lookup)
+                }
+                field.anyObjectValue = model as AnyObject
+            }
+        }
     }
     
 }
