@@ -10,6 +10,13 @@ import Foundation
 import MagneticFields
 
 public class ModelValueTransformer<T: Model>: ValueTransformer<T> {
+    public var dataStoreDelegate:DataStoreDelegate?
+
+    public convenience init(dataStoreDelegate:DataStoreDelegate) {
+        self.init()
+        self.dataStoreDelegate = dataStoreDelegate
+    }
+    
     public override init() {
         super.init(importAction: { value in
             if let value = value as? AttributeDictionary {

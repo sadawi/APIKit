@@ -77,22 +77,20 @@ public class RemoteDataStore: DataStore, ListableDataStore {
     }
     
     public func deserializeModel<T:Model>(modelClass:T.Type, parameters:AttributeDictionary) -> T? {
-        // TODO: I guess it would be more efficient to lookup the canonical object before instantiating at all.
-        // But that requires identifier key knowledge that lives in the model class at the moment.
         
-        var deserialized = modelClass.fromDictionaryValue(parameters)
-        if let id = deserialized?.identifier {
-            // If we have a canonical object for this id, swap it in
-            if let canonical = self.delegate?.dataStore(self, canonicalObjectForIdentifier:id, modelClass:modelClass) as? T {
-                print("reusing existing \(modelClass) with id \(canonical.identifier)")
-                deserialized = canonical
-                (deserialized as? Model)?.dictionaryValue = parameters
-            } else if let deserialized = deserialized {
-                print("did instantiate \(modelClass) with id \(deserialized.identifier)")
-                self.delegate?.dataStore(self, didInstantiateModel: deserialized)
-            }
-        }
-        return deserialized
+        return modelClass.fromDictionaryValue(parameters)
+//        if let id = deserialized?.identifier {
+//            // If we have a canonical object for this id, swap it in
+//            if let canonical = self.delegate?.dataStore(self, canonicalObjectForIdentifier:id, modelClass:modelClass) as? T {
+//                print("reusing existing \(modelClass) with id \(canonical.identifier)")
+//                deserialized = canonical
+//                (deserialized as? Model)?.dictionaryValue = parameters
+//            } else if let deserialized = deserialized {
+//                print("did instantiate \(modelClass) with id \(deserialized.identifier)")
+//                self.delegate?.dataStore(self, didInstantiateModel: deserialized)
+//            }
+//        }
+//        return deserialized
     }
     
     public func handleError(inout error:NSError, model:Model?=nil) {

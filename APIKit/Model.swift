@@ -12,10 +12,49 @@ import MagneticFields
 public typealias AttributeDictionary = [String:AnyObject]
 public typealias Identifier = String
 
-public class Model: DictionarySerializable, Routable {
+public protocol ModelRegistry {
+    func didInstantiateModel<T:Model>(model:T)
+    func canonicalModelForModel<T:Model>(model:T) -> T?
+}
+
+public class Model: NSObject, Routable, NSCopying {
+    public static var registry:ModelRegistry?
+    
+    /**
+     Attempts to instantiate a new object from a dictionary representation of its attributes.
+     It's a class method to allow returning a canonical object instance for an identifier, if desired.
+     */
+    public class func fromDictionaryValue(dictionaryValue:AttributeDictionary) -> Self? {
+        //        let instance = self.init()
+        //        instance.dictionaryValue = dictionaryValue
+        //        return instance
+        
+        var instance = self.init()
+        (instance as Model).dictionaryValue = dictionaryValue
+        
+        if let registry = self.registry {
+            // If we have a canonical object for this id, swap it in
+            if let canonical = registry.canonicalModelForModel(instance) {
+                //                print("reusing existing \(self) with id \(canonical.identifier)")
+                instance = canonical
+                (instance as Model).dictionaryValue = dictionaryValue
+            } else {
+                //                print("did instantiate \(self) with id \(instance.identifier)")
+                registry.didInstantiateModel(instance)
+            }
+        }
+        return instance
+        
+    }
+    
+    public func copyWithZone(zone: NSZone) -> AnyObject {
+        return self.dynamicType.fromDictionaryValue(self.dictionaryValue)!
+    }
+
+    
     /**
      Which field should be treated as the identifier?
-     If all the models in your system have the same identifier field (e.g., "id"), you'll probably want to just put that in your 
+     If all the models in your system have the same identifier field (e.g., "id"), you'll probably want to just put that in your
      base model class.
      */
     public var identifierField: FieldType? {
@@ -161,7 +200,7 @@ public class Model: DictionarySerializable, Routable {
     //        return DictionaryFieldSerializer<T>()
     //    }
     
-    public required init() {
+    public required override init() {
         super.init()
         self.processFields()
     }
@@ -199,7 +238,7 @@ public class Model: DictionarySerializable, Routable {
         }
     }
     
-    public override var dictionaryValue:AttributeDictionary {
+    public var dictionaryValue:AttributeDictionary {
         get {
             var result:AttributeDictionary = [:]
             let include = self.fieldsForDictionaryValue()
@@ -211,7 +250,6 @@ public class Model: DictionarySerializable, Routable {
             return result
         }
         set {
-            super.dictionaryValue = newValue
             let include = self.fieldsForDictionaryValue()
             for (name, field) in self.fields() {
                 if include.contains({ $0 === field }) {
@@ -230,8 +268,8 @@ public class Model: DictionarySerializable, Routable {
     }
     
     /**
-    Finds all the fields whose value is a shell (i.e., just an identifier)
-    */
+     Finds all the fields whose value is a shell (i.e., just an identifier)
+     */
     public func shellFields(recursive recursive:Bool = false) -> [FieldType] {
         var results:[FieldType] = []
         self.visitAllFields(recursive: recursive) { field in
@@ -253,7 +291,7 @@ public class Model: DictionarySerializable, Routable {
         for field in self.shellFields() {
             if let shellValue = field.anyObjectValue as? Model, model = lookup(shellValue) {
                 if recursive {
-                     // Recursively fill the new model's shells, too
+                    // Recursively fill the new model's shells, too
                     model.fillShells(recursive: true, lookup: lookup)
                 }
                 field.anyObjectValue = model as AnyObject
