@@ -12,26 +12,30 @@ import MagneticFields
 
 @testable import APIKit
 
-class Company:Model {
-    let id      = Field<String>()
-    let name = Field<String>()
-    
+class BaseModel:Model {
+    let id          = Field<String>()
     override var identifierField:FieldType {
         return self.id
     }
 }
 
-class Person:Model {
-    let id      = Field<String>()
+class Department:BaseModel {
+    let name        = Field<String>()
+    let departments = *ModelField<Department>()
+}
+
+class Company:BaseModel {
+    let name        = Field<String>()
+    let departments = *ModelField<Department>()
+}
+
+class Person:BaseModel {
     let name    = Field<String>()
     let age     = Field<Int>()
     let company = ModelField<Company>()
+    // TODO: pets (avoid cycles!)
     
     required init() { }
-    
-    override var identifierField:FieldType {
-        return self.id
-    }
     
     init(name:String?, age:Int?) {
         self.name.value = name
@@ -39,18 +43,13 @@ class Person:Model {
     }
 }
 
-class Pet:Model {
-    let id      = Field<String>()
+class Pet:BaseModel {
     let name    = Field<String>()
     let species = Field<String>()
     let owner   = ModelField<Person>()
     
     required init() { }
 
-    override var identifierField:FieldType {
-        return self.id
-    }
-    
     init(name:String?, species:String?) {
         self.name.value = name
         self.species.value = species
@@ -131,7 +130,7 @@ class APIKitTests: XCTestCase {
             // Put the code you want to measure the time of here.
         }
     }
-
+    
 
     
 }
