@@ -19,14 +19,18 @@ class BaseModel:Model {
     }
 }
 
-class Department:BaseModel {
-    let name        = Field<String>()
-    let departments = *ModelField<Department>()
+class Category:BaseModel {
+    let categoryName = Field<String>()
+}
+
+class Product:BaseModel {
+    let productName = Field<String>()
+    let category = ModelField<Category>()
 }
 
 class Company:BaseModel {
     let name        = Field<String>()
-    let departments = *ModelField<Department>()
+    let products    = *ModelField<Product>()
 }
 
 class Person:BaseModel {
@@ -123,14 +127,56 @@ class APIKitTests: XCTestCase {
         self.waitForExpectationsWithTimeout(1, handler:nil)
     }
 
-    
-    func testPerformanceExample() {
-        // This is an example of a performance test case.
-        self.measureBlock {
-            // Put the code you want to measure the time of here.
+    func testVisitAllFields() {
+        let company = Company()
+        company.name.value = "Apple"
+        
+        let iphone = Product()
+        iphone.productName.value = "iPhone"
+        company.products.value = [iphone]
+        
+        var keys:[String] = []
+        
+        company.visitAllFields(recursive: false) { field in
+            if let k = field.key {
+                keys.append(k)
+            }
         }
+        XCTAssertEqual(keys.sort(), ["id", "name", "products"])
+        
+        keys = []
+        company.visitAllFields(recursive: true) { field in
+            if let k = field.key {
+                keys.append(k)
+            }
+        }
+        XCTAssertEqual(keys.sort(), ["category", "id", "id", "name", "productName", "products"])
     }
-    
 
+    func testVisitAllFieldsSimple() {
+        let category = Category()
+        category.categoryName.value = "phones"
+        
+        let iphone = Product()
+        iphone.productName.value = "iPhone"
+        iphone.category.value = category
+        
+        var keys:[String] = []
+        
+        category.visitAllFields(recursive: false) { field in
+            if let k = field.key {
+                keys.append(k)
+            }
+        }
+        XCTAssertEqual(keys.sort(), ["categoryName", "id"])
+        
+        keys = []
+        iphone.visitAllFields(recursive: true) { field in
+            if let k = field.key {
+                keys.append(k)
+            }
+        }
+        XCTAssertEqual(keys.sort(), ["category", "categoryName", "id", "id", "productName"])
+    }
     
 }

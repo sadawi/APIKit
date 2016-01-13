@@ -188,9 +188,12 @@ public class Model: DictionarySerializable, Routable {
             action(field)
             
             if recursive {
-                // And all the way down!
-                if let value = field.anyValue as? Model {
+                if let value = field.anyObjectValue as? Model {
                     value.visitAllFields(recursive: recursive, action: action)
+                } else if let values = field.anyObjectValue as? [Model] {
+                    for value in values {
+                        value.visitAllFields(recursive: recursive, action: action)
+                    }
                 }
             }
         }
