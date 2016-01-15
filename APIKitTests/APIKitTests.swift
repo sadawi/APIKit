@@ -36,7 +36,7 @@ class Company:BaseModel {
 class Person:BaseModel {
     let name    = Field<String>()
     let age     = Field<Int>()
-    let company = ModelField<Company>()
+    let company = ModelField<Company>(foreignKey: true)
     // TODO: pets (avoid cycles!)
     
     required init() { }
@@ -50,7 +50,7 @@ class Person:BaseModel {
 class Pet:BaseModel {
     let name    = Field<String>()
     let species = Field<String>()
-    let owner   = ModelField<Person>()
+    let owner   = ModelField<Person>(foreignKey: true)
     
     required init() { }
 
