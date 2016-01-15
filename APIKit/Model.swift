@@ -286,23 +286,4 @@ public class Model: NSObject, Routable, NSCopying {
         
         return results
     }
-    
-    
-    /**
-     Attempts to turn all the shells into full objects.
-     
-     - parameter lookup: A closure to be used to look up a model from its shell.  Must be a synchronous operation!
-     */
-    public func fillShells(recursive recursive:Bool = false, lookup: (Model -> Model?)) {
-        for field in self.shellFields() {
-            if let shellValue = field.anyObjectValue as? Model, model = lookup(shellValue) {
-                if recursive {
-                    // Recursively fill the new model's shells, too
-                    model.fillShells(recursive: true, lookup: lookup)
-                }
-                field.anyObjectValue = model as AnyObject
-            }
-        }
-    }
-    
 }
