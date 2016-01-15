@@ -75,7 +75,7 @@ class APIKitTests: XCTestCase {
         super.tearDown()
     }
 
-    func testFaults() {
+    func testShells() {
         let didSave = expectationWithDescription("save")
         
         let phil = Person.fromDictionaryValue(["name": "Phil", "age": 44, "company": "testID"])!
