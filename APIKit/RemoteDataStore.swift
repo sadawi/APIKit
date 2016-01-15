@@ -47,7 +47,10 @@ public class RemoteDataStore: DataStore, ListableDataStore {
             // TODO: any of the individual models could fail to deserialize, and we're just silently ignoring them.
             // Not sure what the right behavior should be.
             if let values = response.data {
-                let models = values.map{ self.deserializeModel(modelClass, parameters: $0) }.flatMap{$0}
+                let models = values.map { value -> T? in
+                    let model:T? = self.deserializeModel(modelClass, parameters: value)
+                    return model
+                    }.flatMap{$0}
                 return Promise(models)
             } else {
                 return Promise([])
@@ -77,20 +80,11 @@ public class RemoteDataStore: DataStore, ListableDataStore {
     }
     
     public func deserializeModel<T:Model>(modelClass:T.Type, parameters:AttributeDictionary) -> T? {
-        
-        return modelClass.fromDictionaryValue(parameters)
-//        if let id = deserialized?.identifier {
-//            // If we have a canonical object for this id, swap it in
-//            if let canonical = self.delegate?.dataStore(self, canonicalObjectForIdentifier:id, modelClass:modelClass) as? T {
-//                print("reusing existing \(modelClass) with id \(canonical.identifier)")
-//                deserialized = canonical
-//                (deserialized as? Model)?.dictionaryValue = parameters
-//            } else if let deserialized = deserialized {
-//                print("did instantiate \(modelClass) with id \(deserialized.identifier)")
-//                self.delegate?.dataStore(self, didInstantiateModel: deserialized)
-//            }
-//        }
-//        return deserialized
+        // TODO: would rather use value transformer here instead, but T is Model instead of modelClass and it doesn't get deserialized properly
+        //        return ModelValueTransformer<T>().importValue(parameters)
+        let model = modelClass.fromDictionaryValue(parameters)
+        model?.shell = false
+        return model
     }
     
     public func handleError(inout error:NSError, model:Model?=nil) {

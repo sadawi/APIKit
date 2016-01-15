@@ -10,11 +10,15 @@ import Foundation
 import MagneticFields
 
 public class ModelField<T: Model>: Field<T> {
-    public override init(value:T?=nil, name:String?=nil, priority:Int=0, key:String?=nil) {
+    public var foreignKey:Bool = false
+    
+    public init(value:T?=nil, name:String?=nil, priority:Int=0, key:String?=nil, foreignKey:Bool=false) {
         super.init(value: value, name: name, priority: priority, key: key)
+        self.foreignKey = foreignKey
+        self.initializeValueTransformers()
     }
     
     public override func defaultValueTransformer() -> ValueTransformer<T> {
-        return ModelValueTransformer<T>()
+        return self.foreignKey ? ModelForeignKeyValueTransformer<T>() : ModelValueTransformer<T>()
     }
 }

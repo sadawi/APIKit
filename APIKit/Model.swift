@@ -18,37 +18,48 @@ public protocol ModelRegistry {
 }
 
 public class Model: NSObject, Routable, NSCopying {
+    /**
+     An object that is responsible for keeping track of canonical instances
+     */
     public static var registry:ModelRegistry?
     
     /**
      Attempts to instantiate a new object from a dictionary representation of its attributes.
-     It's a class method to allow returning a canonical object instance for an identifier, if desired.
+     If a registry is set, will attempt to reuse the canonical instance for its identifier
+     
+     - parameter dictionaryValue: The attributes
+     - parameter useRegistry: Whether we should attempt to canonicalize models and register new ones
+     - parameter configure: A closure to configure a deserialized model, taking a Bool flag indicating whether it was newly instantiated (vs. reused from registry)
      */
-    public class func fromDictionaryValue(dictionaryValue:AttributeDictionary) -> Self? {
-        //        let instance = self.init()
-        //        instance.dictionaryValue = dictionaryValue
-        //        return instance
-        
+    public class func fromDictionaryValue(dictionaryValue:AttributeDictionary, useRegistry:Bool = true, configure:((Model,Bool) -> Void)?=nil) -> Self? {
         var instance = self.init()
         (instance as Model).dictionaryValue = dictionaryValue
         
-        if let registry = self.registry {
-            // If we have a canonical object for this id, swap it in
-            if let canonical = registry.canonicalModelForModel(instance) {
-                //                print("reusing existing \(self) with id \(canonical.identifier)")
-                instance = canonical
-                (instance as Model).dictionaryValue = dictionaryValue
-            } else {
-                //                print("did instantiate \(self) with id \(instance.identifier)")
-                registry.didInstantiateModel(instance)
+        var isNew = true
+        
+        if useRegistry {
+            if let registry = self.registry {
+                // If we have a canonical object for this id, swap it in
+                if let canonical = registry.canonicalModelForModel(instance) {
+                    isNew = false
+                    instance = canonical
+                    (instance as Model).dictionaryValue = dictionaryValue
+                } else {
+                    isNew = true
+                    registry.didInstantiateModel(instance)
+                }
             }
         }
+        configure?(instance, isNew)
         return instance
         
     }
     
+    /**
+     Creates a clone of this model.  It won't exist in the registry.
+     */
     public func copyWithZone(zone: NSZone) -> AnyObject {
-        return self.dynamicType.fromDictionaryValue(self.dictionaryValue)!
+        return self.dynamicType.fromDictionaryValue(self.dictionaryValue, useRegistry: false)!
     }
 
     
@@ -62,7 +73,7 @@ public class Model: NSObject, Routable, NSCopying {
     }
     
     /**
-     Attempts to find the identifier as a String or Int, and cast it to a String
+     Attempts to find the identifier as a String or Int, and cast it to an Identifier (aka String)
      (because it's useful to have an identifier with known type!)
      */
     public var identifier:Identifier? {
@@ -191,14 +202,8 @@ public class Model: NSObject, Routable, NSCopying {
             if field.key == nil {
                 field.key = key
             }
-            //            field.owner = self
-            //            field.buildSerializer()
         }
     }
-    
-    //    public func serializerForField(field:FieldType) -> FieldSerializerType {
-    //        return DictionaryFieldSerializer<T>()
-    //    }
     
     public required override init() {
         super.init()
@@ -224,6 +229,7 @@ public class Model: NSObject, Routable, NSCopying {
     
     public func visitAllFields(recursive recursive:Bool = true, action:(FieldType -> Void)) {
         for (_, field) in self.fields() {
+            
             action(field)
             
             if recursive {

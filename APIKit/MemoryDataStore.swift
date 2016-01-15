@@ -48,11 +48,7 @@ public class MemoryDataStore: DataStore, ListableDataStore {
     }
     public func update(model: Model) -> Promise<Model> {
         return Promise { fulfill, reject in
-            // store in the collection just to be safe
-            if let id = model.identifier {
-                self.collectionForClass(model.dynamicType, create: true)![id] = model
-            }
-            fulfill(model)
+            fulfill(self.updateImmediately(model))
         }
     }
     public func delete(model: Model) -> Promise<Model> {
@@ -73,6 +69,13 @@ public class MemoryDataStore: DataStore, ListableDataStore {
         return collection?[identifier] as? T
     }
 
+    public func updateImmediately<T: Model>(model: T) -> T {
+        // store in the collection just to be safe
+        if let id = model.identifier {
+            self.collectionForClass(model.dynamicType, create: true)![id] = model
+        }
+        return model
+    }
     
     public func lookup<T: Model>(modelClass:T.Type, identifier:String) -> Promise<T> {
         return Promise { fulfill, reject in
