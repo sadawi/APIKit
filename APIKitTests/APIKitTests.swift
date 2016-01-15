@@ -76,9 +76,21 @@ class APIKitTests: XCTestCase {
         super.tearDown()
     }
     
+    func testArrayVisit() {
+        let company = Company.fromDictionaryValue(["products": [["id":"100", "productName": "iPhone"]]])
+        XCTAssertEqual(company?.products.value?.count, 1)
+        var iphone = false
+        company?.visitAllFieldValues(recursive: true) { value in
+            if (value as? String) == "iPhone" {
+                iphone = true
+            }
+        }
+        XCTAssert(iphone)
+    }
+    
     func testArrayShells() {
         let company = Company.fromDictionaryValue(["widgetIDs": ["44", "55"]])
-        let shells = company?.shells()
+        let shells = company?.shells(recursive: true)
         XCTAssertEqual(shells?.count, 2)
     }
 
@@ -95,16 +107,16 @@ class APIKitTests: XCTestCase {
             let grazi1 = Pet.fromDictionaryValue(["name": "Grazi", "owner": phil.id.value!])
             XCTAssertEqual(grazi1?.owner.value?.id.value, phil.id.value)
             
-            let shells = grazi1!.shellFields()
+            let shells = grazi1!.shells()
             XCTAssertEqual(1, shells.count)
-            let shell = shells.first as! ModelField<Person>
-            XCTAssertEqual(shell.value?.identifier, phil.identifier)
+            let shell = shells.first as? Person
+            XCTAssertEqual(shell?.identifier, phil.identifier)
             
             let grazi2 = Pet()
             grazi2.owner.value = phil
-            let shells2 = grazi2.shellFields(recursive: true)
+            let shells2 = grazi2.shells(recursive: true)
             XCTAssertEqual(1, shells2.count)
-            let shell2 = shells2.first as? ModelField<Company>
+            let shell2 = shells2.first as? Company
             XCTAssertNotNil(shell2)
             
             didSave.fulfill()
@@ -149,7 +161,7 @@ class APIKitTests: XCTestCase {
                 keys.append(k)
             }
         }
-        XCTAssertEqual(keys.sort(), ["id", "name", "products"])
+        XCTAssertEqual(keys.sort(), ["id", "name", "products", "widgetIDs"])
         
         keys = []
         company.visitAllFields(recursive: true) { field in
@@ -157,7 +169,7 @@ class APIKitTests: XCTestCase {
                 keys.append(k)
             }
         }
-        XCTAssertEqual(keys.sort(), ["category", "id", "id", "name", "productName", "products"])
+        XCTAssertEqual(keys.sort(), ["category", "id", "id", "name", "productName", "products", "widgetIDs"])
     }
 
     func testVisitAllFieldsSimple() {

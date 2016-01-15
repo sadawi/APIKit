@@ -235,9 +235,35 @@ public class Model: NSObject, Routable, NSCopying {
             if recursive {
                 if let value = field.anyObjectValue as? Model {
                     value.visitAllFields(recursive: recursive, action: action)
-                } else if let values = field.anyObjectValue as? [Model] {
+                } else if let values = field.anyObjectValue as? NSArray {
                     for value in values {
-                        value.visitAllFields(recursive: recursive, action: action)
+                        if let model = value as? Model {
+                            model.visitAllFields(recursive: recursive, action: action)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public func visitAllFieldValues(recursive recursive:Bool = true, action:(Any? -> Void)) {
+        for (_, field) in self.fields() {
+            
+            action(field.anyValue)
+            
+            if recursive {
+                if let value = field.anyObjectValue as? Model {
+                    value.visitAllFieldValues(recursive: recursive, action: action)
+                } else if let value = field.anyValue {
+                    // I'm not sure why I can't cast to [Any]
+                    // http://stackoverflow.com/questions/26226911/how-to-tell-if-a-variable-is-an-array
+                    if let values = value as? NSArray {
+                        for value in values {
+                            action(value)
+                            if let modelValue = value as? Model {
+                                modelValue.visitAllFieldValues(recursive: recursive, action: action)
+                            }
+                        }
                     }
                 }
             }
@@ -265,25 +291,16 @@ public class Model: NSObject, Routable, NSCopying {
         }
     }
     
-    // MARK: - Shells
-    
-    public func shells(recursive recursive:Bool = false) -> [Model] {
-        let results = NSMutableSet()
-        results.addObjectsFromArray(self.shellFields().map{$0.anyObjectValue as! Model})
-        return results.allObjects as! [Model]
-    }
-    
     /**
-     Finds all the fields whose value is a shell (i.e., just an identifier)
+     Finds all values that are shells (i.e., a model instantiated from just a foreign key)
      */
-    public func shellFields(recursive recursive:Bool = false) -> [FieldType] {
-        var results:[FieldType] = []
-        self.visitAllFields(recursive: recursive) { field in
-            if let model = field.anyObjectValue as? Model where model.shell == true {
-                results.append(field)
+    public func shells(recursive recursive:Bool = false) -> [Model] {
+        var results:[Model] = []
+        self.visitAllFieldValues(recursive: recursive) { value in
+            if let model = value as? Model where model.shell == true {
+                results.append(model)
             }
         }
-        
         return results
     }
 }
