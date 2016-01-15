@@ -31,6 +31,7 @@ class Product:BaseModel {
 class Company:BaseModel {
     let name        = Field<String>()
     let products    = *ModelField<Product>()
+    let widgets     = *ModelField<Product>(foreignKey: true, key: "widgetIDs")
 }
 
 class Person:BaseModel {
@@ -73,6 +74,12 @@ class APIKitTests: XCTestCase {
     override func tearDown() {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
         super.tearDown()
+    }
+    
+    func testArrayShells() {
+        let company = Company.fromDictionaryValue(["widgetIDs": ["44", "55"]])
+        let shells = company?.shells()
+        XCTAssertEqual(shells?.count, 2)
     }
 
     func testShells() {
