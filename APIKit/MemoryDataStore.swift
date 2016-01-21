@@ -5,6 +5,15 @@
 //  Created by Sam Williams on 11/7/15.
 //  Copyright © 2015 Sam Williams. All rights reserved.
 //
+/**
+
+Notes: 
+[1]
+    There's a weird bug where doing things with model.dynamicType gives EXC_BAD_ACCESS on the device, but not simulator.
+    Other people have seen it: http://ambracode.com/index/show/1013298
+
+    Replacing `model` with `(model as Model)` seems to fix it.
+*/
 
 import Foundation
 import PromiseKit
@@ -42,7 +51,7 @@ public class MemoryDataStore: DataStore, ListableDataStore {
         return Promise { fulfill, reject in
             let id = self.generateIdentifier()
             model.identifier = id
-            self.collectionForClass(model.dynamicType, create: true)![id] = model
+            self.collectionForClass((model as Model).dynamicType, create: true)![id] = model
             fulfill(model)
         }
     }
@@ -53,7 +62,7 @@ public class MemoryDataStore: DataStore, ListableDataStore {
     }
     public func delete(model: Model) -> Promise<Model> {
         return Promise { fulfill, reject in
-            if let id=self.keyForModel(model), let collection = self.collectionForClass(model.dynamicType) {
+            if let id=self.keyForModel(model), let collection = self.collectionForClass((model as Model).dynamicType) {
                 collection.removeObjectForKey(id)
             }
             // TODO: probably should reject when not deleted
@@ -72,7 +81,8 @@ public class MemoryDataStore: DataStore, ListableDataStore {
     public func updateImmediately<T: Model>(model: T) -> T {
         // store in the collection just to be safe
         if let id = model.identifier {
-            self.collectionForClass(model.dynamicType, create: true)![id] = model
+            // casting model to Model to avoid weird Swift (?) bug (see [1] at top of file)
+            self.collectionForClass((model as Model).dynamicType, create: true)![id] = model
         }
         return model
     }
