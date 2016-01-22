@@ -23,6 +23,7 @@ public protocol DataStore {
     /**
      Inserts a record.  May give the object an identifier.
      // TODO: Decide on strict id semantics.  Do we leave an existing identifier alone, or replace it with a new one?
+     The returned object should be a new instance, different from the provided one.
      */
     func create<T:Model>(model:T) -> Promise<T>
     
