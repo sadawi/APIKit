@@ -47,7 +47,7 @@ public class MemoryDataStore: DataStore, ListableDataStore {
     }
     
     // TODO: think more about how to safely create identifiers, when the ID field can be arbitrary type.
-    public func create(model: Model) -> Promise<Model> {
+    public func create<T:Model>(model: T) -> Promise<T> {
         return Promise { fulfill, reject in
             let id = self.generateIdentifier()
             model.identifier = id
@@ -55,12 +55,12 @@ public class MemoryDataStore: DataStore, ListableDataStore {
             fulfill(model)
         }
     }
-    public func update(model: Model) -> Promise<Model> {
+    public func update<T:Model>(model: T) -> Promise<T> {
         return Promise { fulfill, reject in
             fulfill(self.updateImmediately(model))
         }
     }
-    public func delete(model: Model) -> Promise<Model> {
+    public func delete<T:Model>(model: T) -> Promise<T> {
         return Promise { fulfill, reject in
             if let id=self.keyForModel(model), let collection = self.collectionForClass((model as Model).dynamicType) {
                 collection.removeObjectForKey(id)

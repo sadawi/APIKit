@@ -15,17 +15,17 @@ public class KeychainStore: DataStore {
         
     }
     
-    public func create(model: Model) -> Promise<Model> {
+    public func create<T:Model>(model: T) -> Promise<T> {
         return Promise { fulfill, reject in
         }
     }
     
-    public func update(model: Model) -> Promise<Model> {
+    public func update<T:Model>(model: T) -> Promise<T> {
         return Promise { fulfill, reject in
         }
     }
     
-    public func delete(model: Model) -> Promise<Model> {
+    public func delete<T:Model>(model: T) -> Promise<T> {
         return Promise { fulfill, reject in
         }
     }

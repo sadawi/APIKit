@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		22080E311BEED3A200A633AA /* CompoundDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22080E301BEED3A200A633AA /* CompoundDataStore.swift */; };
+		221D575C1C51B9FB0047BECB /* RequestEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 221D575B1C51B9FB0047BECB /* RequestEncoder.swift */; };
+		221D575D1C51F9070047BECB /* RequestEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 221D575B1C51B9FB0047BECB /* RequestEncoder.swift */; };
 		2235AED61BEFD4AD00A730F0 /* Routable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2235AED51BEFD4AD00A730F0 /* Routable.swift */; };
 		2235AED81BEFD5B800A730F0 /* DictionarySerializable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2235AED71BEFD5B800A730F0 /* DictionarySerializable.swift */; };
 		2235AEDB1BEFE00E00A730F0 /* DictionaryExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2235AEDA1BEFE00E00A730F0 /* DictionaryExtension.swift */; };
@@ -59,6 +61,7 @@
 
 /* Begin PBXFileReference section */
 		22080E301BEED3A200A633AA /* CompoundDataStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CompoundDataStore.swift; sourceTree = "<group>"; };
+		221D575B1C51B9FB0047BECB /* RequestEncoder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RequestEncoder.swift; sourceTree = "<group>"; };
 		2235AED51BEFD4AD00A730F0 /* Routable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Routable.swift; sourceTree = "<group>"; };
 		2235AED71BEFD5B800A730F0 /* DictionarySerializable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DictionarySerializable.swift; sourceTree = "<group>"; };
 		2235AEDA1BEFE00E00A730F0 /* DictionaryExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DictionaryExtension.swift; sourceTree = "<group>"; };
@@ -183,6 +186,7 @@
 				22080E301BEED3A200A633AA /* CompoundDataStore.swift */,
 				2235AEE51BF1057200A730F0 /* DataStoreDelegate.swift */,
 				2235AEED1BF27E3200A730F0 /* KeychainStore.swift */,
+				221D575B1C51B9FB0047BECB /* RequestEncoder.swift */,
 			);
 			name = "data store";
 			sourceTree = "<group>";
@@ -371,6 +375,7 @@
 				2235AEF41BF3C0A600A730F0 /* Response.swift in Sources */,
 				22080E311BEED3A200A633AA /* CompoundDataStore.swift in Sources */,
 				2235AEE91BF26A0700A730F0 /* OAuth.swift in Sources */,
+				221D575C1C51B9FB0047BECB /* RequestEncoder.swift in Sources */,
 				2235AED81BEFD5B800A730F0 /* DictionarySerializable.swift in Sources */,
 				225DE80E1BEEB9FE009698FC /* RemoteDataStore.swift in Sources */,
 				225DE8121BEEBABE009698FC /* Model.swift in Sources */,
@@ -393,6 +398,7 @@
 				2235AEDC1BF008E400A730F0 /* DictionarySerializable.swift in Sources */,
 				22B71E841C17819100EA7FD8 /* ModelField.swift in Sources */,
 				2235AEF51BF3C89E00A730F0 /* Response.swift in Sources */,
+				221D575D1C51F9070047BECB /* RequestEncoder.swift in Sources */,
 				22B71E791C17757000EA7FD8 /* FieldModelTests.swift in Sources */,
 				225DE8171BEEC4D8009698FC /* Model.swift in Sources */,
 				225DE8181BEEC4DC009698FC /* ModelManager.swift in Sources */,

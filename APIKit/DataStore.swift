@@ -24,18 +24,18 @@ public protocol DataStore {
      Inserts a record.  May give the object an identifier.
      // TODO: Decide on strict id semantics.  Do we leave an existing identifier alone, or replace it with a new one?
      */
-    func create(model:Model) -> Promise<Model>
+    func create<T:Model>(model:T) -> Promise<T>
     
     /**
      Updates an existing record
      */
-    func update(model:Model) -> Promise<Model>
+    func update<T:Model>(model:T) -> Promise<T>
     
     /**
      Deletes a record.
      TODO: cascade
      */
-    func delete(model:Model) -> Promise<Model>
+    func delete<T:Model>(model:T) -> Promise<T>
     
     /**
      Retrieves a record with the specified identifier.  The Promise should fail if the record can't be found.

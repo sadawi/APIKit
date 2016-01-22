@@ -111,6 +111,24 @@ public class RemoteDataStore: DataStore, ListableDataStore {
     
     // MARK: - Generic requests
     
+    public func nestedParameterEncoding() -> ParameterEncoding {
+        return ParameterEncoding.Custom({ (request:URLRequestConvertible, parameters:[String : AnyObject]?) -> (NSMutableURLRequest, NSError?) in
+            let request = request as? NSMutableURLRequest ?? NSMutableURLRequest()
+            if let parameters = parameters {
+                request.HTTPBody = RequestEncoder.encodeParameters(parameters).dataUsingEncoding(NSUTF8StringEncoding)
+            }
+            return (request, nil)
+        })
+    }
+    
+    public func encodingForMethod(method: Alamofire.Method) -> ParameterEncoding {
+        if method == .POST {
+            return self.nestedParameterEncoding()
+        } else {
+            return .URL
+        }
+    }
+    
     /**
     The core request method, basically a Promise wrapper around an Alamofire.request call
     Parameterized by the T, the expected data payload type (typically either a dictionary or an array of dictionaries)
@@ -124,7 +142,8 @@ public class RemoteDataStore: DataStore, ListableDataStore {
         let headers = self.defaultHeaders() + headers
         let url = self.url(path: path)
         return Promise { fulfill, reject in
-            Alamofire.request(method, url, parameters: parameters, encoding: ParameterEncoding.URL, headers: headers).responseJSON { response in
+            
+            Alamofire.request(method, url, parameters: parameters, encoding: encodingForMethod(method), headers: headers).responseJSON { response in
                 switch response.result {
                 case .Success:
                     if let value:Response<T> = self.constructResponse(response) {
@@ -150,7 +169,7 @@ public class RemoteDataStore: DataStore, ListableDataStore {
     
     // MARK: - CRUD operations (DataStore protocol methods)
     
-    public func create(model: Model) -> Promise<Model> {
+    public func create<T:Model>(model: T) -> Promise<T> {
         model.beforeSave()
         let parameters = self.formatPayload(self.serializeModel(model))
         return self.request(.POST, path: model.dynamicType.path, parameters: parameters, model:model).then(self.instantiateModel(model.dynamicType)).then { model in
@@ -159,9 +178,9 @@ public class RemoteDataStore: DataStore, ListableDataStore {
         }
     }
     
-    public func update(model: Model) -> Promise<Model> {
+    public func update<T:Model>(model: T) -> Promise<T> {
         model.beforeSave()
-        if let path = model.path {
+        if let path = (model as Model).path {
             let parameters = self.formatPayload(self.serializeModel(model))
             return self.request(.PATCH, path: path, parameters: parameters, model:model).then(self.instantiateModel(model.dynamicType))
         } else {
@@ -169,9 +188,9 @@ public class RemoteDataStore: DataStore, ListableDataStore {
         }
     }
     
-    public func delete(model: Model) -> Promise<Model> {
-        if let path = model.path {
-            return self.request(.DELETE, path: path).then { (response:Response<Model>) -> Promise<Model> in
+    public func delete<T:Model>(model: T) -> Promise<T> {
+        if let path = (model as Model).path {
+            return self.request(.DELETE, path: path).then { (response:Response<T>) -> Promise<T> in
                 model.afterDelete()
                 return Promise(model)
             }
@@ -190,6 +209,14 @@ public class RemoteDataStore: DataStore, ListableDataStore {
         }
     }
     
+    public func refresh<T:Model>(model:T) -> Promise<T> {
+        if let identifier = model.identifier {
+            return self.lookup(T.self, identifier: identifier)
+        } else {
+            return self.errorPromise("Model has no ID")
+        }
+    }
+
     public func list<T: Model>(modelClass:T.Type) -> Promise<[T]> {
         return self.list(modelClass, parameters: nil)
     }
