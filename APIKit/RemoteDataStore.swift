@@ -130,14 +130,14 @@ public class RemoteDataStore: DataStore, ListableDataStore {
     }
     
     /**
-    The core request method, basically a Promise wrapper around an Alamofire.request call
-    Parameterized by the T, the expected data payload type (typically either a dictionary or an array of dictionaries)
-    
-    TODO: At the moment T is only specified by type inference from the return value, which is awkward since it's a promise.
-    Consider specifying as a param.
-    
-    - returns: A Promise parameterized by the data payload type of the response
-    */
+     The core request method, basically a Promise wrapper around an Alamofire.request call
+     Parameterized by the T, the expected data payload type (typically either a dictionary or an array of dictionaries)
+     
+     TODO: At the moment T is only specified by type inference from the return value, which is awkward since it's a promise.
+     Consider specifying as a param.
+     
+     - returns: A Promise parameterized by the data payload type of the response
+     */
     public func request<T>(method:Alamofire.Method, path:String, parameters:AttributeDictionary?=nil, headers:[String:String]=[:], model:Model?=nil) -> Promise<Response<T>> {
         let headers = self.defaultHeaders() + headers
         let url = self.url(path: path)
@@ -172,17 +172,27 @@ public class RemoteDataStore: DataStore, ListableDataStore {
     public func create<T:Model>(model: T) -> Promise<T> {
         model.beforeSave()
         let parameters = self.formatPayload(self.serializeModel(model))
-        return self.request(.POST, path: model.dynamicType.path, parameters: parameters, model:model).then(self.instantiateModel(model.dynamicType)).then { model in
+        
+        // See MemoryDataStore for an explanation [1]
+        let modelModel = model as Model
+        
+        return self.request(.POST, path: modelModel.dynamicType.path, parameters: parameters, model:model).then(self.instantiateModel(modelModel.dynamicType)).then { model in
             model.afterCreate()
-            return Promise(model)
+            return Promise(model as! T)
         }
     }
     
     public func update<T:Model>(model: T) -> Promise<T> {
         model.beforeSave()
-        if let path = (model as Model).path {
+        
+        let modelModel = model as Model
+        
+        if let path = modelModel.path {
             let parameters = self.formatPayload(self.serializeModel(model))
-            return self.request(.PATCH, path: path, parameters: parameters, model:model).then(self.instantiateModel(model.dynamicType))
+            return self.request(.PATCH, path: path, parameters: parameters, model:model).then(self.instantiateModel(modelModel.dynamicType)).then { model in
+                // Dancing around to get the type inference to work
+                return Promise(model as! T)
+            }
         } else {
             return self.errorPromise("No path for model")
         }
@@ -216,7 +226,7 @@ public class RemoteDataStore: DataStore, ListableDataStore {
             return self.errorPromise("Model has no ID")
         }
     }
-
+    
     public func list<T: Model>(modelClass:T.Type) -> Promise<[T]> {
         return self.list(modelClass, parameters: nil)
     }
