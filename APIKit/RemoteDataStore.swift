@@ -111,22 +111,24 @@ public class RemoteDataStore: DataStore, ListableDataStore {
     
     // MARK: - Generic requests
     
-    public func nestedParameterEncoding() -> ParameterEncoding {
+    public func nestedParameterEncoding(method method:Alamofire.Method) -> ParameterEncoding {
         return ParameterEncoding.Custom({ (request:URLRequestConvertible, parameters:[String : AnyObject]?) -> (NSMutableURLRequest, NSError?) in
             let request = request as? NSMutableURLRequest ?? NSMutableURLRequest()
-            if let parameters = parameters {
-                request.HTTPBody = RequestEncoder.encodeParameters(parameters).dataUsingEncoding(NSUTF8StringEncoding)
+            if let parameters = parameters, url = request.URL {
+                if method == .GET {
+                    let components = NSURLComponents(URL: url, resolvingAgainstBaseURL: false)
+                    components?.query = RequestEncoder.encodeParameters(parameters)
+                    request.URL = components?.URL
+                } else {
+                    request.HTTPBody = RequestEncoder.encodeParameters(parameters).dataUsingEncoding(NSUTF8StringEncoding)
+                }
             }
             return (request, nil)
         })
     }
     
     public func encodingForMethod(method: Alamofire.Method) -> ParameterEncoding {
-        if method == .POST {
-            return self.nestedParameterEncoding()
-        } else {
-            return .URL
-        }
+        return self.nestedParameterEncoding(method: method)
     }
     
     /**
@@ -138,33 +140,42 @@ public class RemoteDataStore: DataStore, ListableDataStore {
      
      - returns: A Promise parameterized by the data payload type of the response
      */
-    public func request<T>(method:Alamofire.Method, path:String, parameters:AttributeDictionary?=nil, headers:[String:String]=[:], model:Model?=nil) -> Promise<Response<T>> {
-        let headers = self.defaultHeaders() + headers
-        let url = self.url(path: path)
-        return Promise { fulfill, reject in
+    public func request<T>(
+        method: Alamofire.Method,
+        path: String,
+        parameters: AttributeDictionary?=nil,
+        headers: [String:String]=[:],
+        encoding: ParameterEncoding?=nil,
+        model: Model?=nil
+        ) -> Promise<Response<T>> {
             
-            Alamofire.request(method, url, parameters: parameters, encoding: encodingForMethod(method), headers: headers).responseJSON { response in
-                switch response.result {
-                case .Success:
-                    if let value:Response<T> = self.constructResponse(response) {
-                        if var error=value.error {
-                            // the request might have succeeded, but we found an error when constructing the Response object
-                            self.handleError(&error, model:model)
-                            reject(error)
+            let headers = self.defaultHeaders() + headers
+            let url = self.url(path: path)
+            let encoding = encoding ?? self.encodingForMethod(method)
+            
+            return Promise { fulfill, reject in
+                Alamofire.request(method, url, parameters: parameters, encoding: encoding, headers: headers).responseJSON { response in
+                    switch response.result {
+                    case .Success:
+                        if let value:Response<T> = self.constructResponse(response) {
+                            if var error=value.error {
+                                // the request might have succeeded, but we found an error when constructing the Response object
+                                self.handleError(&error, model:model)
+                                reject(error)
+                            } else {
+                                fulfill(value)
+                            }
                         } else {
-                            fulfill(value)
+                            var error = NSError(domain: DataStoreErrorDomain, code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid response value"])
+                            self.handleError(&error)
+                            reject(error)
                         }
-                    } else {
-                        var error = NSError(domain: DataStoreErrorDomain, code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid response value"])
-                        self.handleError(&error)
+                    case .Failure(var error):
+                        self.handleError(&error, model:model)
                         reject(error)
                     }
-                case .Failure(var error):
-                    self.handleError(&error, model:model)
-                    reject(error)
                 }
             }
-        }
     }
     
     // MARK: - CRUD operations (DataStore protocol methods)
@@ -241,4 +252,5 @@ public class RemoteDataStore: DataStore, ListableDataStore {
     public func list<T: Model>(modelClass:T.Type, path:String?=nil, parameters:[String:AnyObject]?) -> Promise<[T]> {
         return self.request(.GET, path: path ?? modelClass.path, parameters: parameters).then(self.instantiateModels(modelClass))
     }
+
 }
