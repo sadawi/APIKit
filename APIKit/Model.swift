@@ -174,12 +174,17 @@ public class Model: NSObject, Routable, NSCopying {
         return path.componentsSeparatedByString(".")
     }
     
+    /**
+     Builds a mapping of keys to fields.  Keys are either the field's `key` property (if specified) or the property name of the field.
+     */
     public func fields() -> [String:FieldType] {
         var result:[String:FieldType] = [:]
         let mirror = Mirror(reflecting: self)
         mirror.eachChild { child in
             if let label = child.label, value = child.value as? FieldType {
-                result[label] = value
+                // If the field has its key defined, use that; otherwise fall back to the property name.
+                let key = value.key ?? label
+                result[key] = value
             }
         }
         
