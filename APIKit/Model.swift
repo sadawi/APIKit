@@ -129,6 +129,7 @@ public class Model: NSObject, Routable, NSCopying {
         }
     }
     
+    public func afterInit() { }
     public func afterCreate() { }
     public func afterDelete() { }
     public func beforeSave() {
@@ -176,8 +177,13 @@ public class Model: NSObject, Routable, NSCopying {
     
     /**
      Builds a mapping of keys to fields.  Keys are either the field's `key` property (if specified) or the property name of the field.
+     This can be slow, since it uses reflection.  If you find this to be a performance bottleneck, consider overriding this var
+     with an explicit mapping of keys to fields.
      */
-    lazy public var fields: [String:FieldType] = {
+    public var fields: [String:FieldType] {
+        return _fields
+    }
+    lazy private var _fields: [String:FieldType] = {
         var result:[String:FieldType] = [:]
         let mirror = Mirror(reflecting: self)
         mirror.eachChild { child in
@@ -202,7 +208,7 @@ public class Model: NSObject, Routable, NSCopying {
     /**
      Look at the instance's fields, do some introspection and processing.
      */
-    func processFields() {
+    internal func processFields() {
         for (key, field) in self.fields {
             if field.key == nil {
                 field.key = key
@@ -213,6 +219,7 @@ public class Model: NSObject, Routable, NSCopying {
     public required override init() {
         super.init()
         self.processFields()
+        self.afterInit()
     }
     
     public func validate() -> Bool {
