@@ -146,7 +146,7 @@ public class Model: NSObject, Routable, NSCopying {
     public func fieldForKeyPath(components:[String]) -> FieldType? {
         guard components.count > 0 else { return nil }
         
-        let fields = self.fields()
+        let fields = self.fields
         if let firstField = fields[components[0]] {
             let remainingComponents = Array(components[1..<components.count])
             if remainingComponents.count == 0 {
@@ -177,7 +177,7 @@ public class Model: NSObject, Routable, NSCopying {
     /**
      Builds a mapping of keys to fields.  Keys are either the field's `key` property (if specified) or the property name of the field.
      */
-    public func fields() -> [String:FieldType] {
+    lazy public var fields: [String:FieldType] = {
         var result:[String:FieldType] = [:]
         let mirror = Mirror(reflecting: self)
         mirror.eachChild { child in
@@ -189,21 +189,21 @@ public class Model: NSObject, Routable, NSCopying {
         }
         
         return result
-    }
+    }()
     
     /**
      Which fields should we include in the dictionaryValue?
      By default, includes all of them.
      */
     public func fieldsForDictionaryValue() -> [FieldType] {
-        return Array(self.fields().values)
+        return Array(self.fields.values)
     }
     
     /**
      Look at the instance's fields, do some introspection and processing.
      */
     func processFields() {
-        for (key, field) in self.fields() {
+        for (key, field) in self.fields {
             if field.key == nil {
                 field.key = key
             }
@@ -233,7 +233,7 @@ public class Model: NSObject, Routable, NSCopying {
     }
     
     public func visitAllFields(recursive recursive:Bool = true, action:(FieldType -> Void)) {
-        for (_, field) in self.fields() {
+        for (_, field) in self.fields {
             
             action(field)
             
@@ -252,7 +252,7 @@ public class Model: NSObject, Routable, NSCopying {
     }
 
     public func visitAllFieldValues(recursive recursive:Bool = true, action:(Any? -> Void)) {
-        for (_, field) in self.fields() {
+        for (_, field) in self.fields {
             
             action(field.anyValue)
             
@@ -279,7 +279,7 @@ public class Model: NSObject, Routable, NSCopying {
         get {
             var result:AttributeDictionary = [:]
             let include = self.fieldsForDictionaryValue()
-            for (name, field) in self.fields() {
+            for (name, field) in self.fields {
                 if include.contains({ $0 === field }) && field.state == .Set {
                     field.writeToDictionary(&result, name: field.key ?? name)
                 }
@@ -288,7 +288,7 @@ public class Model: NSObject, Routable, NSCopying {
         }
         set {
             let include = self.fieldsForDictionaryValue()
-            for (name, field) in self.fields() {
+            for (name, field) in self.fields {
                 if include.contains({ $0 === field }) {
                     field.readFromDictionary(newValue, name: field.key ?? name)
                 }
