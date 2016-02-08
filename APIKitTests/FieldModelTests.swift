@@ -21,10 +21,21 @@ class FieldModelTests: XCTestCase {
         super.tearDown()
     }
     
-    class Company: Model {
+    private class Profile: Model {
+        let person:ModelField<Person> = ModelField<Person>(inverse: { $0.profile })
+    }
+    
+    private class Company: Model {
         let name = Field<String>()
         let size = Field<Int>()
         let parentCompany = ModelField<Company>()
+//        let employees = *ModelField<Person>() //.inverse { person in return person.company }
+    }
+    
+    private class Person: Model {
+        let name = Field<String>()
+        let company = ModelField<Company>() // (inverse: { $0.employees })
+        let profile = ModelField<Profile>(inverse: { $0.person })
     }
     
     func testFieldModel() {
@@ -32,7 +43,7 @@ class FieldModelTests: XCTestCase {
         co.name.value = "The Widget Company"
         co.size.value = 22
         
-        let fields = co.fields()
+        let fields = co.fields
         XCTAssertNotNil(fields["name"])
         
         let co2 = Company()
@@ -50,6 +61,25 @@ class FieldModelTests: XCTestCase {
         if let parentDict = parentDict as? AttributeDictionary {
             XCTAssertEqual(parentDict["name"] as? String, "Parent Company")
         }
+    }
+    
+    func testInverseFields() {
+//        let company1 = Company()
+//        let company2 = Company()
+        let person1 = Person()
+        let profileA = Profile()
+        
+        person1.profile.value = profileA
+        XCTAssertEqual(profileA.person.value, person1)
+        
+        let profileB = Profile()
+        profileB.person.value = person1
+        XCTAssertEqual(person1.profile.value, profileB)
+        
+        XCTAssertNil(profileA.person.value)
+        
+//        person1.company.value = company1
+//        XCTAssertEqual(1, company1.employees.value?.count)
     }
     
 }
