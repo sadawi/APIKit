@@ -62,5 +62,44 @@ public class ModelField<T: Model>: Field<T>, ModelFieldType {
     public func inverseValueRemoved(value: Model?) {
         self.value = nil
     }
+}
 
+public class ModelArrayField<T: Model>: ArrayField<T>, ModelFieldType {
+    public weak var model: Model?
+    private var _inverse: (T->ModelFieldType)?
+    
+    public init(_ field:ModelField<T>, value:[T]?=[], name:String?=nil, priority:Int=0, key:String?=nil, inverse: (T->ModelFieldType)?=nil) {
+        super.init(field, value: value, name: name, priority: priority, key: key)
+        self._inverse = inverse ?? field._inverse
+    }
+
+    public override func valueRemoved(value: T) {
+        self.inverse(value)?.inverseValueRemoved(self.model)
+    }
+    
+    public override func valueAdded(value: T) {
+        self.inverse(value)?.inverseValueAdded(self.model)
+    }
+    
+    public func inverse(model:T) -> ModelFieldType? {
+        return self._inverse?(model)
+    }
+    
+    // MARK: - ModelFieldType
+    
+    public func inverseValueAdded(value: Model?) {
+        if let value = value as? T {
+            self.appendValue(value)
+        }
+    }
+    
+    public func inverseValueRemoved(value: Model?) {
+        if let value = value as? T {
+            self.removeValue(value)
+        }
+    }
+}
+
+public prefix func *<T:Model>(right:ModelField<T>) -> ModelArrayField<T> {
+    return ModelArrayField<T>(right)
 }

@@ -29,12 +29,12 @@ class FieldModelTests: XCTestCase {
         let name = Field<String>()
         let size = Field<Int>()
         let parentCompany = ModelField<Company>()
-//        let employees = *ModelField<Person>() //.inverse { person in return person.company }
+        let employees:ModelArrayField<Person> = *ModelField<Person>(inverse: { person in return person.company })
     }
     
     private class Person: Model {
         let name = Field<String>()
-        let company = ModelField<Company>() // (inverse: { $0.employees })
+        let company = ModelField<Company>(inverse: { company in return company.employees })
         let profile = ModelField<Profile>(inverse: { $0.person })
     }
     
@@ -64,8 +64,6 @@ class FieldModelTests: XCTestCase {
     }
     
     func testInverseFields() {
-//        let company1 = Company()
-//        let company2 = Company()
         let person1 = Person()
         let profileA = Profile()
         
@@ -78,8 +76,19 @@ class FieldModelTests: XCTestCase {
         
         XCTAssertNil(profileA.person.value)
         
-//        person1.company.value = company1
-//        XCTAssertEqual(1, company1.employees.value?.count)
+        let company1 = Company()
+        let company2 = Company()
+
+        person1.company.value = company1
+        XCTAssertEqual(1, company1.employees.value?.count)
+        
+        company1.employees.removeValue(person1)
+        XCTAssertEqual(0, company1.employees.value?.count)
+        XCTAssertNil(person1.company.value)
+        
+        company2.employees.value = [person1]
+        XCTAssertEqual(person1.company.value, company2)
+        XCTAssertEqual(0, company1.employees.value?.count)
     }
-    
+
 }
