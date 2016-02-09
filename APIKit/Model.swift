@@ -213,6 +213,9 @@ public class Model: NSObject, Routable, NSCopying {
             if field.key == nil {
                 field.key = key
             }
+            if let modelField = field as? ModelFieldType {
+                modelField.model = self
+            }
         }
     }
     
