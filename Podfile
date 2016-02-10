@@ -3,7 +3,7 @@ platform :ios, '8.0'
 use_frameworks!
 
 target 'APIKit' do
-    pod 'MagneticFields', '~> 0.4.3'
+    pod 'MagneticFields', '~> 0.4.4'
     pod 'Alamofire', '~> 3.0'
     pod 'PromiseKit', '~> 3.0'
     pod 'SwiftyJSON', '~> 2.3.0'
