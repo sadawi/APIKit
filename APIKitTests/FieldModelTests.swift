@@ -82,7 +82,7 @@ class FieldModelTests: XCTestCase {
         person1.company.value = company1
         XCTAssertEqual(1, company1.employees.value?.count)
         
-        company1.employees.removeValue(person1)
+        company1.employees.removeFirst(person1)
         XCTAssertEqual(0, company1.employees.value?.count)
         XCTAssertNil(person1.company.value)
         

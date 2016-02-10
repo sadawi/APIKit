@@ -68,6 +68,23 @@ public class ModelArrayField<T: Model>: ArrayField<T>, ModelFieldType {
     public weak var model: Model?
     private var _inverse: (T->ModelFieldType)?
     
+    public override var value:[T]? {
+        didSet {
+            let oldValues = oldValue ?? []
+            let newValues = self.value ?? []
+            
+            let (removed, added) = oldValues.symmetricDifference(newValues)
+            
+            for value in removed {
+                self.valueRemoved(value)
+            }
+            for value in added {
+                self.valueAdded(value)
+            }
+            self.valueUpdated(oldValue: oldValue, newValue: self.value)
+        }
+    }
+    
     public init(_ field:ModelField<T>, value:[T]?=[], name:String?=nil, priority:Int=0, key:String?=nil, inverse: (T->ModelFieldType)?=nil) {
         super.init(field, value: value, name: name, priority: priority, key: key)
         self._inverse = inverse ?? field._inverse
@@ -89,13 +106,13 @@ public class ModelArrayField<T: Model>: ArrayField<T>, ModelFieldType {
     
     public func inverseValueAdded(value: Model?) {
         if let value = value as? T {
-            self.appendValue(value)
+            self.append(value)
         }
     }
     
     public func inverseValueRemoved(value: Model?) {
         if let value = value as? T {
-            self.removeValue(value)
+            self.removeFirst(value)
         }
     }
 }
