@@ -10,19 +10,20 @@
 import Foundation
 
 struct RequestEncoder {
-    static func encodeParameters(object: AnyObject, prefix: String! = nil) -> String {
+    static func encodeParameters(object: AnyObject, prefix: String! = nil, escape shouldEscape: Bool = false) -> String {
         if let dictionary = object as? [String: AnyObject] {
             let results = dictionary.map { (key, value) -> String in
-                return self.encodeParameters(value, prefix: prefix != nil ? "\(prefix)[\(key)]" : key)
+                return self.encodeParameters(value, prefix: prefix != nil ? "\(prefix)[\(key)]" : key, escape: shouldEscape)
             }
             return results.joinWithSeparator("&")
         } else if let array = object as? [AnyObject] {
             let results = array.enumerate().map { (index, value) -> String in
-                return self.encodeParameters(value, prefix: prefix != nil ? "\(prefix)[\(index)]" : "\(index)")
+                return self.encodeParameters(value, prefix: prefix != nil ? "\(prefix)[\(index)]" : "\(index)", escape: shouldEscape)
             }
             return results.joinWithSeparator("&")
         } else {
-            let escapedValue = escape("\(object)")
+            let string = "\(object)"
+            let escapedValue = shouldEscape ? escape(string) : string
             return prefix != nil ? "\(prefix)=\(escapedValue)" : "\(escapedValue)"
         }
     }

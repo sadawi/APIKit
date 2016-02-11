@@ -198,10 +198,4 @@ class APIKitTests: XCTestCase {
         XCTAssertEqual(keys.sort(), ["category", "categoryName", "id", "id", "productName"])
     }
     
-    func testRequestEncoding() {
-        let dict = ["people": [["name": "Bob", "age": 65], ["name": "Alice"]]]
-        let json = RequestEncoder.encodeParameters(dict)
-        XCTAssertEqual("people[0][age]=65&people[0][name]=Bob&people[1][name]=Alice", json)
-    }
-    
 }
