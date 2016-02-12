@@ -39,6 +39,12 @@ class RemoteRequestTests: XCTestCase {
         XCTAssertEqual(encoder.encodeParameters(parameters), "")
         encoder.includeNullValues = true
         XCTAssertEqual(encoder.encodeParameters(parameters), "age=")
+
+        let dict = ["people": [["name": "Bob", "age": NSNull()], ["name": "Alice"]]]
+        encoder.includeNullValues = false
+        let json = encoder.encodeParameters(dict)
+        XCTAssertEqual("people[0][name]=Bob&people[1][name]=Alice", json)
+
     }
 
 }
