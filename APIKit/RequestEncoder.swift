@@ -9,17 +9,17 @@
 
 import Foundation
 
-class RequestEncoder {
-    var escapeStrings: Bool = false
-    var includeNullValues: Bool = false
-    var nullString = ""
+public class ParameterEncoder {
+    public var escapeStrings: Bool = false
+    public var includeNullValues: Bool = false
+    public var nullString = ""
     
-    init(escapeStrings: Bool = false, includeNullValues:Bool = false) {
+    public init(escapeStrings: Bool = false, includeNullValues:Bool = false) {
         self.escapeStrings = escapeStrings
         self.includeNullValues = includeNullValues
     }
     
-    func encodeParameters(object: AnyObject, prefix: String! = nil) -> String {
+    public func encodeParameters(object: AnyObject, prefix: String! = nil) -> String {
         if let dictionary = object as? [String: AnyObject] {
             var results:[String] = []
             
@@ -40,7 +40,7 @@ class RequestEncoder {
         }
     }
     
-    func encodeValue(value: AnyObject) -> String {
+    public func encodeValue(value: AnyObject) -> String {
         var string:String
         if self.valueIsNull(value) {
             string = self.encodeNullValue()
@@ -53,15 +53,15 @@ class RequestEncoder {
         return string
     }
     
-    func valueIsNull(value: AnyObject?) -> Bool {
+    public func valueIsNull(value: AnyObject?) -> Bool {
         return value == nil || (value as? NSNull == NSNull())
     }
     
-    func encodeNullValue() -> String {
+    public func encodeNullValue() -> String {
         return self.nullString
     }
     
-    func escape(string: String) -> String {
+    public func escape(string: String) -> String {
         return string.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.URLQueryAllowedCharacterSet()) ?? ""
     }
 }

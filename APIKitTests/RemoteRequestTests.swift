@@ -12,20 +12,20 @@ class RemoteRequestTests: XCTestCase {
 
     func testSimpleRequestEncoding() {
         let dict = ["name": "Bob"]
-        let json = RequestEncoder().encodeParameters(dict)
+        let json = ParameterEncoder().encodeParameters(dict)
         XCTAssertEqual("name=Bob", json)
     }
     
     func testRequestEncoding() {
         let dict = ["people": [["name": "Bob", "age": 65], ["name": "Alice"]]]
-        let json = RequestEncoder().encodeParameters(dict)
+        let json = ParameterEncoder().encodeParameters(dict)
         XCTAssertEqual("people[0][age]=65&people[0][name]=Bob&people[1][name]=Alice", json)
     }
     
     func testEncoding() {
         let parameters = ["query": "New York"]
         
-        let encoder = RequestEncoder()
+        let encoder = ParameterEncoder()
         XCTAssertEqual(encoder.encodeParameters(parameters), "query=New York")
         encoder.escapeStrings = true
         XCTAssertEqual(encoder.encodeParameters(parameters), "query=New%20York")
@@ -35,7 +35,7 @@ class RemoteRequestTests: XCTestCase {
     
     func testNils() {
         let parameters:[String:AnyObject] = ["age": NSNull()]
-        let encoder = RequestEncoder()
+        let encoder = ParameterEncoder()
         XCTAssertEqual(encoder.encodeParameters(parameters), "")
         encoder.includeNullValues = true
         XCTAssertEqual(encoder.encodeParameters(parameters), "age=")
