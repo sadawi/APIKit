@@ -117,10 +117,10 @@ public class RemoteDataStore: DataStore, ListableDataStore {
             if let parameters = parameters, url = request.URL {
                 if method == .GET {
                     let components = NSURLComponents(URL: url, resolvingAgainstBaseURL: false)
-                    components?.query = RequestEncoder.encodeParameters(parameters)
+                    components?.query = RequestEncoder().encodeParameters(parameters)
                     request.URL = components?.URL
                 } else {
-                    request.HTTPBody = RequestEncoder.encodeParameters(parameters).dataUsingEncoding(NSUTF8StringEncoding)
+                    request.HTTPBody = RequestEncoder().encodeParameters(parameters).dataUsingEncoding(NSUTF8StringEncoding)
                 }
             }
             return (request, nil)

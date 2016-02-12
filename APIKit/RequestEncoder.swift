@@ -9,26 +9,53 @@
 
 import Foundation
 
-struct RequestEncoder {
-    static func encodeParameters(object: AnyObject, prefix: String! = nil, escape shouldEscape: Bool = false) -> String {
+class RequestEncoder {
+    var escapeStrings: Bool = false
+    var includeNullValues: Bool = false
+    
+    init(escapeStrings: Bool = false) {
+        self.escapeStrings = escapeStrings
+    }
+    
+    func encodeParameters(object: AnyObject, prefix: String! = nil) -> String {
         if let dictionary = object as? [String: AnyObject] {
             let results = dictionary.map { (key, value) -> String in
-                return self.encodeParameters(value, prefix: prefix != nil ? "\(prefix)[\(key)]" : key, escape: shouldEscape)
+                return self.encodeParameters(value, prefix: prefix != nil ? "\(prefix)[\(key)]" : key)
             }
             return results.joinWithSeparator("&")
         } else if let array = object as? [AnyObject] {
             let results = array.enumerate().map { (index, value) -> String in
-                return self.encodeParameters(value, prefix: prefix != nil ? "\(prefix)[\(index)]" : "\(index)", escape: shouldEscape)
+                return self.encodeParameters(value, prefix: prefix != nil ? "\(prefix)[\(index)]" : "\(index)")
             }
             return results.joinWithSeparator("&")
         } else {
-            let string = "\(object)"
-            let escapedValue = shouldEscape ? escape(string) : string
-            return prefix != nil ? "\(prefix)=\(escapedValue)" : "\(escapedValue)"
+            let string = self.encodeValue(object)
+            return prefix != nil ? "\(prefix)=\(string)" : "\(string)"
         }
     }
     
-    static func escape(string: String) -> String {
+    func encodeValue(value: AnyObject) -> String {
+        var string:String
+        if self.valueIsNull(value) {
+            string = self.encodeNullValue()
+        } else {
+            string = "\(value)"
+        }
+        if self.escapeStrings {
+            string = self.escape(string)
+        }
+        return string
+    }
+    
+    func valueIsNull(value: AnyObject?) -> Bool {
+        return value == nil || (value as? NSNull == NSNull())
+    }
+    
+    func encodeNullValue() -> String {
+        return ""
+    }
+    
+    func escape(string: String) -> String {
         return string.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.URLQueryAllowedCharacterSet()) ?? ""
     }
 }
