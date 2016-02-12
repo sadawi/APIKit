@@ -12,15 +12,21 @@ import Foundation
 class RequestEncoder {
     var escapeStrings: Bool = false
     var includeNullValues: Bool = false
+    var nullString = ""
     
-    init(escapeStrings: Bool = false) {
+    init(escapeStrings: Bool = false, includeNullValues:Bool = false) {
         self.escapeStrings = escapeStrings
+        self.includeNullValues = includeNullValues
     }
     
     func encodeParameters(object: AnyObject, prefix: String! = nil) -> String {
         if let dictionary = object as? [String: AnyObject] {
-            let results = dictionary.map { (key, value) -> String in
-                return self.encodeParameters(value, prefix: prefix != nil ? "\(prefix)[\(key)]" : key)
+            var results:[String] = []
+            
+            for (key, value) in dictionary {
+                if !self.valueIsNull(value) || self.includeNullValues {
+                    results.append(self.encodeParameters(value, prefix: prefix != nil ? "\(prefix)[\(key)]" : key))
+                }
             }
             return results.joinWithSeparator("&")
         } else if let array = object as? [AnyObject] {
@@ -52,7 +58,7 @@ class RequestEncoder {
     }
     
     func encodeNullValue() -> String {
-        return ""
+        return self.nullString
     }
     
     func escape(string: String) -> String {

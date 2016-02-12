@@ -33,12 +33,12 @@ class RemoteRequestTests: XCTestCase {
         XCTAssertEqual(encoder.encodeParameters(parameters), "query=New York")
     }
     
-//    func testNils() {
-//        let parameters:[String:AnyObject] = ["age": NSNull()]
-//        let encoder = RequestEncoder()
-//        XCTAssertEqual(encoder.encodeParameters(parameters), "")
-//        encoder.includeNullValues = true
-//        XCTAssertEqual(encoder.encodeParameters(parameters), "age=")
-//    }
+    func testNils() {
+        let parameters:[String:AnyObject] = ["age": NSNull()]
+        let encoder = RequestEncoder()
+        XCTAssertEqual(encoder.encodeParameters(parameters), "")
+        encoder.includeNullValues = true
+        XCTAssertEqual(encoder.encodeParameters(parameters), "age=")
+    }
 
 }
