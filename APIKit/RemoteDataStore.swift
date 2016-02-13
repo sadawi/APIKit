@@ -9,20 +9,32 @@
 import Alamofire
 import PromiseKit
 
+public enum RemoteDataStoreError: ErrorType {
+    case UnknownError(message: String)
+    case DeserializationFailure
+    case InvalidResponse
+    case NoModelPath(model: Model)
+    
+    var description: String {
+        switch(self) {
+        case .DeserializationFailure:
+            return "Could not deserialize model"
+        case .InvalidResponse:
+            return "Invalid response value"
+        case .NoModelPath(let model):
+            return "No path for model of type \(model.dynamicType)"
+        case .UnknownError(let message):
+            return message
+        }
+    }
+}
+
 public class RemoteDataStore: DataStore, ListableDataStore {
     public var baseURL:NSURL
     public var delegate:DataStoreDelegate?
     
     public init(baseURL:NSURL) {
         self.baseURL = baseURL
-    }
-    
-    /**
-     parameter message: A localized error message
-     returns: An immediately failing promise
-     */
-    private func errorPromise<T:Model>(message:String) -> Promise<T> {
-        return Promise(error: NSError(domain: DataStoreErrorDomain, code: 0, userInfo: [NSLocalizedDescriptionKey: message]))
     }
     
     /**
@@ -37,7 +49,7 @@ public class RemoteDataStore: DataStore, ListableDataStore {
             if let data = response.data, model = self.deserializeModel(modelClass, parameters: data) {
                 return Promise(model)
             } else {
-                return self.errorPromise("Could not deserialize model")
+                return Promise(error: RemoteDataStoreError.DeserializationFailure)
             }
         }
     }
@@ -87,7 +99,7 @@ public class RemoteDataStore: DataStore, ListableDataStore {
         return model
     }
     
-    public func handleError(inout error:NSError, model:Model?=nil) {
+    public func handleError(error:ErrorType, model:Model?=nil) {
         // Override
     }
     
@@ -158,20 +170,20 @@ public class RemoteDataStore: DataStore, ListableDataStore {
                     switch response.result {
                     case .Success:
                         if let value:Response<T> = self.constructResponse(response) {
-                            if var error=value.error {
+                            if let error=value.error {
                                 // the request might have succeeded, but we found an error when constructing the Response object
-                                self.handleError(&error, model:model)
+                                self.handleError(error, model:model)
                                 reject(error)
                             } else {
                                 fulfill(value)
                             }
                         } else {
-                            var error = NSError(domain: DataStoreErrorDomain, code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid response value"])
-                            self.handleError(&error)
+                            let error = RemoteDataStoreError.InvalidResponse
+                            self.handleError(error)
                             reject(error)
                         }
-                    case .Failure(var error):
-                        self.handleError(&error, model:model)
+                    case .Failure(let error):
+                        self.handleError(error as ErrorType, model:model)
                         reject(error)
                     }
                 }
@@ -205,7 +217,7 @@ public class RemoteDataStore: DataStore, ListableDataStore {
                 return Promise(model as! T)
             }
         } else {
-            return self.errorPromise("No path for model")
+            return Promise(error: RemoteDataStoreError.NoModelPath(model: model))
         }
     }
     
@@ -216,7 +228,7 @@ public class RemoteDataStore: DataStore, ListableDataStore {
                 return Promise(model)
             }
         } else {
-            return self.errorPromise("No path for model")
+            return Promise(error: RemoteDataStoreError.NoModelPath(model: model))
         }
     }
     
@@ -226,7 +238,7 @@ public class RemoteDataStore: DataStore, ListableDataStore {
         if let path = (model as Model).path {
             return self.request(.GET, path: path).then(self.instantiateModel(modelClass))
         } else {
-            return self.errorPromise("No path for model")
+            return Promise(error: RemoteDataStoreError.NoModelPath(model: model))
         }
     }
     
@@ -234,7 +246,7 @@ public class RemoteDataStore: DataStore, ListableDataStore {
         if let identifier = model.identifier {
             return self.lookup(T.self, identifier: identifier)
         } else {
-            return self.errorPromise("Model has no ID")
+            return Promise(error: RemoteDataStoreError.NoModelPath(model: model))
         }
     }
     

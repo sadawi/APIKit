@@ -12,7 +12,7 @@ import Foundation
 public class Response<DataType>: DictionarySerializable {
     public var data: DataType?
     public var successful:Bool = true
-    public var error:NSError?
+    public var error:ErrorType?
 
     required public init() {
     }
