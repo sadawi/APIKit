@@ -144,6 +144,13 @@ public class RemoteDataStore: DataStore, ListableDataStore {
     }
     
     /**
+     A placeholder method in which you can attempt to restore your session (refreshing your oauth token, for example) before each request.
+     */
+    public func restoreSession() -> Promise<Void> {
+        return Promise<Void>()
+    }
+    
+    /**
      The core request method, basically a Promise wrapper around an Alamofire.request call
      Parameterized by the T, the expected data payload type (typically either a dictionary or an array of dictionaries)
      
@@ -158,35 +165,44 @@ public class RemoteDataStore: DataStore, ListableDataStore {
         parameters: AttributeDictionary?=nil,
         headers: [String:String]=[:],
         encoding: ParameterEncoding?=nil,
-        model: Model?=nil
+        model: Model?=nil,
+        requireSession: Bool = true
         ) -> Promise<Response<T>> {
             
             let headers = self.defaultHeaders() + headers
             let url = self.url(path: path)
             let encoding = encoding ?? self.encodingForMethod(method)
             
-            return Promise { fulfill, reject in
-                Alamofire.request(method, url, parameters: parameters, encoding: encoding, headers: headers).responseJSON { response in
-                    switch response.result {
-                    case .Success:
-                        if let value:Response<T> = self.constructResponse(response) {
-                            if let error=value.error {
-                                // the request might have succeeded, but we found an error when constructing the Response object
-                                self.handleError(error, model:model)
-                                reject(error)
+            let action = { () -> Promise<Response<T>> in
+                return Promise { fulfill, reject in
+                    Alamofire.request(method, url, parameters: parameters, encoding: encoding, headers: headers).responseJSON { response in
+                        switch response.result {
+                        case .Success:
+                            if let value:Response<T> = self.constructResponse(response) {
+                                if let error=value.error {
+                                    // the request might have succeeded, but we found an error when constructing the Response object
+                                    self.handleError(error, model:model)
+                                    reject(error)
+                                } else {
+                                    fulfill(value)
+                                }
                             } else {
-                                fulfill(value)
+                                let error = RemoteDataStoreError.InvalidResponse
+                                self.handleError(error)
+                                reject(error)
                             }
-                        } else {
-                            let error = RemoteDataStoreError.InvalidResponse
-                            self.handleError(error)
+                        case .Failure(let error):
+                            self.handleError(error as ErrorType, model:model)
                             reject(error)
                         }
-                    case .Failure(let error):
-                        self.handleError(error as ErrorType, model:model)
-                        reject(error)
                     }
                 }
+            }
+            
+            if requireSession {
+                return self.restoreSession().then(action)
+            } else {
+                return action()
             }
     }
     
