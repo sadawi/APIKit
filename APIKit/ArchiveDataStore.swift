@@ -19,12 +19,23 @@ enum ArchiveError: ErrorType {
 public class ArchiveDataStore: ListableDataStore {
     public static let sharedInstance = ArchiveDataStore()
 
+    
+    /**
+     Unarchives the default group of instances of a model class.  This will not include any lists of this model class 
+     that were saved with a group name.
+     */
     public func list<T : Model>(modelClass: T.Type) -> Promise<[T]> {
-        return self.list(modelClass, suffix: "")
+        return self.list(modelClass, group: "")
     }
 
-    public func list<T : Model>(modelClass: T.Type, suffix: String) -> Promise<[T]> {
-        let results = self.unarchive(modelClass, suffix: suffix)
+    /**
+     Unarchives a named group of instances of a model class.
+     
+     - parameter modelClass: The model class to unarchive.
+     - parameter group: An identifier for the group
+     */
+    public func list<T : Model>(modelClass: T.Type, group: String) -> Promise<[T]> {
+        let results = self.unarchive(modelClass, suffix: group)
         return Promise(results)
     }
     
@@ -55,10 +66,19 @@ public class ArchiveDataStore: ListableDataStore {
         return registry
     }
     
-    public func saveList<T: Model>(modelClass:T.Type, models: [T], suffix: String="", includeRelated: Bool = false) -> Promise<Void> {
+    /**
+     Archives a collection of instances, replacing the previously archived collection.  A group name may be provided, which 
+     identifies a named set of instances that can be retrieved separately from the default group.
+     
+     - parameter modelClass: The class of models to be archived
+     - parameter models: The list of models to be archived
+     - parameter group: A specific group name identifying this model list.
+     - parameter includeRelated: Whether the entire object graph should be archived.
+     */
+    public func saveList<T: Model>(modelClass:T.Type, models: [T], group: String="", includeRelated: Bool = false) -> Promise<Void> {
         guard let _ = self.createdDirectory() else { return Promise(error: ArchiveError.DirectoryError) }
         
-        let registry = self.accumulateRelatedModels(models, suffix: suffix)
+        let registry = self.accumulateRelatedModels(models, suffix: group)
         
         for (key, models) in registry {
             self.archive(models, key: key)
@@ -70,7 +90,6 @@ public class ArchiveDataStore: ListableDataStore {
     /**
      Loads all instances of a class, and recursively unarchives all classes of related (shell) models.
      */
-    
     private func unarchive<T: Model>(modelClass: T.Type, suffix: String, keysToIgnore:NSMutableSet=NSMutableSet()) -> [T] {
         let key = self.keyForClass(modelClass).stringByAppendingString(suffix)
         
