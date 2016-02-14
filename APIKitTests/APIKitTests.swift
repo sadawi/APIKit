@@ -12,29 +12,29 @@ import MagneticFields
 
 @testable import APIKit
 
-class BaseModel:Model {
+private class BaseModel:Model {
     let id          = Field<String>()
     override var identifierField:FieldType {
         return self.id
     }
 }
 
-class Category:BaseModel {
+private class Category:BaseModel {
     let categoryName = Field<String>()
 }
 
-class Product:BaseModel {
+private class Product:BaseModel {
     let productName = Field<String>()
     let category = ModelField<Category>()
 }
 
-class Company:BaseModel {
+private class Company:BaseModel {
     let name        = Field<String>()
     let products    = *ModelField<Product>()
     let widgets     = *ModelField<Product>(foreignKey: true, key: "widgetIDs")
 }
 
-class Person:BaseModel {
+private class Person:BaseModel {
     let name    = Field<String>()
     let age     = Field<Int>()
     let company = ModelField<Company>(foreignKey: true)
@@ -48,7 +48,7 @@ class Person:BaseModel {
     }
 }
 
-class Pet:BaseModel {
+private class Pet:BaseModel {
     let name    = Field<String>()
     let species = Field<String>()
     let owner   = ModelField<Person>(foreignKey: true)

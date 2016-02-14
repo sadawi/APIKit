@@ -12,16 +12,43 @@ import MagneticFields
 public typealias AttributeDictionary = [String:AnyObject]
 public typealias Identifier = String
 
+/**
+ An object that keeps track of canonical model instances, presumably indexed by identifier.
+*/
 public protocol ModelRegistry {
+    /// Registers a new model in the registry.
     func didInstantiateModel<T:Model>(model:T)
+    
+    /// Tries to find a registered canonical instance matching the provided model.  Should return nil if no such object has been registered.
     func canonicalModelForModel<T:Model>(model:T) -> T?
+}
+
+/**
+ A very simple ModelRegistry adapter for a MemoryDataStore
+*/
+public struct MemoryRegistry: ModelRegistry {
+    var memory = MemoryDataStore.sharedInstance
+    
+    public func didInstantiateModel<T:Model>(model: T) {
+        if model.identifier != nil {
+            self.memory.updateImmediately(model)
+        }
+    }
+    
+    public func canonicalModelForModel<T:Model>(model: T) -> T? {
+        if let identifier = model.identifier {
+            return self.memory.lookupImmediately(T.self, identifier: identifier)
+        } else {
+            return nil
+        }
+    }
 }
 
 public class Model: NSObject, Routable, NSCopying {
     /**
      An object that is responsible for keeping track of canonical instances
      */
-    public static var registry:ModelRegistry?
+    public static var registry:ModelRegistry? = MemoryRegistry()
     
     /**
      Attempts to instantiate a new object from a dictionary representation of its attributes.
@@ -53,6 +80,25 @@ public class Model: NSObject, Routable, NSCopying {
         configure?(instance, isNew)
         return instance
         
+    }
+    
+    public class func withIdentifier(identifier: Identifier) -> Self {
+        let instance = self.init()
+        instance.identifier = identifier
+        if let canonical = Model.registry?.canonicalModelForModel(instance) {
+            return canonical
+        } else {
+            instance.registerInstance()
+            return instance
+        }
+    }
+    
+    public func registerInstance() {
+        self.dynamicType.registry?.didInstantiateModel(self)
+    }
+    
+    public func canonicalInstance() -> Self {
+        return self.dynamicType.registry?.canonicalModelForModel(self) ?? self
     }
     
     /**
@@ -314,6 +360,26 @@ public class Model: NSObject, Routable, NSCopying {
         self.visitAllFieldValues(recursive: recursive) { value in
             if let model = value as? Model where model.shell == true {
                 results.append(model)
+            }
+        }
+        return results
+    }
+    
+    /**
+     All models related with foreignKey fields
+     */
+    public func foreignKeyModels() -> [Model] {
+        var results:[Model] = []
+        
+        self.visitAllFields { field in
+            if let modelField = field as? ModelFieldType where modelField.foreignKey == true {
+                if let value = modelField.anyObjectValue as? Model {
+                    results.append(value)
+                } else if let values = modelField.anyObjectValue as? [Model] {
+                    for value in values {
+                        results.append(value)
+                    }
+                }
             }
         }
         return results

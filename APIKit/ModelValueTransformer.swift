@@ -15,12 +15,6 @@ public class ModelValueTransformer<T: Model>: ValueTransformer<T> {
         super.init(importAction: { value in
             if let value = value as? AttributeDictionary {
                 return T.fromDictionaryValue(value)
-//                return T.fromDictionaryValue(value) { model, isNew in
-//                    if model.identifier == "B6" {
-//                        print("I'M SETTING B6 no NOT SHELL")
-//                    }
-//                    model.shell = false
-//                }
             } else {
                 return nil
             }

@@ -39,6 +39,9 @@
 		225DE81C1BEEC4E3009698FC /* MemoryDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 225DE8061BEEB04D009698FC /* MemoryDataStore.swift */; };
 		225DE81D1BEEC4E3009698FC /* DataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 225DE80B1BEEB9CF009698FC /* DataStore.swift */; };
 		225DE81E1BEEC4E3009698FC /* RemoteDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 225DE80D1BEEB9FE009698FC /* RemoteDataStore.swift */; };
+		2264B9EA1C6FE35A00B609A0 /* ArchiveTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2264B9E91C6FE35A00B609A0 /* ArchiveTests.swift */; };
+		2264B9EC1C6FE38900B609A0 /* ArchiveDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2264B9EB1C6FE38900B609A0 /* ArchiveDataStore.swift */; };
+		2264B9ED1C6FE51800B609A0 /* ArchiveDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2264B9EB1C6FE38900B609A0 /* ArchiveDataStore.swift */; };
 		22B124041C30589600070629 /* Mirror+Super.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22B124031C30589600070629 /* Mirror+Super.swift */; };
 		22B124051C30589600070629 /* Mirror+Super.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22B124031C30589600070629 /* Mirror+Super.swift */; };
 		22B71E791C17757000EA7FD8 /* FieldModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22B71E781C17757000EA7FD8 /* FieldModelTests.swift */; };
@@ -86,6 +89,8 @@
 		225DE80D1BEEB9FE009698FC /* RemoteDataStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RemoteDataStore.swift; sourceTree = "<group>"; };
 		225DE8111BEEBABE009698FC /* Model.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Model.swift; sourceTree = "<group>"; };
 		225DE8151BEEC0D5009698FC /* ModelManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ModelManager.swift; sourceTree = "<group>"; };
+		2264B9E91C6FE35A00B609A0 /* ArchiveTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ArchiveTests.swift; sourceTree = "<group>"; };
+		2264B9EB1C6FE38900B609A0 /* ArchiveDataStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ArchiveDataStore.swift; sourceTree = "<group>"; };
 		22B124031C30589600070629 /* Mirror+Super.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Mirror+Super.swift"; sourceTree = "<group>"; };
 		22B71E781C17757000EA7FD8 /* FieldModelTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FieldModelTests.swift; sourceTree = "<group>"; };
 		22B71E7A1C1777B700EA7FD8 /* ModelValueTransformer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ModelValueTransformer.swift; sourceTree = "<group>"; };
@@ -182,6 +187,7 @@
 				225DE7F71BEE8069009698FC /* Info.plist */,
 				22CE192B1C6BA8BB001D5571 /* ArrayTests.swift */,
 				22EF75D71C6C2DE500F5C8EC /* RemoteRequestTests.swift */,
+				2264B9E91C6FE35A00B609A0 /* ArchiveTests.swift */,
 			);
 			path = APIKitTests;
 			sourceTree = "<group>";
@@ -189,6 +195,7 @@
 		225DE80F1BEEBA93009698FC /* data store */ = {
 			isa = PBXGroup;
 			children = (
+				2264B9EB1C6FE38900B609A0 /* ArchiveDataStore.swift */,
 				225DE80B1BEEB9CF009698FC /* DataStore.swift */,
 				225DE8061BEEB04D009698FC /* MemoryDataStore.swift */,
 				225DE80D1BEEB9FE009698FC /* RemoteDataStore.swift */,
@@ -378,6 +385,7 @@
 				2235AED61BEFD4AD00A730F0 /* Routable.swift in Sources */,
 				2235AEEE1BF27E3200A730F0 /* KeychainStore.swift in Sources */,
 				225DE8071BEEB04D009698FC /* MemoryDataStore.swift in Sources */,
+				2264B9EC1C6FE38900B609A0 /* ArchiveDataStore.swift in Sources */,
 				2235AEE61BF1057200A730F0 /* DataStoreDelegate.swift in Sources */,
 				22B124041C30589600070629 /* Mirror+Super.swift in Sources */,
 				22CE192A1C6BA809001D5571 /* Array+Difference.swift in Sources */,
@@ -398,6 +406,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2264B9EA1C6FE35A00B609A0 /* ArchiveTests.swift in Sources */,
 				22EF75D81C6C2DE500F5C8EC /* RemoteRequestTests.swift in Sources */,
 				2235AEDE1BF008FA00A730F0 /* DictionaryExtension.swift in Sources */,
 				2235AEF21BF27E5100A730F0 /* KeychainStore.swift in Sources */,
@@ -419,6 +428,7 @@
 				225DE81E1BEEC4E3009698FC /* RemoteDataStore.swift in Sources */,
 				2235AEDF1BF0090100A730F0 /* CompoundDataStore.swift in Sources */,
 				2235AEDD1BF008EE00A730F0 /* Routable.swift in Sources */,
+				2264B9ED1C6FE51800B609A0 /* ArchiveDataStore.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
