@@ -8,6 +8,7 @@
 
 import Foundation
 import PromiseKit
+import MagneticFields
 
 enum Operation {
     case Any
@@ -25,12 +26,12 @@ public protocol DataStore {
      // TODO: Decide on strict id semantics.  Do we leave an existing identifier alone, or replace it with a new one?
      The returned object should be a new instance, different from the provided one.
      */
-    func create<T:Model>(model:T) -> Promise<T>
+    func create<T:Model>(model: T, fields: [FieldType]?) -> Promise<T>
     
     /**
      Updates an existing record
      */
-    func update<T:Model>(model:T) -> Promise<T>
+    func update<T:Model>(model: T, fields: [FieldType]?) -> Promise<T>
     
     /**
      Deletes a record.
@@ -65,6 +66,15 @@ public extension DataStore {
     public func containsModel(model:Model) -> Promise<Bool> {
         return Promise(model.identifier != nil)
     }
+    
+    func create<T:Model>(model:T) -> Promise<T> {
+        return self.create(model, fields: nil)
+    }
+    
+    public func update<T:Model>(model: T) -> Promise<T> {
+        return self.update(model, fields: nil)
+    }
+
     
     /**
      Upsert.  Creates a new record or updates an existing one, depending on whether we think it's been persisted.

@@ -63,6 +63,13 @@ class FieldModelTests: XCTestCase {
         }
     }
     
+    func testSelectiveDictionary() {
+        let co = Company()
+        co.name.value = "Apple"
+        let dictionary = co.dictionaryValueWithFields([co.name])
+        XCTAssertEqual(dictionary as! [String: String], ["name": "Apple"])
+    }
+    
     func testInverseFields() {
         let person1 = Person()
         let profileA = Profile()

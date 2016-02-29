@@ -17,6 +17,7 @@ Notes:
 
 import Foundation
 import PromiseKit
+import MagneticFields
 
 public class MemoryDataStore: DataStore, ListableDataStore {
     public static let sharedInstance = MemoryDataStore()
@@ -47,7 +48,7 @@ public class MemoryDataStore: DataStore, ListableDataStore {
     }
     
     // TODO: think more about how to safely create identifiers, when the ID field can be arbitrary type.
-    public func create<T:Model>(model: T) -> Promise<T> {
+    public func create<T:Model>(model: T, fields: [FieldType]?) -> Promise<T> {
         return Promise { fulfill, reject in
             let id = self.generateIdentifier()
             model.identifier = id
@@ -55,7 +56,7 @@ public class MemoryDataStore: DataStore, ListableDataStore {
             fulfill(model)
         }
     }
-    public func update<T:Model>(model: T) -> Promise<T> {
+    public func update<T:Model>(model: T, fields: [FieldType]?) -> Promise<T> {
         return Promise { fulfill, reject in
             fulfill(self.updateImmediately(model))
         }
