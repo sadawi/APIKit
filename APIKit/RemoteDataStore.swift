@@ -71,9 +71,6 @@ public class RemoteDataStore: DataStore, ListableDataStore {
         }
     }
     
-    
-    //    public func handleModelError<T:Model>(modelClass:T.Type) ->
-    
     // MARK: - Helper methods that subclasses might want to override
     
     private func url(path path:String) -> NSURL {
@@ -133,6 +130,7 @@ public class RemoteDataStore: DataStore, ListableDataStore {
                     components?.query = ParameterEncoder().encodeParameters(parameters)
                     request.URL = components?.URL
                 } else {
+                    request.addValue("application/x-www-form-urlencoded; charset=utf-8", forHTTPHeaderField: "Content-Type")
                     request.HTTPBody = ParameterEncoder().encodeParameters(parameters).dataUsingEncoding(NSUTF8StringEncoding)
                 }
             }
