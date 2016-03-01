@@ -7,6 +7,7 @@
 //
 
 import PromiseKit
+import MagneticFields
 
 class CompoundDataStore {
     var dataStores:[DataStore] = []
@@ -19,13 +20,13 @@ class CompoundDataStore {
     func dataStoresForModelClass<T:Model>(modelClass:T.Type, operation:Operation) -> [DataStore] {
         return self.dataStores
     }
-    
-    func create(model: Model) -> Promise<Model> {
+
+    func create(model: Model, fields: [FieldType]?) -> Promise<Model> {
         return Promise { fulfill, reject in
             
         }
     }
-    func update(model: Model) -> Promise<Model> {
+    func update(model: Model, fields: [FieldType]?) -> Promise<Model> {
         return Promise { fulfill, reject in
             
         }

@@ -7,6 +7,7 @@
 //
 
 import PromiseKit
+import MagneticFields
 
 public class KeychainStore: DataStore {
     public var delegate:DataStoreDelegate?
@@ -15,12 +16,12 @@ public class KeychainStore: DataStore {
         
     }
     
-    public func create<T:Model>(model: T) -> Promise<T> {
+    public func create<T:Model>(model: T, fields: [FieldType]?) -> Promise<T> {
         return Promise { fulfill, reject in
         }
     }
     
-    public func update<T:Model>(model: T) -> Promise<T> {
+    public func update<T:Model>(model: T, fields: [FieldType]?) -> Promise<T> {
         return Promise { fulfill, reject in
         }
     }

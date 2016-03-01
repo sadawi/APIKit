@@ -8,6 +8,7 @@
 
 import Alamofire
 import PromiseKit
+import MagneticFields
 
 public enum RemoteDataStoreError: ErrorType {
     case UnknownError(message: String)
@@ -70,9 +71,6 @@ public class RemoteDataStore: DataStore, ListableDataStore {
         }
     }
     
-    
-    //    public func handleModelError<T:Model>(modelClass:T.Type) ->
-    
     // MARK: - Helper methods that subclasses might want to override
     
     private func url(path path:String) -> NSURL {
@@ -87,8 +85,8 @@ public class RemoteDataStore: DataStore, ListableDataStore {
         return payload
     }
     
-    public func serializeModel(model:Model) -> AttributeDictionary {
-        return model.dictionaryValue
+    public func serializeModel(model:Model, fields:[FieldType]?=nil) -> AttributeDictionary {
+        return model.dictionaryValueWithFields(fields)
     }
     
     public func deserializeModel<T:Model>(modelClass:T.Type, parameters:AttributeDictionary) -> T? {
@@ -132,6 +130,7 @@ public class RemoteDataStore: DataStore, ListableDataStore {
                     components?.query = ParameterEncoder().encodeParameters(parameters)
                     request.URL = components?.URL
                 } else {
+                    request.addValue("application/x-www-form-urlencoded; charset=utf-8", forHTTPHeaderField: "Content-Type")
                     request.HTTPBody = ParameterEncoder().encodeParameters(parameters).dataUsingEncoding(NSUTF8StringEncoding)
                 }
             }
@@ -207,10 +206,10 @@ public class RemoteDataStore: DataStore, ListableDataStore {
     }
     
     // MARK: - CRUD operations (DataStore protocol methods)
-    
-    public func create<T:Model>(model: T) -> Promise<T> {
+
+    public func create<T:Model>(model: T, fields: [FieldType]?) -> Promise<T> {
         model.beforeSave()
-        let parameters = self.formatPayload(self.serializeModel(model))
+        let parameters = self.formatPayload(self.serializeModel(model, fields: fields))
         
         // See MemoryDataStore for an explanation [1]
         let modelModel = model as Model
@@ -221,13 +220,13 @@ public class RemoteDataStore: DataStore, ListableDataStore {
         }
     }
     
-    public func update<T:Model>(model: T) -> Promise<T> {
+    public func update<T:Model>(model: T, fields: [FieldType]?) -> Promise<T> {
         model.beforeSave()
         
         let modelModel = model as Model
         
         if let path = modelModel.path {
-            let parameters = self.formatPayload(self.serializeModel(model))
+            let parameters = self.formatPayload(self.serializeModel(model, fields: fields))
             return self.request(.PATCH, path: path, parameters: parameters, model:model).then(self.instantiateModel(modelModel.dynamicType)).then { model in
                 // Dancing around to get the type inference to work
                 return Promise(model as! T)

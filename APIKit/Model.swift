@@ -315,15 +315,14 @@ public class Model: NSObject, Routable, NSCopying {
             if recursive {
                 if let value = field.anyObjectValue as? Model {
                     value.visitAllFieldValues(recursive: recursive, action: action)
-                } else if let value = field.anyValue {
+                } else if let value = field.anyValue, let values = value as? NSArray {
                     // I'm not sure why I can't cast to [Any]
                     // http://stackoverflow.com/questions/26226911/how-to-tell-if-a-variable-is-an-array
-                    if let values = value as? NSArray {
-                        for value in values {
-                            action(value)
-                            if let modelValue = value as? Model {
-                                modelValue.visitAllFieldValues(recursive: recursive, action: action)
-                            }
+                    
+                    for value in values {
+                        action(value)
+                        if let modelValue = value as? Model {
+                            modelValue.visitAllFieldValues(recursive: recursive, action: action)
                         }
                     }
                 }
@@ -331,16 +330,22 @@ public class Model: NSObject, Routable, NSCopying {
         }
     }
     
+    public func dictionaryValueWithFields(fields:[FieldType]?=nil) -> AttributeDictionary {
+        let fields = fields ?? self.fieldsForDictionaryValue()
+        var result:AttributeDictionary = [:]
+        let include = fields
+        for (name, field) in self.fields {
+            if include.contains({ $0 === field }) && field.state == .Set {
+                field.writeToDictionary(&result, name: field.key ?? name)
+            }
+        }
+        return result
+    }
+    
+    
     public var dictionaryValue:AttributeDictionary {
         get {
-            var result:AttributeDictionary = [:]
-            let include = self.fieldsForDictionaryValue()
-            for (name, field) in self.fields {
-                if include.contains({ $0 === field }) && field.state == .Set {
-                    field.writeToDictionary(&result, name: field.key ?? name)
-                }
-            }
-            return result
+            return self.dictionaryValueWithFields()
         }
         set {
             let include = self.fieldsForDictionaryValue()
