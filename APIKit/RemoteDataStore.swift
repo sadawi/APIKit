@@ -15,6 +15,7 @@ public enum RemoteDataStoreError: ErrorType {
     case DeserializationFailure
     case InvalidResponse
     case NoModelPath(model: Model)
+    case NoModelCollectionPath(modelClass: Model.Type)
     
     var description: String {
         switch(self) {
@@ -26,6 +27,8 @@ public enum RemoteDataStoreError: ErrorType {
             return "No path for model of type \(model.dynamicType)"
         case .UnknownError(let message):
             return message
+        case .NoModelCollectionPath(let modelClass):
+            return "No path for model collection of type \(modelClass)"
         }
     }
 }
@@ -206,7 +209,7 @@ public class RemoteDataStore: DataStore, ListableDataStore {
     }
     
     // MARK: - CRUD operations (DataStore protocol methods)
-
+    
     public func create<T:Model>(model: T, fields: [FieldType]?) -> Promise<T> {
         model.beforeSave()
         let parameters = self.formatPayload(self.serializeModel(model, fields: fields))
@@ -214,9 +217,13 @@ public class RemoteDataStore: DataStore, ListableDataStore {
         // See MemoryDataStore for an explanation [1]
         let modelModel = model as Model
         
-        return self.request(.POST, path: modelModel.dynamicType.path, parameters: parameters, model:model).then(self.instantiateModel(modelModel.dynamicType)).then { model in
-            model.afterCreate()
-            return Promise(model as! T)
+        if let collectionPath = modelModel.dynamicType.collectionPath {
+            return self.request(.POST, path: collectionPath, parameters: parameters, model:model).then(self.instantiateModel(modelModel.dynamicType)).then { model in
+                model.afterCreate()
+                return Promise(model as! T)
+            }
+        } else {
+            return Promise(error: RemoteDataStoreError.NoModelCollectionPath(modelClass: modelModel.dynamicType))
         }
     }
     
@@ -277,7 +284,11 @@ public class RemoteDataStore: DataStore, ListableDataStore {
      - parameter parameters: Request parameters to pass along in the request.
      */
     public func list<T: Model>(modelClass:T.Type, path:String?=nil, parameters:[String:AnyObject]?) -> Promise<[T]> {
-        return self.request(.GET, path: path ?? modelClass.path, parameters: parameters).then(self.instantiateModels(modelClass))
+        if let collectionPath = (path ?? modelClass.collectionPath) {
+            return self.request(.GET, path: collectionPath, parameters: parameters).then(self.instantiateModels(modelClass))
+        } else {
+            return Promise(error: RemoteDataStoreError.NoModelCollectionPath(modelClass: modelClass))
+       }
     }
-
+    
 }

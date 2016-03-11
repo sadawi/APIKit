@@ -168,10 +168,9 @@ public class Model: NSObject, Routable, NSCopying {
     
     // MARK: Routable
     
-    public class var path: String {
+    public class var collectionPath: String? {
         get {
-            assert(false, "This must be overridden")
-            return "models"
+            return nil
         }
     }
     
