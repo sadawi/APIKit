@@ -9,9 +9,8 @@
 import Foundation
 
 public protocol Routable {
-    static var path:String { get }
+    static var collectionPath:String? { get }
     var identifier:String? { get }
-    var path:String? { get }
 }
 
 extension Routable {
@@ -23,8 +22,8 @@ extension Routable {
     */
     public var path:String? {
         get {
-            if let id = self.identifier {
-                return "\(self.dynamicType.path)/\(id)"
+            if let id = self.identifier, let collectionPath = self.dynamicType.collectionPath {
+                return "\(collectionPath)/\(id)"
             } else {
                 return nil
             }
