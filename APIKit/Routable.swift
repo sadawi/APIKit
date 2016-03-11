@@ -29,4 +29,8 @@ extension Routable {
             }
         }
     }
+    
+    public static var hasCollectionPath: Bool {
+        return self.collectionPath != nil
+    }
 }
