@@ -202,7 +202,7 @@ public class RemoteDataStore: DataStore, ListableDataStore {
             }
             
             if requireSession {
-                return self.restoreSession().then(action)
+                return self.restoreSession().thenInBackground(action)
             } else {
                 return action()
             }
@@ -218,7 +218,7 @@ public class RemoteDataStore: DataStore, ListableDataStore {
         let modelModel = model as Model
         
         if let collectionPath = modelModel.dynamicType.collectionPath {
-            return self.request(.POST, path: collectionPath, parameters: parameters, model:model).then(self.instantiateModel(modelModel.dynamicType)).then { model in
+            return self.request(.POST, path: collectionPath, parameters: parameters, model:model).thenInBackground(self.instantiateModel(modelModel.dynamicType)).thenInBackground { model in
                 model.afterCreate()
                 return Promise(model as! T)
             }
@@ -234,7 +234,7 @@ public class RemoteDataStore: DataStore, ListableDataStore {
         
         if let path = modelModel.path {
             let parameters = self.formatPayload(self.serializeModel(model, fields: fields))
-            return self.request(.PATCH, path: path, parameters: parameters, model:model).then(self.instantiateModel(modelModel.dynamicType)).then { model in
+            return self.request(.PATCH, path: path, parameters: parameters, model:model).thenInBackground(self.instantiateModel(modelModel.dynamicType)).thenInBackground { model in
                 // Dancing around to get the type inference to work
                 return Promise(model as! T)
             }
@@ -245,7 +245,7 @@ public class RemoteDataStore: DataStore, ListableDataStore {
     
     public func delete<T:Model>(model: T) -> Promise<T> {
         if let path = (model as Model).path {
-            return self.request(.DELETE, path: path).then { (response:Response<T>) -> Promise<T> in
+            return self.request(.DELETE, path: path).thenInBackground { (response:Response<T>) -> Promise<T> in
                 model.afterDelete()
                 return Promise(model)
             }
@@ -258,7 +258,7 @@ public class RemoteDataStore: DataStore, ListableDataStore {
         let model = modelClass.init() as T
         model.identifier = identifier
         if let path = (model as Model).path {
-            return self.request(.GET, path: path).then(self.instantiateModel(modelClass))
+            return self.request(.GET, path: path).thenInBackground(self.instantiateModel(modelClass))
         } else {
             return Promise(error: RemoteDataStoreError.NoModelPath(model: model))
         }
@@ -285,7 +285,7 @@ public class RemoteDataStore: DataStore, ListableDataStore {
      */
     public func list<T: Model>(modelClass:T.Type, path:String?=nil, parameters:[String:AnyObject]?) -> Promise<[T]> {
         if let collectionPath = (path ?? modelClass.collectionPath) {
-            return self.request(.GET, path: collectionPath, parameters: parameters).then(self.instantiateModels(modelClass))
+            return self.request(.GET, path: collectionPath, parameters: parameters).thenInBackground(self.instantiateModels(modelClass))
         } else {
             return Promise(error: RemoteDataStoreError.NoModelCollectionPath(modelClass: modelClass))
        }
