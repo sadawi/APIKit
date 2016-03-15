@@ -54,8 +54,8 @@ public class Model: NSObject, Routable, NSCopying {
      A bare instance, uninitialized, that is appropriate for the given dictionary value.  Might be an instance
      of a subclass, for example.
      */
-    public class func newInstanceForDictionaryValue(dictionaryValue: AttributeDictionary) -> Self? {
-        return self.init()
+    public class func newInstanceForDictionaryValue<T>(dictionaryValue: AttributeDictionary) -> T? {
+        return self.init() as? T
     }
     
     /**

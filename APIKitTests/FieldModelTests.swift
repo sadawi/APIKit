@@ -99,21 +99,17 @@ class FieldModelTests: XCTestCase {
     }
     
     private class Letter: Model {
-        override class func newInstanceForDictionaryValue(dictionaryValue: AttributeDictionary) -> Self? {
+        override class func newInstanceForDictionaryValue<T>(dictionaryValue: AttributeDictionary) -> T? {
             if let letter = dictionaryValue["letter"] as? String {
-                return self.instance(letter)
+                if letter == "a" {
+                    return A() as? T
+                } else if letter == "b" {
+                    return B() as? T
+                } else {
+                    return nil
+                }
             }
             return nil
-        }
-        
-        class func instance<T where T: Letter>(letter: String) -> T? {
-            if letter == "a" {
-                return A() as? T
-            } else if letter == "b" {
-                return B() as? T
-            } else {
-                return nil
-            }
         }
     }
     
@@ -129,6 +125,9 @@ class FieldModelTests: XCTestCase {
 
         let b = Letter.fromDictionaryValue(["letter": "b"])
         XCTAssert(b is B)
+        
+        let c = Letter.fromDictionaryValue(["letter": "c"])
+        XCTAssert(c!.dynamicType == Letter.self)
     }
 
 }
