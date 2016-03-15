@@ -80,7 +80,7 @@ public extension DataStore {
      Upsert.  Creates a new record or updates an existing one, depending on whether we think it's been persisted.
      */
     public func save(model:Model, fields:[FieldType]?=nil) -> Promise<Model> {
-        return self.containsModel(model).then { result in
+        return self.containsModel(model).thenInBackground { result in
             return result ? self.update(model, fields: fields) : self.create(model, fields: fields)
         }
     }
