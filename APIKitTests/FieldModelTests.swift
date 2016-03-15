@@ -97,5 +97,38 @@ class FieldModelTests: XCTestCase {
         XCTAssertEqual(person1.company.value, company2)
         XCTAssertEqual(0, company1.employees.value?.count)
     }
+    
+    private class Letter: Model {
+        override class func newInstanceForDictionaryValue(dictionaryValue: AttributeDictionary) -> Self? {
+            if let letter = dictionaryValue["letter"] as? String {
+                return self.instance(letter)
+            }
+            return nil
+        }
+        
+        class func instance<T where T: Letter>(letter: String) -> T? {
+            if letter == "a" {
+                return A() as? T
+            } else if letter == "b" {
+                return B() as? T
+            } else {
+                return nil
+            }
+        }
+    }
+    
+    private class A: Letter {
+    }
+    
+    private class B: Letter {
+    }
+    
+    func testCustomSubclass() {
+        let a = Letter.fromDictionaryValue(["letter": "a"])
+        XCTAssert(a is A)
+
+        let b = Letter.fromDictionaryValue(["letter": "b"])
+        XCTAssert(b is B)
+    }
 
 }

@@ -51,6 +51,14 @@ public class Model: NSObject, Routable, NSCopying {
     public static var registry:ModelRegistry? = MemoryRegistry()
     
     /**
+     A bare instance, uninitialized, that is appropriate for the given dictionary value.  Might be an instance
+     of a subclass, for example.
+     */
+    public class func newInstanceForDictionaryValue(dictionaryValue: AttributeDictionary) -> Self? {
+        return self.init()
+    }
+    
+    /**
      Attempts to instantiate a new object from a dictionary representation of its attributes.
      If a registry is set, will attempt to reuse the canonical instance for its identifier
      
@@ -59,7 +67,7 @@ public class Model: NSObject, Routable, NSCopying {
      - parameter configure: A closure to configure a deserialized model, taking a Bool flag indicating whether it was newly instantiated (vs. reused from registry)
      */
     public class func fromDictionaryValue(dictionaryValue:AttributeDictionary, useRegistry:Bool = true, configure:((Model,Bool) -> Void)?=nil) -> Self? {
-        var instance = self.init()
+        var instance = self.newInstanceForDictionaryValue(dictionaryValue) ?? self.init()
         (instance as Model).dictionaryValue = dictionaryValue
         
         var isNew = true
