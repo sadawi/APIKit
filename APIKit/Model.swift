@@ -51,11 +51,15 @@ public class Model: NSObject, Routable, NSCopying {
     public static var registry:ModelRegistry? = MemoryRegistry()
     
     /**
-     A bare instance, uninitialized, that is appropriate for the given dictionary value.  Might be an instance
-     of a subclass, for example.
+     The class to instantiate, based on a dictionary value.
+     
+     Whatever class you attempt to return must be cast to T.Type, which is inferred to be Self.
+     
+     In other words, if you don't return a subclass, it's likely that you'll silently get an instance of
+     whatever class defines this method.
      */
-    public class func newInstanceForDictionaryValue<T>(dictionaryValue: AttributeDictionary) -> T? {
-        return self.init() as? T
+    public class func instanceClassForDictionaryValue<T>(dictionaryValue: AttributeDictionary) -> T.Type? {
+        return self as? T.Type
     }
     
     /**
@@ -67,7 +71,7 @@ public class Model: NSObject, Routable, NSCopying {
      - parameter configure: A closure to configure a deserialized model, taking a Bool flag indicating whether it was newly instantiated (vs. reused from registry)
      */
     public class func fromDictionaryValue(dictionaryValue:AttributeDictionary, useRegistry:Bool = true, configure:((Model,Bool) -> Void)?=nil) -> Self? {
-        var instance = self.newInstanceForDictionaryValue(dictionaryValue) ?? self.init()
+        var instance = (self.instanceClassForDictionaryValue(dictionaryValue) ?? self).init()
         (instance as Model).dictionaryValue = dictionaryValue
         
         var isNew = true

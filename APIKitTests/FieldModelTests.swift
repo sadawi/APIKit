@@ -99,12 +99,14 @@ class FieldModelTests: XCTestCase {
     }
     
     private class Letter: Model {
-        override class func newInstanceForDictionaryValue<T>(dictionaryValue: AttributeDictionary) -> T? {
+        override class func instanceClassForDictionaryValue<T>(dictionaryValue: AttributeDictionary) -> T.Type? {
             if let letter = dictionaryValue["letter"] as? String {
                 if letter == "a" {
-                    return A() as? T
+                    return A.self as? T.Type
                 } else if letter == "b" {
-                    return B() as? T
+                    return B.self as? T.Type
+                } else if letter == "x" {
+                    return UnrelatedClass.self as? T.Type
                 } else {
                     return nil
                 }
@@ -119,6 +121,9 @@ class FieldModelTests: XCTestCase {
     private class B: Letter {
     }
     
+    private class UnrelatedClass: Model {
+    }
+    
     func testCustomSubclass() {
         let a = Letter.fromDictionaryValue(["letter": "a"])
         XCTAssert(a is A)
@@ -126,8 +131,13 @@ class FieldModelTests: XCTestCase {
         let b = Letter.fromDictionaryValue(["letter": "b"])
         XCTAssert(b is B)
         
+        // We didn't define the case for "c", so it falls back to Letter.
         let c = Letter.fromDictionaryValue(["letter": "c"])
         XCTAssert(c!.dynamicType == Letter.self)
+
+        // Note that the unrelated type falls back to Letter!
+        let x = Letter.fromDictionaryValue(["letter": "x"])
+        XCTAssert(x!.dynamicType == Letter.self)
     }
 
 }
