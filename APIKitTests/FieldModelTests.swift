@@ -63,6 +63,21 @@ class FieldModelTests: XCTestCase {
         }
     }
     
+    private class InitializedFields: Model {
+        let name = Field<String>()
+        
+        private override func initializeField(field: FieldType) {
+            if field.key == "name" {
+                field.name = "Test"
+            }
+        }
+    }
+    
+    func testFieldInitialization() {
+        let model = InitializedFields()
+        XCTAssertEqual(model.name.name, "Test")
+    }
+    
     func testSelectiveDictionary() {
         let co = Company()
         co.name.value = "Apple"

@@ -272,10 +272,17 @@ public class Model: NSObject, Routable, NSCopying {
             if field.key == nil {
                 field.key = key
             }
+            self.initializeField(field)
             if let modelField = field as? ModelFieldType {
                 modelField.model = self
             }
         }
+    }
+    
+    /**
+     Performs any model-level field initialization your class may need, before any field values are set.
+     */
+    public func initializeField(field:FieldType) {
     }
     
     public required override init() {
@@ -380,7 +387,7 @@ public class Model: NSObject, Routable, NSCopying {
     /**
      The default dictionary representation of this model.
      
-     If you want to customize the input/output, override `dictionaryValue(fields:)` and/or `setDictionaryValue(:, fields:)`.
+     If you want to customize the input/output, override `dictionaryValue(fields:)` and/or `setDictionaryValue(_:fields:)`.
      */
     public final var dictionaryValue:AttributeDictionary {
         get {
