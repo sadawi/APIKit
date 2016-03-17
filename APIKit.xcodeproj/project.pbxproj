@@ -48,6 +48,8 @@
 		22B71E841C17819100EA7FD8 /* ModelField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22B71E821C17819100EA7FD8 /* ModelField.swift */; };
 		22CE192A1C6BA809001D5571 /* Array+Difference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22CE19291C6BA809001D5571 /* Array+Difference.swift */; };
 		22CE192C1C6BA8BB001D5571 /* ArrayTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22CE192B1C6BA8BB001D5571 /* ArrayTests.swift */; };
+		22D408771C9B4E9A00368987 /* TypeDictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22D408761C9B4E9A00368987 /* TypeDictionary.swift */; };
+		22D408791C9B530800368987 /* TypeDictionaryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22D408781C9B530800368987 /* TypeDictionaryTests.swift */; };
 		22EF75D81C6C2DE500F5C8EC /* RemoteRequestTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22EF75D71C6C2DE500F5C8EC /* RemoteRequestTests.swift */; };
 		3379611099364D616E5921CF /* Pods_APIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA64AEC3AC528E3B53B826E1 /* Pods_APIKit.framework */; };
 /* End PBXBuildFile section */
@@ -92,6 +94,8 @@
 		22B71E821C17819100EA7FD8 /* ModelField.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ModelField.swift; sourceTree = "<group>"; };
 		22CE19291C6BA809001D5571 /* Array+Difference.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Array+Difference.swift"; sourceTree = "<group>"; };
 		22CE192B1C6BA8BB001D5571 /* ArrayTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ArrayTests.swift; sourceTree = "<group>"; };
+		22D408761C9B4E9A00368987 /* TypeDictionary.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TypeDictionary.swift; sourceTree = "<group>"; };
+		22D408781C9B530800368987 /* TypeDictionaryTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TypeDictionaryTests.swift; sourceTree = "<group>"; };
 		22EF75D71C6C2DE500F5C8EC /* RemoteRequestTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RemoteRequestTests.swift; sourceTree = "<group>"; };
 		4449023E723EA0BF4A2BA99C /* Pods-APIKit.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-APIKit.debug.xcconfig"; path = "Pods/Target Support Files/Pods-APIKit/Pods-APIKit.debug.xcconfig"; sourceTree = "<group>"; };
 		5A96EBE05329483E5F866082 /* Pods-APIKit.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-APIKit.release.xcconfig"; path = "Pods/Target Support Files/Pods-APIKit/Pods-APIKit.release.xcconfig"; sourceTree = "<group>"; };
@@ -173,6 +177,7 @@
 				22CE192B1C6BA8BB001D5571 /* ArrayTests.swift */,
 				22EF75D71C6C2DE500F5C8EC /* RemoteRequestTests.swift */,
 				2264B9E91C6FE35A00B609A0 /* ArchiveTests.swift */,
+				22D408781C9B530800368987 /* TypeDictionaryTests.swift */,
 			);
 			path = APIKitTests;
 			sourceTree = "<group>";
@@ -200,6 +205,7 @@
 				225DE8111BEEBABE009698FC /* Model.swift */,
 				2235AEF31BF3C0A600A730F0 /* Response.swift */,
 				22B71E821C17819100EA7FD8 /* ModelField.swift */,
+				22D408761C9B4E9A00368987 /* TypeDictionary.swift */,
 			);
 			name = models;
 			sourceTree = "<group>";
@@ -376,6 +382,7 @@
 				22CE192A1C6BA809001D5571 /* Array+Difference.swift in Sources */,
 				22B71E7B1C1777B700EA7FD8 /* ModelValueTransformer.swift in Sources */,
 				2235AEF41BF3C0A600A730F0 /* Response.swift in Sources */,
+				22D408771C9B4E9A00368987 /* TypeDictionary.swift in Sources */,
 				22080E311BEED3A200A633AA /* CompoundDataStore.swift in Sources */,
 				221D575C1C51B9FB0047BECB /* RequestEncoder.swift in Sources */,
 				2235AED81BEFD5B800A730F0 /* DictionarySerializable.swift in Sources */,
@@ -391,6 +398,7 @@
 			files = (
 				2264B9EA1C6FE35A00B609A0 /* ArchiveTests.swift in Sources */,
 				22EF75D81C6C2DE500F5C8EC /* RemoteRequestTests.swift in Sources */,
+				22D408791C9B530800368987 /* TypeDictionaryTests.swift in Sources */,
 				2235AEDE1BF008FA00A730F0 /* DictionaryExtension.swift in Sources */,
 				2235AEF21BF27E5100A730F0 /* KeychainStore.swift in Sources */,
 				22B71E7E1C1777F300EA7FD8 /* ModelValueTransformer.swift in Sources */,
