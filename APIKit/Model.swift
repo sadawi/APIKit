@@ -57,6 +57,8 @@ public class Model: NSObject, Routable, NSCopying {
      
      In other words, if you don't return a subclass, it's likely that you'll silently get an instance of
      whatever class defines this method.
+     
+     I would prefer not to use generics here, but not sure how else to get this to work!
      */
     public class func instanceClassForDictionaryValue<T>(dictionaryValue: AttributeDictionary) -> T.Type? {
         return self as? T.Type
