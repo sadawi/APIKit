@@ -66,7 +66,7 @@ class FieldModelTests: XCTestCase {
     func testSelectiveDictionary() {
         let co = Company()
         co.name.value = "Apple"
-        let dictionary = co.dictionaryValueWithFields([co.name])
+        let dictionary = co.dictionaryValue(fields: [co.name])
         XCTAssertEqual(dictionary as! [String: String], ["name": "Apple"])
     }
     

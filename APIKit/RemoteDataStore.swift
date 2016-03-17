@@ -89,7 +89,7 @@ public class RemoteDataStore: DataStore, ListableDataStore {
     }
     
     public func serializeModel(model:Model, fields:[FieldType]?=nil) -> AttributeDictionary {
-        return model.dictionaryValueWithFields(fields)
+        return model.dictionaryValue(fields: fields)
     }
     
     public func deserializeModel<T:Model>(modelClass:T.Type, parameters:AttributeDictionary) -> T? {

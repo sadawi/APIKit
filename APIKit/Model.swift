@@ -260,7 +260,7 @@ public class Model: NSObject, Routable, NSCopying {
      Which fields should we include in the dictionaryValue?
      By default, includes all of them.
      */
-    public func fieldsForDictionaryValue() -> [FieldType] {
+    public func defaultFieldsForDictionaryValue() -> [FieldType] {
         return Array(self.fields.values)
     }
     
@@ -343,8 +343,14 @@ public class Model: NSObject, Routable, NSCopying {
         }
     }
     
-    public func dictionaryValueWithFields(fields:[FieldType]?=nil) -> AttributeDictionary {
-        let fields = fields ?? self.fieldsForDictionaryValue()
+    /**
+     Converts this object to its dictionary representation, optionally limited to a subset of its fields.  By default, it will 
+     export all fields in `defaultFieldsForDictionaryValue`, which itself defaults to all fields.
+     
+     - parameter fields: An array of field objects (belonging to this model) to be included in the dictionary value.
+     */
+    public func dictionaryValue(fields fields:[FieldType]?=nil) -> AttributeDictionary {
+        let fields = fields ?? self.defaultFieldsForDictionaryValue()
         var result:AttributeDictionary = [:]
         let include = fields
         for (name, field) in self.fields {
@@ -355,18 +361,33 @@ public class Model: NSObject, Routable, NSCopying {
         return result
     }
     
+    /**
+     Read field values from a dictionary representation.  If a field's key is missing from the dictionary,
+     but the field is included in the fields to be imported, its value will be set to nil.
+     
+     - parameter dictionaryValue: The dictionary representation of this model's new field values.
+     - parameter fields: An array of field objects whose values are to be found in the dictionary
+     */
+    public func setDictionaryValue(dictionaryValue: AttributeDictionary, fields:[FieldType]?=nil) {
+        let fields = (fields ?? self.defaultFieldsForDictionaryValue())
+        for (name, field) in self.fields {
+            if fields.contains({ $0 === field }) {
+                field.readFromDictionary(dictionaryValue, name: field.key ?? name)
+            }
+        }
+    }
     
-    public var dictionaryValue:AttributeDictionary {
+    /**
+     The default dictionary representation of this model.
+     
+     If you want to customize the input/output, override `dictionaryValue(fields:)` and/or `setDictionaryValue(:, fields:)`.
+     */
+    public final var dictionaryValue:AttributeDictionary {
         get {
-            return self.dictionaryValueWithFields()
+            return self.dictionaryValue()
         }
         set {
-            let include = self.fieldsForDictionaryValue()
-            for (name, field) in self.fields {
-                if include.contains({ $0 === field }) {
-                    field.readFromDictionary(newValue, name: field.key ?? name)
-                }
-            }
+            self.setDictionaryValue(newValue)
         }
     }
     
