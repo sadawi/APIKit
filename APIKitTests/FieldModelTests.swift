@@ -63,10 +63,25 @@ class FieldModelTests: XCTestCase {
         }
     }
     
+    private class InitializedFields: Model {
+        let name = Field<String>()
+        
+        private override func initializeField(field: FieldType) {
+            if field.key == "name" {
+                field.name = "Test"
+            }
+        }
+    }
+    
+    func testFieldInitialization() {
+        let model = InitializedFields()
+        XCTAssertEqual(model.name.name, "Test")
+    }
+    
     func testSelectiveDictionary() {
         let co = Company()
         co.name.value = "Apple"
-        let dictionary = co.dictionaryValueWithFields([co.name])
+        let dictionary = co.dictionaryValue(fields: [co.name])
         XCTAssertEqual(dictionary as! [String: String], ["name": "Apple"])
     }
     
@@ -96,6 +111,48 @@ class FieldModelTests: XCTestCase {
         company2.employees.value = [person1]
         XCTAssertEqual(person1.company.value, company2)
         XCTAssertEqual(0, company1.employees.value?.count)
+    }
+    
+    private class Letter: Model {
+        override class func instanceClassForDictionaryValue<T>(dictionaryValue: AttributeDictionary) -> T.Type? {
+            if let letter = dictionaryValue["letter"] as? String {
+                if letter == "a" {
+                    return A.self as? T.Type
+                } else if letter == "b" {
+                    return B.self as? T.Type
+                } else if letter == "x" {
+                    return UnrelatedClass.self as? T.Type
+                } else {
+                    return nil
+                }
+            }
+            return nil
+        }
+    }
+    
+    private class A: Letter {
+    }
+    
+    private class B: Letter {
+    }
+    
+    private class UnrelatedClass: Model {
+    }
+    
+    func testCustomSubclass() {
+        let a = Letter.fromDictionaryValue(["letter": "a"])
+        XCTAssert(a is A)
+
+        let b = Letter.fromDictionaryValue(["letter": "b"])
+        XCTAssert(b is B)
+        
+        // We didn't define the case for "c", so it falls back to Letter.
+        let c = Letter.fromDictionaryValue(["letter": "c"])
+        XCTAssert(c!.dynamicType == Letter.self)
+
+        // Note that the unrelated type falls back to Letter!
+        let x = Letter.fromDictionaryValue(["letter": "x"])
+        XCTAssert(x!.dynamicType == Letter.self)
     }
 
 }
