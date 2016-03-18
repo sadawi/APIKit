@@ -1,6 +1,6 @@
 PODS:
   - Alamofire (3.1.2)
-  - MagneticFields (0.5.0)
+  - MagneticFields (0.5.1)
   - OMGHTTPURLRQ (3.0.2):
     - OMGHTTPURLRQ/RQ (= 3.0.2)
   - OMGHTTPURLRQ/FormURLEncode (3.0.2)
@@ -24,17 +24,13 @@ PODS:
 
 DEPENDENCIES:
   - Alamofire (~> 3.0)
-  - MagneticFields (from `~/Dropbox/projects/_lib/iOS/MagneticFields`)
+  - MagneticFields (= 0.5.1)
   - PromiseKit (~> 3.0)
   - SwiftyJSON (~> 2.3.0)
 
-EXTERNAL SOURCES:
-  MagneticFields:
-    :path: "~/Dropbox/projects/_lib/iOS/MagneticFields"
-
 SPEC CHECKSUMS:
   Alamofire: 7c16ca65f3c7e681fd925fd7f2dec7747ff96855
-  MagneticFields: a973e7e1e6f3257c6308ac17c5805a946e6a8ec2
+  MagneticFields: 53df431ce802b6777d9dc4df91f5f939e835b530
   OMGHTTPURLRQ: 8376dc887d76a5a7e2a67881dc788f917a2f437c
   PromiseKit: 665540a1eb43156446872dcf49ed7dee6ebbe13b
   SwiftyJSON: 592b53bee5ef3dd9b3bebc6b9cb7ee35426ae8c3
