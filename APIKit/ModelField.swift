@@ -26,7 +26,6 @@ public class ModelField<T: Model>: Field<T>, ModelFieldType {
         super.init(value: value, name: name, priority: priority, key: key)
         self.foreignKey = foreignKey
         self._inverse = inverse
-        self.setDefaultValueTransformers()
     }
     
     public override func defaultValueTransformer() -> ValueTransformer<T> {
