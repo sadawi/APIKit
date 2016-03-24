@@ -84,6 +84,7 @@ class ArchiveTests: XCTestCase {
         
         let didLoad = expectationWithDescription("load")
         let didSave = expectationWithDescription("save")
+        let didDelete = expectationWithDescription("delete")
         
         archive.saveList(Person.self, models: [person1]).then { () -> () in
             didSave.fulfill()
@@ -95,6 +96,14 @@ class ArchiveTests: XCTestCase {
                 XCTAssertEqual(person.name.value, "Alice")
                 
                 didLoad.fulfill()
+                
+                archive.deleteAll(Person.self).then {
+                    archive.list(Person.self).then { people -> () in
+                        XCTAssertEqual(people.count, 0)
+                        didDelete.fulfill()
+                    }
+                }
+                
                 }.error { error in
                     XCTFail(String(error))
             }
@@ -104,6 +113,5 @@ class ArchiveTests: XCTestCase {
         
         self.waitForExpectationsWithTimeout(1, handler:nil)
     }
-
     
 }

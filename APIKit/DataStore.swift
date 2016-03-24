@@ -52,8 +52,13 @@ public protocol ListableDataStore {
      Retrieves a list of all models of the specified type.
      */
     func list<T: Model>(modelClass:T.Type) -> Promise<[T]>
-    
-    // TODO: delete all from a class
+}
+
+public protocol ClearableDataStore {
+    /**
+     Removes all stored instances of a model class, without fetching them.
+     */
+    func deleteAll<T: Model>(modelClass:T.Type) -> Promise<Void>
 }
 
 public extension DataStore {
