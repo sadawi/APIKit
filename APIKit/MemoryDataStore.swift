@@ -19,7 +19,7 @@ import Foundation
 import PromiseKit
 import MagneticFields
 
-public class MemoryDataStore: DataStore, ListableDataStore {
+public class MemoryDataStore: DataStore, ListableDataStore, ClearableDataStore {
     public static let sharedInstance = MemoryDataStore()
     
     // of the form [class name: [id: Model]]
@@ -69,6 +69,12 @@ public class MemoryDataStore: DataStore, ListableDataStore {
             // TODO: probably should reject when not deleted
             fulfill(model)
         }
+    }
+    
+    public func deleteAll<T : Model>(modelClass: T.Type) -> Promise<Void> {
+        let key = self.keyForClass(modelClass)
+        self.data.removeObjectForKey(key)
+        return Promise<Void>()
     }
     
     /**

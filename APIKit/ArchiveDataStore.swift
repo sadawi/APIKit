@@ -16,7 +16,9 @@ enum ArchiveError: ErrorType {
     case DirectoryError
 }
 
-public class ArchiveDataStore: ListableDataStore {
+private let kDefaultGroup = ""
+
+public class ArchiveDataStore: ListableDataStore, ClearableDataStore {
     public static let sharedInstance = ArchiveDataStore()
 
     
@@ -25,7 +27,7 @@ public class ArchiveDataStore: ListableDataStore {
      that were saved with a group name.
      */
     public func list<T : Model>(modelClass: T.Type) -> Promise<[T]> {
-        return self.list(modelClass, group: "")
+        return self.list(modelClass, group: kDefaultGroup)
     }
 
     /**
@@ -86,6 +88,26 @@ public class ArchiveDataStore: ListableDataStore {
         return Promise<Void>()
         
     }
+
+    public func deleteAll<T : Model>(modelClass: T.Type) -> Promise<Void> {
+        return self.deleteAll(modelClass, group: kDefaultGroup)
+    }
+    
+    public func deleteAll<T : Model>(modelClass: T.Type, group suffix: String) -> Promise<Void> {
+        let key = self.keyForClass(modelClass).stringByAppendingString(suffix)
+        
+        if let path = self.pathForKey(key) {
+            let filemanager = NSFileManager.defaultManager()
+            do {
+                try filemanager.removeItemAtPath(path)
+                return Promise<Void>()
+            } catch let error {
+                return Promise(error: error)
+            }
+        } else {
+            return Promise(error: ArchiveError.NoPath)
+        }
+    }
     
     /**
      Loads all instances of a class, and recursively unarchives all classes of related (shell) models.
@@ -99,7 +121,6 @@ public class ArchiveDataStore: ListableDataStore {
             if let path = self.pathForKey(key) {
                 let unarchived = NSKeyedUnarchiver.unarchiveObjectWithFile(path)
                 if let dictionaries = unarchived as? [AttributeDictionary] {
-                    print("UNARCHIVED: ", dictionaries)
                     let models = dictionaries.map { modelClass.fromDictionaryValue($0) }.flatMap { $0 }
                     for model in models {
                         for shell in model.shells() {
@@ -117,7 +138,6 @@ public class ArchiveDataStore: ListableDataStore {
     private func archive<T: Model>(models: [T], key: String) -> Bool {
         if let path = self.pathForKey(key) {
             let dictionaries = models.map { $0.dictionaryValue }
-            print("archiving to path: ", path)
             if NSKeyedArchiver.archiveRootObject(dictionaries, toFile: path) {
                 return true
             } else {
