@@ -198,4 +198,31 @@ class APIKitTests: XCTestCase {
         XCTAssertEqual(keys.sort(), ["category", "categoryName", "id", "id", "productName"])
     }
     
+    func testSaveDelete() {
+        let didSave = expectationWithDescription("save")
+        let didList = expectationWithDescription("list")
+        let didDelete = expectationWithDescription("delete")
+        
+        let store = MemoryDataStore()
+        let a = Person()
+        a.identifier = "12324"
+        store.save(a).then { _ -> () in
+            didSave.fulfill()
+            store.list(Person.self).then { people -> () in
+                XCTAssertEqual(people.count, 1)
+                didList.fulfill()
+
+                store.deleteAll(Person.self).then { () -> () in
+                    store.list(Person.self).then { people -> () in
+                        XCTAssertEqual(people.count, 0)
+                        didDelete.fulfill()
+                    }
+                }
+            }
+        }
+        
+        self.waitForExpectationsWithTimeout(1, handler:nil)
+
+    }
+    
 }

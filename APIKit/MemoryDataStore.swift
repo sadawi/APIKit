@@ -109,7 +109,7 @@ public class MemoryDataStore: DataStore, ListableDataStore, ClearableDataStore {
             if let items = self.collectionForClass(modelClass)?.allValues as? [T] {
                 fulfill(items)
             } else {
-                reject(NSError(domain: DataStoreErrorDomain, code: 0, userInfo: [NSLocalizedDescriptionKey: "Error retrieving collection"]))
+                fulfill([])
             }
         }
     }
