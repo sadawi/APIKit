@@ -89,6 +89,20 @@ public class ArchiveDataStore: ListableDataStore, ClearableDataStore {
         
     }
 
+    public func deleteAll() -> Promise<Void> {
+        let filemanager = NSFileManager.defaultManager()
+        if let directory = self.directory() {
+            do {
+                try filemanager.removeItemAtPath(directory)
+                return Promise<Void>()
+            } catch let error {
+                return Promise(error: error)
+            }
+        } else {
+            return Promise(error: ArchiveError.NoPath)
+        }
+    }
+    
     public func deleteAll<T : Model>(modelClass: T.Type) -> Promise<Void> {
         return self.deleteAll(modelClass, group: kDefaultGroup)
     }

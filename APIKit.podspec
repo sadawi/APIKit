@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
 s.name             = "APIKit"
-s.version          = "0.6.5"
+s.version          = "0.6.6"
 s.summary          = "A short description of APIKit."
 
 s.description      = <<-DESC

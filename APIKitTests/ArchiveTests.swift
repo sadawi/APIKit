@@ -114,4 +114,23 @@ class ArchiveTests: XCTestCase {
         self.waitForExpectationsWithTimeout(1, handler:nil)
     }
     
+    func testArchiveDeleteAll() {
+        let archive = ArchiveDataStore.sharedInstance
+        let person1 = Person()
+        person1.name.value = "Alice"
+        
+        let didDelete = expectationWithDescription("delete")
+        
+        archive.saveList(Person.self, models: [person1]).then { () -> () in
+            archive.deleteAll(Person.self).then {
+                archive.list(Person.self).then { people -> () in
+                    XCTAssertEqual(people.count, 0)
+                    didDelete.fulfill()
+                }
+            }
+        }
+        
+        self.waitForExpectationsWithTimeout(1, handler:nil)
+    }
+
 }

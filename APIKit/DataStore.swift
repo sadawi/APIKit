@@ -59,6 +59,7 @@ public protocol ClearableDataStore {
      Removes all stored instances of a model class, without fetching them.
      */
     func deleteAll<T: Model>(modelClass:T.Type) -> Promise<Void>
+    func deleteAll() -> Promise<Void>
 }
 
 public extension DataStore {
