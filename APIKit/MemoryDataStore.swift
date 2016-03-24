@@ -77,6 +77,11 @@ public class MemoryDataStore: DataStore, ListableDataStore, ClearableDataStore {
         return Promise<Void>()
     }
     
+    public func deleteAll() -> Promise<Void> {
+        self.data.removeAllObjects()
+        return Promise<Void>()
+    }
+    
     /**
         A synchronous variant of lookup that does not return a promise.
     */
