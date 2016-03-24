@@ -19,7 +19,7 @@ import Foundation
 import PromiseKit
 import MagneticFields
 
-public class MemoryDataStore: DataStore, ListableDataStore {
+public class MemoryDataStore: DataStore, ListableDataStore, ClearableDataStore {
     public static let sharedInstance = MemoryDataStore()
     
     // of the form [class name: [id: Model]]
@@ -71,6 +71,12 @@ public class MemoryDataStore: DataStore, ListableDataStore {
         }
     }
     
+    public func deleteAll<T : Model>(modelClass: T.Type) -> Promise<Void> {
+        let key = self.keyForClass(modelClass)
+        self.data.removeObjectForKey(key)
+        return Promise<Void>()
+    }
+    
     /**
         A synchronous variant of lookup that does not return a promise.
     */
@@ -103,7 +109,7 @@ public class MemoryDataStore: DataStore, ListableDataStore {
             if let items = self.collectionForClass(modelClass)?.allValues as? [T] {
                 fulfill(items)
             } else {
-                reject(NSError(domain: DataStoreErrorDomain, code: 0, userInfo: [NSLocalizedDescriptionKey: "Error retrieving collection"]))
+                fulfill([])
             }
         }
     }
