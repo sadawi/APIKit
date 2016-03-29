@@ -38,6 +38,11 @@ class FieldModelTests: XCTestCase {
         let profile = ModelField<Profile>(inverse: { $0.person })
     }
     
+    private class Club: Model {
+        let name = Field<String>()
+        let members = *ModelField<Person>()
+    }
+    
     func testFieldModel() {
         let co = Company()
         co.name.value = "The Widget Company"
@@ -70,6 +75,29 @@ class FieldModelTests: XCTestCase {
             if field.key == "name" {
                 field.name = "Test"
             }
+        }
+    }
+    
+    func testArrayFields() {
+        let a = Person()
+        a.name.value = "Alice"
+
+        let b = Person()
+        b.name.value = "Bob"
+        
+        let c = Club()
+        c.name.value = "Chess Club"
+        c.members.value = [a,b]
+        
+        let cDict = c.dictionaryValue
+        XCTAssertEqual(cDict["name"] as? String, "Chess Club")
+        
+        let members = cDict["members"] as? [AttributeDictionary]
+        XCTAssertEqual(members?.count, 2)
+        if let first = members?[0] {
+            XCTAssertEqual(first["name"] as? String, "Alice")
+        } else {
+            XCTFail()
         }
     }
     
