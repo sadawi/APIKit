@@ -66,6 +66,22 @@ public class ModelField<T: Model>: Field<T>, ModelFieldType {
     var modelValue: Model? {
         return self.value
     }
+    
+    
+    public override func writeUnseenValueToDictionary(inout dictionary: [String : AnyObject], inout seenFields: [FieldType], key: String) {
+        if let modelValueTransformer = self.valueTransformer() as? ModelValueTransformer<T> {
+            dictionary[key] = modelValueTransformer.exportValue(self.value, seenFields: &seenFields)
+        } else { 
+            super.writeUnseenValueToDictionary(&dictionary, seenFields: &seenFields, key: key)
+        }
+    }
+    
+    public override func writeSeenValueToDictionary(inout dictionary: [String : AnyObject], inout seenFields: [FieldType], key: String) {
+        // Only writes the identifier field, if it exists
+        if let identifierField = self.value?.identifierField, let modelValueTransformer = self.valueTransformer() as? ModelValueTransformer<T> {
+            dictionary[key] = modelValueTransformer.exportValue(self.value, fields: [identifierField], seenFields: &seenFields)
+        }
+    }
 }
 
 public class ModelArrayField<T: Model>: ArrayField<T>, ModelFieldType {
