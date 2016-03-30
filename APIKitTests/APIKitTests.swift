@@ -61,6 +61,16 @@ private class Pet:BaseModel {
     }
 }
 
+private class Left: Model {
+    let id = Field<String>()
+    let right = ModelField<Right>()
+}
+
+private class Right: Model {
+    let id = Field<String>()
+    let left = ModelField<Left>()
+}
+
 class APIKitTests: XCTestCase {
     
     override func setUp() {
@@ -86,6 +96,32 @@ class APIKitTests: XCTestCase {
             }
         }
         XCTAssert(iphone)
+    }
+    
+    func testCycles() {
+        let left = Left()
+        let right = Right()
+        
+        left.id.value = "leftID"
+        right.id.value = "rightID"
+        
+        left.right.value = right
+        right.left.value = left
+        
+        let leftDict = left.dictionaryValue
+        XCTAssertEqual(leftDict.count, 2)
+        
+        XCTAssertEqual(leftDict["id"] as? String, "leftID")
+
+        let leftRightDict = leftDict["right"] as? AttributeDictionary
+        XCTAssertEqual(leftRightDict?["id"] as? String, "rightID")
+        
+        let leftRightLeftDict = leftRightDict?["left"] as? AttributeDictionary
+        // Should only have the identifier
+        XCTAssertEqual(leftRightLeftDict?.count, 1)
+        XCTAssertNil(leftRightLeftDict?["left"])
+        XCTAssertNil(leftRightLeftDict?["right"])
+        XCTAssertEqual(leftRightLeftDict?["id"] as? String, "leftID")
     }
     
     func testArrayShells() {

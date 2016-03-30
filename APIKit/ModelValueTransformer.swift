@@ -12,24 +12,30 @@ import MagneticFields
 public class ModelValueTransformer<T: Model>: ValueTransformer<T> {
     
     public override init() {
-        super.init(importAction: { value in
-            if let value = value as? AttributeDictionary {
-                return T.fromDictionaryValue(value)
-            } else {
-                return nil
-            }
-            },
-            exportAction: { value in
-            // Why do I have to cast it to Model?  T is already a Model.
-            if let value = value as? Model {
-                return value.dictionaryValue
-            } else {
-                return nil
-                }
-            }
-        )
+        super.init()
+    }
+
+    public override func importValue(value: AnyObject?) -> T? {
+        if let value = value as? AttributeDictionary {
+            return T.fromDictionaryValue(value)
+        } else {
+            return nil
+        }
     }
     
+    public override func exportValue(value: T?) -> AnyObject? {
+        var seenFields: [FieldType] = []
+        return self.exportValue(value, seenFields: &seenFields)
+    }
+
+    public func exportValue(value: T?, fields: [FieldType]?=nil, inout seenFields: [FieldType]) -> AnyObject? {
+        // Why do I have to cast it to Model?  T is already a Model.
+        if let value = value as? Model {
+            return value.dictionaryValue(fields: fields, seenFields: &seenFields)
+        } else {
+            return nil
+        }
+    }
 }
 
 public class ModelForeignKeyValueTransformer<T: Model>: ValueTransformer<T> {

@@ -355,12 +355,18 @@ public class Model: NSObject, Routable, NSCopying {
      - parameter fields: An array of field objects (belonging to this model) to be included in the dictionary value.
      */
     public func dictionaryValue(fields fields:[FieldType]?=nil) -> AttributeDictionary {
+        var seenFields:[FieldType] = []
+        return self.dictionaryValue(fields: fields, seenFields: &seenFields)
+    }
+    
+    internal func dictionaryValue(fields fields:[FieldType]?=nil, inout seenFields: [FieldType]) -> AttributeDictionary {
         let fields = fields ?? self.defaultFieldsForDictionaryValue()
+        
         var result:AttributeDictionary = [:]
         let include = fields
-        for (name, field) in self.fields {
+        for (_, field) in self.fields {
             if include.contains({ $0 === field }) && field.state == .Set {
-                field.writeToDictionary(&result, name: field.key ?? name)
+                field.writeToDictionary(&result, seenFields: &seenFields)
             }
         }
         return result
@@ -375,9 +381,9 @@ public class Model: NSObject, Routable, NSCopying {
      */
     public func setDictionaryValue(dictionaryValue: AttributeDictionary, fields:[FieldType]?=nil) {
         let fields = (fields ?? self.defaultFieldsForDictionaryValue())
-        for (name, field) in self.fields {
+        for (_, field) in self.fields {
             if fields.contains({ $0 === field }) {
-                field.readFromDictionary(dictionaryValue, name: field.key ?? name)
+                field.readFromDictionary(dictionaryValue)
             }
         }
     }
