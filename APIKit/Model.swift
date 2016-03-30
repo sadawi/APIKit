@@ -305,19 +305,28 @@ public class Model: NSObject, Routable, NSCopying {
     public func resetValidationState() {
         self.visitAllFields { $0.resetValidationState() }
     }
-    
+
     public func visitAllFields(recursive recursive:Bool = true, action:(FieldType -> Void)) {
+        var seenModels: Set<Model> = Set()
+        self.visitAllFields(recursive: recursive, action: action, seenModels: &seenModels)
+    }
+    
+    public func visitAllFields(recursive recursive:Bool = true, action:(FieldType -> Void), inout seenModels:Set<Model>) {
+        guard !seenModels.contains(self) else { return }
+        
+        seenModels.insert(self)
+        
         for (_, field) in self.fields {
             
             action(field)
             
             if recursive {
                 if let value = field.anyObjectValue as? Model {
-                    value.visitAllFields(recursive: recursive, action: action)
+                    value.visitAllFields(recursive: recursive, action: action, seenModels: &seenModels)
                 } else if let values = field.anyObjectValue as? NSArray {
                     for value in values {
                         if let model = value as? Model {
-                            model.visitAllFields(recursive: recursive, action: action)
+                            model.visitAllFields(recursive: recursive, action: action, seenModels: &seenModels)
                         }
                     }
                 }

@@ -122,6 +122,12 @@ class APIKitTests: XCTestCase {
         XCTAssertNil(leftRightLeftDict?["left"])
         XCTAssertNil(leftRightLeftDict?["right"])
         XCTAssertEqual(leftRightLeftDict?["id"] as? String, "leftID")
+        
+        var fields:[FieldType] = []
+        left.visitAllFields { field in
+            fields.append(field)
+        }
+        XCTAssertEqual(fields.count, 4)
     }
     
     func testArrayShells() {
