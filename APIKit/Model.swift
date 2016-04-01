@@ -335,13 +335,22 @@ public class Model: NSObject, Routable, NSCopying {
     }
 
     public func visitAllFieldValues(recursive recursive:Bool = true, action:(Any? -> Void)) {
+        var seenModels: Set<Model> = Set()
+        self.visitAllFieldValues(recursive: recursive, action: action, seenModels: &seenModels)
+}
+
+    public func visitAllFieldValues(recursive recursive:Bool = true, action:(Any? -> Void), inout seenModels:Set<Model>) {
+        guard !seenModels.contains(self) else { return }
+
+        seenModels.insert(self)
+
         for (_, field) in self.fields {
             
             action(field.anyValue)
             
             if recursive {
                 if let value = field.anyObjectValue as? Model {
-                    value.visitAllFieldValues(recursive: recursive, action: action)
+                    value.visitAllFieldValues(recursive: recursive, action: action, seenModels: &seenModels)
                 } else if let value = field.anyValue, let values = value as? NSArray {
                     // I'm not sure why I can't cast to [Any]
                     // http://stackoverflow.com/questions/26226911/how-to-tell-if-a-variable-is-an-array
@@ -349,7 +358,7 @@ public class Model: NSObject, Routable, NSCopying {
                     for value in values {
                         action(value)
                         if let modelValue = value as? Model {
-                            modelValue.visitAllFieldValues(recursive: recursive, action: action)
+                            modelValue.visitAllFieldValues(recursive: recursive, action: action, seenModels: &seenModels)
                         }
                     }
                 }

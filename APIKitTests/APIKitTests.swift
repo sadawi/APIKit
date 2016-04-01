@@ -128,6 +128,13 @@ class APIKitTests: XCTestCase {
             fields.append(field)
         }
         XCTAssertEqual(fields.count, 4)
+
+        var fieldValues:[Any?] = []
+        left.visitAllFieldValues { value in
+            fieldValues.append(value)
+        }
+        XCTAssertEqual(fieldValues.count, 4)
+    
     }
     
     func testArrayShells() {
