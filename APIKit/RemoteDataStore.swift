@@ -211,14 +211,23 @@ public class RemoteDataStore: DataStore, ListableDataStore {
     // MARK: - CRUD operations (DataStore protocol methods)
     
     public func create<T:Model>(model: T, fields: [FieldType]?) -> Promise<T> {
+        return self.create(model, fields: fields, parameters: nil)
+    }
+
+    public func create<T:Model>(model: T, fields: [FieldType]?, parameters: [String:AnyObject]?) -> Promise<T> {
         model.beforeSave()
-        let parameters = self.formatPayload(self.serializeModel(model, fields: fields))
+        var requestParameters = self.formatPayload(self.serializeModel(model, fields: fields))
+        if let parameters = parameters {
+            for (k,v) in parameters {
+                requestParameters[k] = v
+            }
+        }
         
         // See MemoryDataStore for an explanation [1]
         let modelModel = model as Model
         
         if let collectionPath = modelModel.dynamicType.collectionPath {
-            return self.request(.POST, path: collectionPath, parameters: parameters, model:model).thenInBackground(self.instantiateModel(modelModel.dynamicType)).thenInBackground { model in
+            return self.request(.POST, path: collectionPath, parameters: requestParameters, model:model).thenInBackground(self.instantiateModel(modelModel.dynamicType)).thenInBackground { model in
                 model.afterCreate()
                 return Promise(model as! T)
             }
@@ -226,15 +235,24 @@ public class RemoteDataStore: DataStore, ListableDataStore {
             return Promise(error: RemoteDataStoreError.NoModelCollectionPath(modelClass: modelModel.dynamicType))
         }
     }
-    
+
     public func update<T:Model>(model: T, fields: [FieldType]?) -> Promise<T> {
+        return self.update(model, fields: fields, parameters: nil)
+    }
+    
+    public func update<T:Model>(model: T, fields: [FieldType]?, parameters: [String: AnyObject]?) -> Promise<T> {
         model.beforeSave()
         
         let modelModel = model as Model
         
         if let path = modelModel.path {
-            let parameters = self.formatPayload(self.serializeModel(model, fields: fields))
-            return self.request(.PATCH, path: path, parameters: parameters, model:model).thenInBackground(self.instantiateModel(modelModel.dynamicType)).thenInBackground { model in
+            var requestParameters = self.formatPayload(self.serializeModel(model, fields: fields))
+            if let parameters = parameters {
+                for (k,v) in parameters {
+                    requestParameters[k] = v
+                }
+            }
+            return self.request(.PATCH, path: path, parameters: requestParameters, model:model).thenInBackground(self.instantiateModel(modelModel.dynamicType)).thenInBackground { model in
                 // Dancing around to get the type inference to work
                 return Promise(model as! T)
             }
@@ -253,20 +271,23 @@ public class RemoteDataStore: DataStore, ListableDataStore {
             return Promise(error: RemoteDataStoreError.NoModelPath(model: model))
         }
     }
-    
     public func lookup<T: Model>(modelClass:T.Type, identifier:String) -> Promise<T> {
+        return self.lookup(modelClass, identifier: identifier, parameters: nil)
+    }
+    
+    public func lookup<T: Model>(modelClass:T.Type, identifier:String, parameters: [String:AnyObject]?) -> Promise<T> {
         let model = modelClass.init() as T
         model.identifier = identifier
         if let path = (model as Model).path {
-            return self.request(.GET, path: path).thenInBackground(self.instantiateModel(modelClass))
+            return self.request(.GET, path: path, parameters: parameters).thenInBackground(self.instantiateModel(modelClass))
         } else {
             return Promise(error: RemoteDataStoreError.NoModelPath(model: model))
         }
     }
     
-    public func refresh<T:Model>(model:T) -> Promise<T> {
+    public func refresh<T:Model>(model:T, parameters:[String:AnyObject]?=nil) -> Promise<T> {
         if let identifier = model.identifier {
-            return self.lookup(T.self, identifier: identifier)
+            return self.lookup(T.self, identifier: identifier, parameters: parameters)
         } else {
             return Promise(error: RemoteDataStoreError.NoModelPath(model: model))
         }
