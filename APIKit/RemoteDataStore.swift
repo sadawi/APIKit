@@ -215,7 +215,9 @@ public class RemoteDataStore: DataStore, ListableDataStore {
     }
 
     public func create<T:Model>(model: T, fields: [FieldType]?, parameters: [String:AnyObject]?) -> Promise<T> {
+        model.resetValidationState()
         model.beforeSave()
+        
         var requestParameters = self.formatPayload(self.serializeModel(model, fields: fields))
         if let parameters = parameters {
             for (k,v) in parameters {
@@ -241,8 +243,9 @@ public class RemoteDataStore: DataStore, ListableDataStore {
     }
     
     public func update<T:Model>(model: T, fields: [FieldType]?, parameters: [String: AnyObject]?) -> Promise<T> {
+        model.resetValidationState()
         model.beforeSave()
-        
+
         let modelModel = model as Model
         
         if let path = modelModel.path {

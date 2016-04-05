@@ -186,20 +186,12 @@ public class Model: NSObject, Routable, NSCopying {
         }
     }
     
-    public func afterInit() { }
-    public func afterCreate() { }
-    public func afterDelete() { }
-    public func beforeSave() {
-        self.resetValidationState()
-    }
+    public func afterInit()     { }
+    public func afterCreate()   { }
+    public func afterDelete()   { }
+    public func beforeSave()    { }
     
     // MARK: FieldModel
-    
-    public func addError(keyPath path:String, message:String) {
-        if let field = self.fieldForKeyPath(path) {
-            field.addValidationError(message)
-        }
-    }
     
     public func fieldForKeyPath(components:[String]) -> FieldType? {
         guard components.count > 0 else { return nil }
@@ -289,23 +281,6 @@ public class Model: NSObject, Routable, NSCopying {
         self.afterInit()
     }
     
-    public func validate() -> Bool {
-        self.resetValidationState()
-        
-        var allValid = true
-        self.visitAllFields { field in
-            // Make sure to call validate() on each field (don't short circuit if false)
-            let valid = (field.validate() == .Valid)
-            
-            allValid = allValid && valid
-        }
-        return allValid
-    }
-    
-    public func resetValidationState() {
-        self.visitAllFields { $0.resetValidationState() }
-    }
-
     public func visitAllFields(recursive recursive:Bool = true, action:(FieldType -> Void)) {
         var seenModels: Set<Model> = Set()
         self.visitAllFields(recursive: recursive, action: action, seenModels: &seenModels)
