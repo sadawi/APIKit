@@ -39,6 +39,8 @@
 		2264B9ED1C6FE51800B609A0 /* ArchiveDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2264B9EB1C6FE38900B609A0 /* ArchiveDataStore.swift */; };
 		22B124041C30589600070629 /* Mirror+Super.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22B124031C30589600070629 /* Mirror+Super.swift */; };
 		22B124051C30589600070629 /* Mirror+Super.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22B124031C30589600070629 /* Mirror+Super.swift */; };
+		22B6F5CC1CB42E8A00603204 /* Model+Validation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22B6F5CB1CB42E8A00603204 /* Model+Validation.swift */; };
+		22B6F5CD1CB42EF200603204 /* Model+Validation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22B6F5CB1CB42E8A00603204 /* Model+Validation.swift */; };
 		22B71E791C17757000EA7FD8 /* FieldModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22B71E781C17757000EA7FD8 /* FieldModelTests.swift */; };
 		22B71E7B1C1777B700EA7FD8 /* ModelValueTransformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22B71E7A1C1777B700EA7FD8 /* ModelValueTransformer.swift */; };
 		22B71E7E1C1777F300EA7FD8 /* ModelValueTransformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22B71E7A1C1777B700EA7FD8 /* ModelValueTransformer.swift */; };
@@ -86,6 +88,7 @@
 		2264B9E91C6FE35A00B609A0 /* ArchiveTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ArchiveTests.swift; sourceTree = "<group>"; };
 		2264B9EB1C6FE38900B609A0 /* ArchiveDataStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ArchiveDataStore.swift; sourceTree = "<group>"; };
 		22B124031C30589600070629 /* Mirror+Super.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Mirror+Super.swift"; sourceTree = "<group>"; };
+		22B6F5CB1CB42E8A00603204 /* Model+Validation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Model+Validation.swift"; sourceTree = "<group>"; };
 		22B71E781C17757000EA7FD8 /* FieldModelTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FieldModelTests.swift; sourceTree = "<group>"; };
 		22B71E7A1C1777B700EA7FD8 /* ModelValueTransformer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ModelValueTransformer.swift; sourceTree = "<group>"; };
 		22B71E821C17819100EA7FD8 /* ModelField.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ModelField.swift; sourceTree = "<group>"; };
@@ -202,6 +205,7 @@
 				2235AEF31BF3C0A600A730F0 /* Response.swift */,
 				22B71E821C17819100EA7FD8 /* ModelField.swift */,
 				22D408761C9B4E9A00368987 /* TypeDictionary.swift */,
+				22B6F5CB1CB42E8A00603204 /* Model+Validation.swift */,
 			);
 			name = models;
 			sourceTree = "<group>";
@@ -384,6 +388,7 @@
 				225DE80E1BEEB9FE009698FC /* RemoteDataStore.swift in Sources */,
 				225DE8121BEEBABE009698FC /* Model.swift in Sources */,
 				225DE8161BEEC0D5009698FC /* ModelManager.swift in Sources */,
+				22B6F5CC1CB42E8A00603204 /* Model+Validation.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -393,6 +398,7 @@
 			files = (
 				2264B9EA1C6FE35A00B609A0 /* ArchiveTests.swift in Sources */,
 				22EF75D81C6C2DE500F5C8EC /* RemoteRequestTests.swift in Sources */,
+				22B6F5CD1CB42EF200603204 /* Model+Validation.swift in Sources */,
 				22D408791C9B530800368987 /* TypeDictionaryTests.swift in Sources */,
 				2235AEDE1BF008FA00A730F0 /* DictionaryExtension.swift in Sources */,
 				22B71E7E1C1777F300EA7FD8 /* ModelValueTransformer.swift in Sources */,
