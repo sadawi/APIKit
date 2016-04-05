@@ -19,11 +19,17 @@ public extension Model {
         }
     }
     
+    /**
+     Test whether this model passes validation.  All fields will have their validation states updated.
+     
+     By default, related models are not themselves validated.  Use the `requireValid()` method on those fields for deeper validation.
+     */
     public func validate() -> Bool {
         self.resetValidationState()
         
         var allValid = true
-        self.visitAllFields { field in
+        
+        self.visitAllFields(recursive: false) { field in
             // Make sure to call validate() on each field (don't short circuit if false)
             let valid = (field.validate() == .Valid)
             

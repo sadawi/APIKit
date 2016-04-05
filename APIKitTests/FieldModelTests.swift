@@ -182,5 +182,44 @@ class FieldModelTests: XCTestCase {
         let x = Letter.fromDictionaryValue(["letter": "x"])
         XCTAssert(x!.dynamicType == Letter.self)
     }
+    
+    private class Object: Model {
+        let name                = Field<String>().requireNotNil()
+        let component           = ModelField<Component>()
+        let essentialComponent  = ModelField<EssentialComponent>().requireValid()
+    }
+    
+    private class EssentialComponent: Model {
+        let number = Field<Int>().requireNotNil()
+    }
+    
+    private class Component: Model {
+        let name = Field<String>().requireNotNil()
+        let age = Field<String>().requireNotNil()
+    }
+    
+    func testNestedValidations() {
+        let object = Object()
+        let component = Component()
+        let essentialComponent = EssentialComponent()
+        
+        object.component.value = component
+        object.essentialComponent.value = essentialComponent
+        
+        // Object is missing name and a valid EssentialComponent
+        XCTAssertFalse(object.validate())
+        
+        object.name.value = "Widget"
+
+        // Object is still missing a valid EssentialComponent
+        XCTAssertFalse(object.validate())
+        
+        // Object has a valid EssentialComponent.  Component is still invalid, but that's OK.
+        object.essentialComponent.value?.number.value = 1
+        
+        XCTAssertTrue(object.validate())
+        
+        XCTAssert(object.component.value?.validate() == false)
+    }
 
 }
