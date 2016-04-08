@@ -62,6 +62,22 @@ public class Model: NSObject, Routable, NSCopying {
         return self as? T.Type
     }
     
+    
+    /**
+     Generates a RESTful path component for a single model using its identifier.
+     
+     Example: "users/42"
+     */
+    public var path:String? {
+        get {
+            if let id = self.identifier, let collectionPath = self.dynamicType.collectionPath {
+                return "\(collectionPath)/\(id)"
+            } else {
+                return nil
+            }
+        }
+    }
+    
     /**
      Attempts to instantiate a new object from a dictionary representation of its attributes.
      If a registry is set, will attempt to reuse the canonical instance for its identifier

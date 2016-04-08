@@ -222,4 +222,14 @@ class FieldModelTests: XCTestCase {
         XCTAssert(object.component.value?.validate() == false)
     }
 
+    private class PathModel: Model {
+        override var path: String? {
+            return "testPath"
+        }
+    }
+    
+    func testCustomPath() {
+        let pathModel = PathModel()
+        XCTAssertEqual(pathModel.path, "testPath")
+    }
 }
