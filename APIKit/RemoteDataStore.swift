@@ -171,12 +171,15 @@ public class RemoteDataStore: DataStore, ListableDataStore {
         requireSession: Bool = true
         ) -> Promise<Response<T>> {
             
-            let headers = self.defaultHeaders() + headers
             let url = self.url(path: path)
             let encoding = encoding ?? self.encodingForMethod(method)
             
             let action = { () -> Promise<Response<T>> in
                 return Promise { fulfill, reject in
+                    
+                    // Compute headers *after* the session has been restored.
+                    let headers = self.defaultHeaders() + headers
+                    
                     Alamofire.request(method, url, parameters: parameters, encoding: encoding, headers: headers).responseJSON { response in
                         switch response.result {
                         case .Success:
