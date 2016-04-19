@@ -207,19 +207,25 @@ class FieldModelTests: XCTestCase {
         object.essentialComponent.value = essentialComponent
         
         // Object is missing name and a valid EssentialComponent
-        XCTAssertFalse(object.validate())
+        XCTAssertTrue(object.validate().isInvalid)
         
         object.name.value = "Widget"
 
         // Object is still missing a valid EssentialComponent
-        XCTAssertFalse(object.validate())
+        XCTAssertFalse(object.validate().isValid)
         
         // Object has a valid EssentialComponent.  Component is still invalid, but that's OK.
         object.essentialComponent.value?.number.value = 1
         
-        XCTAssertTrue(object.validate())
+        XCTAssertTrue(object.validate().isValid)
         
-        XCTAssert(object.component.value?.validate() == false)
+        XCTAssert(object.component.value?.validate().isInvalid == true)
+    }
+    
+    func testValidationMessages() {
+        let component = EssentialComponent()
+        let state = component.validate()
+        XCTAssertEqual(state, ValidationState.Invalid(["Field is required"]))
     }
 
     private class PathModel: Model {
