@@ -53,7 +53,7 @@ public class ModelField<T: Model>: Field<T>, ModelFieldType {
     
     public func requireValid() -> Self {
         return self.require(message: "Value is invalid", allowNil:true) { value in
-            return value.validate()
+            return value.validate().isValid
         }
     }
     

@@ -24,22 +24,24 @@ public extension Model {
      
      By default, related models are not themselves validated.  Use the `requireValid()` method on those fields for deeper validation.
      */
-    public func validate() -> Bool {
+    public func validate() -> ValidationState {
         self.resetValidationState()
-        
-        var allValid = true
+        var messages: [String] = []
         
         self.visitAllFields(recursive: false) { field in
-            // Make sure to call validate() on each field (don't short circuit if false)
-            let valid = (field.validate() == .Valid)
-            
-            allValid = allValid && valid
+            if case .Invalid(let fieldMessages) = field.validate() {
+                messages.appendContentsOf(fieldMessages)
+            }
         }
-        return allValid
+        
+        if messages.count == 0 {
+            return .Valid
+        } else {
+            return .Invalid(messages)
+        }
     }
     
     public func resetValidationState() {
         self.visitAllFields { $0.resetValidationState() }
     }
-    
 }
