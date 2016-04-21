@@ -204,8 +204,23 @@ public class Model: NSObject, Routable, NSCopying {
     
     public func afterInit()     { }
     public func afterCreate()   { }
-    public func afterDelete()   { }
     public func beforeSave()    { }
+    
+    public func afterDelete(cascade: ((Model)->Void)?=nil) {
+        guard let cascade = cascade else { return }
+        
+        self.visitAllFields { field in
+            if let modelField = field as? ModelFieldType where modelField.cascadeDelete {
+                if let model = modelField.anyObjectValue as? Model {
+                    cascade(model)
+                } else if let models = modelField.anyObjectValue as? [Model] {
+                    for model in models {
+                        cascade(model)
+                    }
+                }
+            }
+        }
+    }
     
     // MARK: FieldModel
     

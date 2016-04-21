@@ -65,6 +65,7 @@ public class MemoryDataStore: DataStore, ListableDataStore, ClearableDataStore {
         return Promise { fulfill, reject in
             if let id=self.keyForModel(model), let collection = self.collectionForClass((model as Model).dynamicType) {
                 collection.removeObjectForKey(id)
+                model.afterDelete { self.delete($0) }
             }
             // TODO: probably should reject when not deleted
             fulfill(model)
