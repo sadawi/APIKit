@@ -30,7 +30,7 @@ public struct TypeDictionary<T>: SequenceType {
     public func generate() -> AnyGenerator<(Any.Type, T)> {
         var nextIndex = dictionary.keys.count-1
         
-        return anyGenerator {
+        return AnyGenerator {
             if (nextIndex < 0) {
                 return nil
             }
