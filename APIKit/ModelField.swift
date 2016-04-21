@@ -9,9 +9,15 @@
 import Foundation
 import MagneticFields
 
+public enum DeleteBehavior {
+    case Nullify
+    case Delete
+}
+
 public protocol ModelFieldType: FieldType {
     var model: Model? { get set }
     var foreignKey:Bool { get set }
+    var cascadeDelete: Bool { get }
 
     func inverseValueRemoved(value: Model?)
     func inverseValueAdded(value: Model?)
@@ -20,6 +26,9 @@ public protocol ModelFieldType: FieldType {
 public class ModelField<T: Model>: Field<T>, ModelFieldType {
     public var foreignKey:Bool = false
     public weak var model: Model?
+    
+    public var cascadeDelete: Bool = true
+    
     private var _inverse: (T->ModelFieldType)?
     
     public init(value:T?=nil, name:String?=nil, priority:Int=0, key:String?=nil, foreignKey:Bool=false, inverse: (T->ModelFieldType)?=nil) {
@@ -94,7 +103,8 @@ public class ModelArrayField<T: Model>: ArrayField<T>, ModelFieldType {
     public weak var model: Model?
     private var _inverse: (T->ModelFieldType)?
     public var foreignKey: Bool = false
-    
+    public var cascadeDelete: Bool = true
+
     public override var value:[T]? {
         didSet {
             let oldValues = oldValue ?? []
