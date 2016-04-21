@@ -27,7 +27,15 @@ public protocol ModelRegistry {
  A very simple ModelRegistry adapter for a MemoryDataStore
 */
 public struct MemoryRegistry: ModelRegistry {
-    var memory = MemoryDataStore.sharedInstance
+    var memory: MemoryDataStore
+    
+    public init() {
+        self.memory = MemoryDataStore.sharedInstance
+    }
+    
+    public init(dataStore: MemoryDataStore) {
+        self.memory = dataStore
+    }
     
     public func didInstantiateModel<T:Model>(model: T) {
         if model.identifier != nil {
@@ -205,11 +213,10 @@ public class Model: NSObject, Routable, NSCopying {
     public func afterInit()     { }
     public func afterCreate()   { }
     public func beforeSave()    { }
+    public func afterDelete()   { }
     
-    public func afterDelete(cascade: ((Model)->Void)?=nil) {
-        guard let cascade = cascade else { return }
-        
-        self.visitAllFields { field in
+    public func cascadeDelete(cascade: ((Model)->Void), inout seenModels: Set<Model>) {
+        self.visitAllFields(action: { field in
             if let modelField = field as? ModelFieldType where modelField.cascadeDelete {
                 if let model = modelField.anyObjectValue as? Model {
                     cascade(model)
@@ -219,7 +226,7 @@ public class Model: NSObject, Routable, NSCopying {
                     }
                 }
             }
-        }
+        }, seenModels: &seenModels)
     }
     
     // MARK: FieldModel

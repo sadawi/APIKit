@@ -62,10 +62,16 @@ public class MemoryDataStore: DataStore, ListableDataStore, ClearableDataStore {
         }
     }
     public func delete<T:Model>(model: T) -> Promise<T> {
+        var seenModels = Set<Model>()
+        return self.delete(model, seenModels: &seenModels)
+    }
+    
+    public func delete<T:Model>(model: T, inout seenModels: Set<Model>) -> Promise<T> {
         return Promise { fulfill, reject in
             if let id=self.keyForModel(model), let collection = self.collectionForClass((model as Model).dynamicType) {
                 collection.removeObjectForKey(id)
-                model.afterDelete { self.delete($0) }
+                model.afterDelete()
+                model.cascadeDelete({ self.delete($0, seenModels: &seenModels) }, seenModels: &seenModels)
             }
             // TODO: probably should reject when not deleted
             fulfill(model)
