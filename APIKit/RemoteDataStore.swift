@@ -168,47 +168,63 @@ public class RemoteDataStore: DataStore, ListableDataStore {
         headers: [String:String]=[:],
         encoding: ParameterEncoding?=nil,
         model: Model?=nil,
+        timeoutInterval: NSTimeInterval?=nil,
+        cachePolicy: NSURLRequestCachePolicy?=nil,
         requireSession: Bool = true
         ) -> Promise<Response<T>> {
-            
-            let url = self.url(path: path)
-            let encoding = encoding ?? self.encodingForMethod(method)
-            
-            let action = { () -> Promise<Response<T>> in
-                return Promise { fulfill, reject in
-                    
-                    // Compute headers *after* the session has been restored.
-                    let headers = self.defaultHeaders() + headers
-                    
-                    Alamofire.request(method, url, parameters: parameters, encoding: encoding, headers: headers).responseJSON { response in
-                        switch response.result {
-                        case .Success:
-                            if let value:Response<T> = self.constructResponse(response) {
-                                if let error=value.error {
-                                    // the request might have succeeded, but we found an error when constructing the Response object
-                                    self.handleError(error, model:model)
-                                    reject(error)
-                                } else {
-                                    fulfill(value)
-                                }
-                            } else {
-                                let error = RemoteDataStoreError.InvalidResponse
-                                self.handleError(error)
+        
+        let url = self.url(path: path)
+        let encoding = encoding ?? self.encodingForMethod(method)
+        
+        let action = { () -> Promise<Response<T>> in
+            return Promise { fulfill, reject in
+                
+                // Compute headers *after* the session has been restored.
+                let headers = self.defaultHeaders() + headers
+                
+                // Manually recreating what Alamofire.request does so we have access to the NSURLRequest object:
+                let mutableRequest = NSMutableURLRequest(URL: url)
+                for (field, value) in headers {
+                    mutableRequest.setValue(value, forHTTPHeaderField: field)
+                }
+                if let timeoutInterval = timeoutInterval {
+                    mutableRequest.timeoutInterval = timeoutInterval
+                }
+                if let cachePolicy = cachePolicy {
+                    mutableRequest.cachePolicy = cachePolicy
+                }
+                mutableRequest.HTTPMethod = method.rawValue
+                let encodedRequest = encoding.encode(mutableRequest, parameters: parameters).0
+                
+                Alamofire.request(encodedRequest).responseJSON { response in
+                    switch response.result {
+                    case .Success:
+                        if let value:Response<T> = self.constructResponse(response) {
+                            if let error=value.error {
+                                // the request might have succeeded, but we found an error when constructing the Response object
+                                self.handleError(error, model:model)
                                 reject(error)
+                            } else {
+                                fulfill(value)
                             }
-                        case .Failure(let error):
-                            self.handleError(error as ErrorType, model:model)
+                        } else {
+                            let error = RemoteDataStoreError.InvalidResponse
+                            self.handleError(error)
                             reject(error)
                         }
+                    case .Failure(let error):
+                        self.handleError(error as ErrorType, model:model)
+                        reject(error)
                     }
                 }
             }
-            
-            if requireSession {
-                return self.restoreSession().thenInBackground(action)
-            } else {
-                return action()
-            }
+        }
+        
+        if requireSession {
+            return self.restoreSession().thenInBackground(action)
+        } else {
+            return action()
+        }
     }
     
     // MARK: - CRUD operations (DataStore protocol methods)
@@ -216,7 +232,7 @@ public class RemoteDataStore: DataStore, ListableDataStore {
     public func create<T:Model>(model: T, fields: [FieldType]?) -> Promise<T> {
         return self.create(model, fields: fields, parameters: nil)
     }
-
+    
     public func create<T:Model>(model: T, fields: [FieldType]?, parameters: [String:AnyObject]?) -> Promise<T> {
         model.resetValidationState()
         model.beforeSave()
@@ -240,7 +256,7 @@ public class RemoteDataStore: DataStore, ListableDataStore {
             return Promise(error: RemoteDataStoreError.NoModelCollectionPath(modelClass: modelModel.dynamicType))
         }
     }
-
+    
     public func update<T:Model>(model: T, fields: [FieldType]?) -> Promise<T> {
         return self.update(model, fields: fields, parameters: nil)
     }
@@ -248,7 +264,7 @@ public class RemoteDataStore: DataStore, ListableDataStore {
     public func update<T:Model>(model: T, fields: [FieldType]?, parameters: [String: AnyObject]?) -> Promise<T> {
         model.resetValidationState()
         model.beforeSave()
-
+        
         let modelModel = model as Model
         
         if let path = modelModel.path {
@@ -315,7 +331,7 @@ public class RemoteDataStore: DataStore, ListableDataStore {
             return self.request(.GET, path: collectionPath, parameters: parameters).thenInBackground(self.instantiateModels(modelClass))
         } else {
             return Promise(error: RemoteDataStoreError.NoModelCollectionPath(modelClass: modelClass))
-       }
+        }
     }
     
 }
