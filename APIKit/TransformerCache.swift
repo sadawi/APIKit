@@ -15,7 +15,7 @@ private struct TransformerCache {
 }
 
 extension ValueTransformer {
-    static var sharedInstance: ValueTransformer<T> {
+    class var sharedInstance: ValueTransformer<T> {
         if let existing = TransformerCache.transformers[self] as? ValueTransformer<T> {
             return existing
         } else {
