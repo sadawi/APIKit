@@ -38,8 +38,12 @@ public class ModelField<T: Model>: Field<T>, ModelFieldType {
     }
     
     public override func defaultValueTransformer() -> ValueTransformer<T> {
-        return self.foreignKey ? ModelForeignKeyValueTransformer<T>() : ModelValueTransformer<T>()
+        return self._defaultValueTransformer
     }
+    
+    lazy private var _defaultValueTransformer: ValueTransformer<T> = {
+        return self.foreignKey ? ModelForeignKeyValueTransformer<T>() : ModelValueTransformer<T>()
+    }()
     
     public func inverse(model:T) -> ModelFieldType? {
         return self._inverse?(model)
