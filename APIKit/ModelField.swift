@@ -42,7 +42,7 @@ public class ModelField<T: Model>: Field<T>, ModelFieldType {
     }
     
     lazy private var _defaultValueTransformer: ValueTransformer<T> = {
-        return self.foreignKey ? ModelForeignKeyValueTransformer<T>() : ModelValueTransformer<T>()
+        return self.foreignKey ? ModelForeignKeyValueTransformer<T>.sharedInstance : ModelValueTransformer<T>.sharedInstance
     }()
     
     public func inverse(model:T) -> ModelFieldType? {

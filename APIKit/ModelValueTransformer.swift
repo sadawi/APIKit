@@ -11,7 +11,7 @@ import MagneticFields
 
 public class ModelValueTransformer<T: Model>: ValueTransformer<T> {
     
-    public override init() {
+    public required init() {
         super.init()
     }
 
@@ -40,7 +40,7 @@ public class ModelValueTransformer<T: Model>: ValueTransformer<T> {
 }
 
 public class ModelForeignKeyValueTransformer<T: Model>: ValueTransformer<T> {
-    public override init() {
+    public required init() {
         super.init(importAction: { value in
             // Attempt to initialize an object with just an id value
             let dummy = Model.prototypeForType(T.self)

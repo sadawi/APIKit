@@ -19,7 +19,7 @@ extension ValueTransformer {
         if let existing = TransformerCache.transformers[self] as? ValueTransformer<T> {
             return existing
         } else {
-            let newInstance = ValueTransformer<T>()
+            let newInstance = self.init()
             TransformerCache.transformers[self] = newInstance
             return newInstance
         }
