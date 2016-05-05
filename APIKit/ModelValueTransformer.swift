@@ -11,11 +11,12 @@ import MagneticFields
 
 public class ModelValueTransformer<T: Model>: ValueTransformer<T> {
     
-    public override init() {
+    public required init() {
         super.init()
     }
 
     public override func importValue(value: AnyObject?) -> T? {
+        // TODO: conditionally casting to AttributeDictionary might be slowish
         if let value = value as? AttributeDictionary {
             return T.fromDictionaryValue(value)
         } else {
@@ -39,11 +40,10 @@ public class ModelValueTransformer<T: Model>: ValueTransformer<T> {
 }
 
 public class ModelForeignKeyValueTransformer<T: Model>: ValueTransformer<T> {
-    
-    public override init() {
+    public required init() {
         super.init(importAction: { value in
             // Attempt to initialize an object with just an id value
-            let dummy = T()
+            let dummy = Model.prototypeForType(T.self)
             if let idField = dummy.identifierField, idKey = idField.key, value = value {
                 let attributes = [idKey: value]
                 let model = T.fromDictionaryValue(attributes) { model, isNew in

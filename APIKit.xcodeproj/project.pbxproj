@@ -10,6 +10,9 @@
 		22080E311BEED3A200A633AA /* CompoundDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22080E301BEED3A200A633AA /* CompoundDataStore.swift */; };
 		221D575C1C51B9FB0047BECB /* RequestEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 221D575B1C51B9FB0047BECB /* RequestEncoder.swift */; };
 		221D575D1C51F9070047BECB /* RequestEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 221D575B1C51B9FB0047BECB /* RequestEncoder.swift */; };
+		22256B571CDBFDFE007D380B /* TypeDictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22D408761C9B4E9A00368987 /* TypeDictionary.swift */; };
+		22256B591CDC0AF2007D380B /* TransformerCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22256B581CDC0AF2007D380B /* TransformerCache.swift */; };
+		22256B5A1CDC0BD3007D380B /* TransformerCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22256B581CDC0AF2007D380B /* TransformerCache.swift */; };
 		2235AED61BEFD4AD00A730F0 /* Routable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2235AED51BEFD4AD00A730F0 /* Routable.swift */; };
 		2235AED81BEFD5B800A730F0 /* DictionarySerializable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2235AED71BEFD5B800A730F0 /* DictionarySerializable.swift */; };
 		2235AEDB1BEFE00E00A730F0 /* DictionaryExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2235AEDA1BEFE00E00A730F0 /* DictionaryExtension.swift */; };
@@ -65,6 +68,7 @@
 /* Begin PBXFileReference section */
 		22080E301BEED3A200A633AA /* CompoundDataStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CompoundDataStore.swift; sourceTree = "<group>"; };
 		221D575B1C51B9FB0047BECB /* RequestEncoder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RequestEncoder.swift; sourceTree = "<group>"; };
+		22256B581CDC0AF2007D380B /* TransformerCache.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransformerCache.swift; sourceTree = "<group>"; };
 		2235AED51BEFD4AD00A730F0 /* Routable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Routable.swift; sourceTree = "<group>"; };
 		2235AED71BEFD5B800A730F0 /* DictionarySerializable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DictionarySerializable.swift; sourceTree = "<group>"; };
 		2235AEDA1BEFE00E00A730F0 /* DictionaryExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DictionaryExtension.swift; sourceTree = "<group>"; };
@@ -202,6 +206,7 @@
 				2235AEF31BF3C0A600A730F0 /* Response.swift */,
 				22B71E821C17819100EA7FD8 /* ModelField.swift */,
 				22D408761C9B4E9A00368987 /* TypeDictionary.swift */,
+				22256B581CDC0AF2007D380B /* TransformerCache.swift */,
 			);
 			name = models;
 			sourceTree = "<group>";
@@ -375,6 +380,7 @@
 				2235AEE61BF1057200A730F0 /* DataStoreDelegate.swift in Sources */,
 				22B124041C30589600070629 /* Mirror+Super.swift in Sources */,
 				22CE192A1C6BA809001D5571 /* Array+Difference.swift in Sources */,
+				22256B591CDC0AF2007D380B /* TransformerCache.swift in Sources */,
 				22B71E7B1C1777B700EA7FD8 /* ModelValueTransformer.swift in Sources */,
 				2235AEF41BF3C0A600A730F0 /* Response.swift in Sources */,
 				22D408771C9B4E9A00368987 /* TypeDictionary.swift in Sources */,
@@ -391,6 +397,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				22256B5A1CDC0BD3007D380B /* TransformerCache.swift in Sources */,
 				2264B9EA1C6FE35A00B609A0 /* ArchiveTests.swift in Sources */,
 				22EF75D81C6C2DE500F5C8EC /* RemoteRequestTests.swift in Sources */,
 				22D408791C9B530800368987 /* TypeDictionaryTests.swift in Sources */,
@@ -404,6 +411,7 @@
 				22B71E841C17819100EA7FD8 /* ModelField.swift in Sources */,
 				2235AEF51BF3C89E00A730F0 /* Response.swift in Sources */,
 				221D575D1C51F9070047BECB /* RequestEncoder.swift in Sources */,
+				22256B571CDBFDFE007D380B /* TypeDictionary.swift in Sources */,
 				22B71E791C17757000EA7FD8 /* FieldModelTests.swift in Sources */,
 				225DE8171BEEC4D8009698FC /* Model.swift in Sources */,
 				225DE8181BEEC4DC009698FC /* ModelManager.swift in Sources */,
