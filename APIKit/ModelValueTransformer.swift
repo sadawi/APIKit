@@ -43,7 +43,7 @@ public class ModelForeignKeyValueTransformer<T: Model>: ValueTransformer<T> {
     public override init() {
         super.init(importAction: { value in
             // Attempt to initialize an object with just an id value
-            let dummy = T()
+            let dummy = Model.prototypeForType(T.self)
             if let idField = dummy.identifierField, idKey = idField.key, value = value {
                 let attributes = [idKey: value]
                 let model = T.fromDictionaryValue(attributes) { model, isNew in

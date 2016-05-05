@@ -70,6 +70,17 @@ public class Model: NSObject, Routable, NSCopying {
         return self as? T.Type
     }
     
+    private static var prototypes = TypeDictionary<Model>()
+    
+    internal static func prototypeForType<T: Model>(type: T.Type) -> T {
+        if let existing = prototypes[type] as? T {
+            return existing
+        } else {
+            let prototype = type.init()
+            prototypes[type] = prototype
+            return prototype
+        }
+    }
     
     /**
      Generates a RESTful path component for a single model using its identifier.

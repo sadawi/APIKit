@@ -10,6 +10,7 @@
 		22080E311BEED3A200A633AA /* CompoundDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22080E301BEED3A200A633AA /* CompoundDataStore.swift */; };
 		221D575C1C51B9FB0047BECB /* RequestEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 221D575B1C51B9FB0047BECB /* RequestEncoder.swift */; };
 		221D575D1C51F9070047BECB /* RequestEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 221D575B1C51B9FB0047BECB /* RequestEncoder.swift */; };
+		22256B571CDBFDFE007D380B /* TypeDictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22D408761C9B4E9A00368987 /* TypeDictionary.swift */; };
 		2235AED61BEFD4AD00A730F0 /* Routable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2235AED51BEFD4AD00A730F0 /* Routable.swift */; };
 		2235AED81BEFD5B800A730F0 /* DictionarySerializable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2235AED71BEFD5B800A730F0 /* DictionarySerializable.swift */; };
 		2235AEDB1BEFE00E00A730F0 /* DictionaryExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2235AEDA1BEFE00E00A730F0 /* DictionaryExtension.swift */; };
@@ -404,6 +405,7 @@
 				22B71E841C17819100EA7FD8 /* ModelField.swift in Sources */,
 				2235AEF51BF3C89E00A730F0 /* Response.swift in Sources */,
 				221D575D1C51F9070047BECB /* RequestEncoder.swift in Sources */,
+				22256B571CDBFDFE007D380B /* TypeDictionary.swift in Sources */,
 				22B71E791C17757000EA7FD8 /* FieldModelTests.swift in Sources */,
 				225DE8171BEEC4D8009698FC /* Model.swift in Sources */,
 				225DE8181BEEC4DC009698FC /* ModelManager.swift in Sources */,
