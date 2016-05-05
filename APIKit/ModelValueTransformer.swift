@@ -16,6 +16,7 @@ public class ModelValueTransformer<T: Model>: ValueTransformer<T> {
     }
 
     public override func importValue(value: AnyObject?) -> T? {
+        // TODO: conditionally casting to AttributeDictionary might be slowish
         if let value = value as? AttributeDictionary {
             return T.fromDictionaryValue(value)
         } else {
@@ -39,7 +40,6 @@ public class ModelValueTransformer<T: Model>: ValueTransformer<T> {
 }
 
 public class ModelForeignKeyValueTransformer<T: Model>: ValueTransformer<T> {
-    
     public override init() {
         super.init(importAction: { value in
             // Attempt to initialize an object with just an id value
