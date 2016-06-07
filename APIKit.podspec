@@ -1,9 +1,10 @@
 Pod::Spec.new do |s|
 s.name             = "APIKit"
 s.version          = "0.7.9"
-s.summary          = "A short description of APIKit."
+s.summary          = "Promise-based tools for working with an abstract API"
 
 s.description      = <<-DESC
+This is a promise-based library abstracts the interface to a model data source, which may be remote.
 DESC
 
 s.homepage         = "https://github.com/sadawi/APIKit"
