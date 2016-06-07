@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
 s.name             = "APIKit"
-s.version          = "0.7.9"
+s.version          = "0.7.10"
 s.summary          = "Promise-based tools for working with an abstract API"
 
 s.description      = <<-DESC
