@@ -283,4 +283,11 @@ class FieldModelTests: XCTestCase {
         let pathModel = PathModel()
         XCTAssertEqual(pathModel.path, "testPath")
     }
+    
+    func testExplicitNulls() {
+        let model = Company()
+        model.name.value = nil
+        let dictionary = model.dictionaryValue(explicitNull: true)
+        XCTAssert(dictionary["name"] is NSNull)
+    }
 }

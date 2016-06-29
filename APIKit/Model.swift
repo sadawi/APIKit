@@ -395,10 +395,11 @@ public class Model: NSObject, Routable, NSCopying {
      export all fields in `defaultFieldsForDictionaryValue`, which itself defaults to all fields.
      
      - parameter fields: An array of field objects (belonging to this model) to be included in the dictionary value.
+     - parameter explicitNull: Whether nil values should be serialized as NSNull. Note that if this is false, dictionary.keys will not include those with nil values.
      */
-    public func dictionaryValue(fields fields:[FieldType]?=nil) -> AttributeDictionary {
+    public func dictionaryValue(fields fields:[FieldType]?=nil, explicitNull: Bool = false) -> AttributeDictionary {
         var seenFields:[FieldType] = []
-        return self.dictionaryValue(fields: fields, seenFields: &seenFields)
+        return self.dictionaryValue(fields: fields, seenFields: &seenFields, explicitNull: explicitNull)
     }
     
     internal func dictionaryValue(fields fields:[FieldType]?=nil, inout seenFields: [FieldType], explicitNull: Bool = false) -> AttributeDictionary {
