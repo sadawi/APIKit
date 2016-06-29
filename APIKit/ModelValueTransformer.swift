@@ -34,7 +34,7 @@ public class ModelValueTransformer<T: Model>: ValueTransformer<T> {
         if let value = value as? Model {
             return value.dictionaryValue(fields: fields, seenFields: &seenFields, explicitNull: explicitNull)
         } else {
-            return self.nullValue(explicit: explicitNull)
+            return self.dynamicType.nullValue(explicit: explicitNull)
         }
     }
 }
@@ -42,17 +42,22 @@ public class ModelValueTransformer<T: Model>: ValueTransformer<T> {
 public class ModelForeignKeyValueTransformer<T: Model>: ValueTransformer<T> {
     public required init() {
         super.init(importAction: { value in
-            // Attempt to initialize an object with just an id value
-            let dummy = Model.prototypeForType(T.self)
-            if let idField = dummy.identifierField, idKey = idField.key, value = value {
-                let attributes = [idKey: value]
-                let model = T.fromDictionaryValue(attributes) { model, isNew in
-                    // We only know it's definitely a shell if it wasn't reused from an existing model
-                    if isNew {
-                        model.shell = true
+            
+            // Normally we'd check for null by simply trying to cast to the correct type, but only a model instance knows the type of its identifier field.
+            if let value = value where !ModelForeignKeyValueTransformer<T>.valueIsNull(value) {
+                
+                // Attempt to initialize an object with just an id value
+                let dummy = Model.prototypeForType(T.self)
+                if let idField = dummy.identifierField, idKey = idField.key {
+                    let attributes = [idKey: value]
+                    let model = T.fromDictionaryValue(attributes) { model, isNew in
+                        // We only know it's definitely a shell if it wasn't reused from an existing model
+                        if isNew {
+                            model.shell = true
+                        }
                     }
+                    return model
                 }
-                return model
             }
             return nil
             },
