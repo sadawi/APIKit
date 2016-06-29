@@ -83,7 +83,7 @@ public class ModelField<T: Model>: Field<T>, ModelFieldType {
     }
     
     
-    public override func writeUnseenValueToDictionary(inout dictionary: [String : AnyObject], inout seenFields: [FieldType], key: String) {
+    public override func writeUnseenValueToDictionary(inout dictionary: [String : AnyObject], inout seenFields: [FieldType], key: String, explicitNull: Bool = false) {
         if let modelValueTransformer = self.valueTransformer() as? ModelValueTransformer<T> {
             dictionary[key] = modelValueTransformer.exportValue(self.value, seenFields: &seenFields)
         } else { 

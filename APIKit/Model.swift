@@ -401,14 +401,14 @@ public class Model: NSObject, Routable, NSCopying {
         return self.dictionaryValue(fields: fields, seenFields: &seenFields)
     }
     
-    internal func dictionaryValue(fields fields:[FieldType]?=nil, inout seenFields: [FieldType]) -> AttributeDictionary {
+    internal func dictionaryValue(fields fields:[FieldType]?=nil, inout seenFields: [FieldType], explicitNull: Bool = false) -> AttributeDictionary {
         let fields = fields ?? self.defaultFieldsForDictionaryValue()
         
         var result:AttributeDictionary = [:]
         let include = fields
         for (_, field) in self.fields {
             if include.contains({ $0 === field }) && field.state == .Set {
-                field.writeToDictionary(&result, seenFields: &seenFields)
+                field.writeToDictionary(&result, seenFields: &seenFields, explicitNull: explicitNull)
             }
         }
         return result
