@@ -286,8 +286,14 @@ class FieldModelTests: XCTestCase {
     
     func testExplicitNulls() {
         let model = Company()
+
+        // We haven't set any values, so nothing will be serialized anyway
+        let d = model.dictionaryValue(explicitNull: true)
+        XCTAssert(d["name"] == nil)
+
+        // Now, set a value explicitly, and it should appear in the dictionary
         model.name.value = nil
-        let dictionary = model.dictionaryValue(explicitNull: true)
-        XCTAssert(dictionary["name"] is NSNull)
+        let d2 = model.dictionaryValue(explicitNull: true)
+        XCTAssert(d2["name"] is NSNull)
     }
 }

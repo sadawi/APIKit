@@ -396,19 +396,24 @@ public class Model: NSObject, Routable, NSCopying {
      
      - parameter fields: An array of field objects (belonging to this model) to be included in the dictionary value.
      - parameter explicitNull: Whether nil values should be serialized as NSNull. Note that if this is false, dictionary.keys will not include those with nil values.
+     - parameter includeField: A closure determining whether a field should be included in the result.  By default, it will be included iff its state is .Set (i.e., it has been explicitly set since it was loaded)
      */
-    public func dictionaryValue(fields fields:[FieldType]?=nil, explicitNull: Bool = false) -> AttributeDictionary {
+    public func dictionaryValue(fields fields:[FieldType]?=nil, explicitNull: Bool = false, includeField: ((FieldType) -> Bool)?=nil) -> AttributeDictionary {
         var seenFields:[FieldType] = []
-        return self.dictionaryValue(fields: fields, seenFields: &seenFields, explicitNull: explicitNull)
+        var includeField = includeField
+        if includeField == nil {
+            includeField = { $0.state == .Set }
+        }
+        return self.dictionaryValue(fields: fields, seenFields: &seenFields, explicitNull: explicitNull, includeField: includeField)
     }
     
-    internal func dictionaryValue(fields fields:[FieldType]?=nil, inout seenFields: [FieldType], explicitNull: Bool = false) -> AttributeDictionary {
+    internal func dictionaryValue(fields fields:[FieldType]?=nil, inout seenFields: [FieldType], explicitNull: Bool = false, includeField: ((FieldType) -> Bool)?=nil) -> AttributeDictionary {
         let fields = fields ?? self.defaultFieldsForDictionaryValue()
         
         var result:AttributeDictionary = [:]
         let include = fields
         for (_, field) in self.fields {
-            if include.contains({ $0 === field }) && field.state == .Set {
+            if include.contains({ $0 === field }) && includeField?(field) != false {
                 field.writeToDictionary(&result, seenFields: &seenFields, explicitNull: explicitNull)
             }
         }
