@@ -286,6 +286,18 @@ class ModelTests: XCTestCase {
     
     func testExplicitNulls() {
         let model = Company()
+        let parent = Company()
+        
+        model.parentCompany.value = parent
+        var d0 = model.dictionaryValue()
+        var parentDictionary = d0["parentCompany"]
+        XCTAssertNotNil(parentDictionary)
+        XCTAssertNil(parentDictionary?["name"])
+        
+        d0 = model.dictionaryValue(explicitNull: true)
+        parentDictionary = d0["parentCompany"]
+        XCTAssertNotNil(parentDictionary?["name"])
+        XCTAssertEqual(parentDictionary?["name"], NSNull())
 
         // We haven't set any values, so nothing will be serialized anyway
         let d = model.dictionaryValue(explicitNull: true)
@@ -295,5 +307,7 @@ class ModelTests: XCTestCase {
         model.name.value = nil
         let d2 = model.dictionaryValue(explicitNull: true)
         XCTAssert(d2["name"] is NSNull)
+        
+        
     }
 }
