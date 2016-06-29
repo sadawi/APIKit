@@ -34,7 +34,7 @@ public class ModelValueTransformer<T: Model>: ValueTransformer<T> {
         if let value = value as? Model {
             return value.dictionaryValue(fields: fields, seenFields: &seenFields, explicitNull: explicitNull)
         } else {
-            return nil
+            return self.nullValue(explicit: explicitNull)
         }
     }
 }
