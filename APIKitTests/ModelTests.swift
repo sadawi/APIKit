@@ -10,7 +10,7 @@ import XCTest
 import MagneticFields
 import PromiseKit
 
-class FieldModelTests: XCTestCase {
+class ModelTests: XCTestCase {
     
     override func setUp() {
         super.setUp()
@@ -282,5 +282,32 @@ class FieldModelTests: XCTestCase {
     func testCustomPath() {
         let pathModel = PathModel()
         XCTAssertEqual(pathModel.path, "testPath")
+    }
+    
+    func testExplicitNulls() {
+        let model = Company()
+        let parent = Company()
+        
+        model.parentCompany.value = parent
+        var d0 = model.dictionaryValue()
+        var parentDictionary = d0["parentCompany"]
+        XCTAssertNotNil(parentDictionary)
+        XCTAssertNil(parentDictionary?["name"])
+        
+        d0 = model.dictionaryValue(explicitNull: true)
+        parentDictionary = d0["parentCompany"]
+        XCTAssertNotNil(parentDictionary?["name"])
+        XCTAssertEqual(parentDictionary?["name"], NSNull())
+
+        // We haven't set any values, so nothing will be serialized anyway
+        let d = model.dictionaryValue(explicitNull: true)
+        XCTAssert(d["name"] == nil)
+
+        // Now, set a value explicitly, and it should appear in the dictionary
+        model.name.value = nil
+        let d2 = model.dictionaryValue(explicitNull: true)
+        XCTAssert(d2["name"] is NSNull)
+        
+        
     }
 }
