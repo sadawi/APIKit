@@ -89,7 +89,7 @@ public class RemoteDataStore: DataStore, ListableDataStore {
     }
     
     public func serializeModel(model:Model, fields:[FieldType]?=nil) -> AttributeDictionary {
-        return model.dictionaryValue(fields: fields)
+        return model.dictionaryValue(fields: fields, explicitNull: true)
     }
     
     public func deserializeModel<T:Model>(modelClass:T.Type, parameters:AttributeDictionary) -> T? {
@@ -134,7 +134,7 @@ public class RemoteDataStore: DataStore, ListableDataStore {
                     request.URL = components?.URL
                 } else {
                     request.addValue("application/x-www-form-urlencoded; charset=utf-8", forHTTPHeaderField: "Content-Type")
-                    request.HTTPBody = ParameterEncoder().encodeParameters(parameters).dataUsingEncoding(NSUTF8StringEncoding)
+                    request.HTTPBody = ParameterEncoder(includeNullValues: true).encodeParameters(parameters).dataUsingEncoding(NSUTF8StringEncoding)
                 }
             }
             return (request, nil)
