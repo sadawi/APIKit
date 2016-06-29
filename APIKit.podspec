@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
 s.name             = "APIKit"
-s.version          = "0.7.11"
+s.version          = "0.7.12"
 s.summary          = "Promise-based tools for working with an abstract API"
 
 s.description      = <<-DESC
@@ -23,6 +23,6 @@ s.resource_bundles = {
 s.dependency 'Alamofire', '~> 3.0'
 s.dependency 'PromiseKit/CorePromise', '~> 3.0'
 s.dependency 'SwiftyJSON', '~> 2.3.0'
-s.dependency 'MagneticFields', '~> 0.6.6'
+s.dependency 'MagneticFields', '~> 0.6.7'
 
 end
