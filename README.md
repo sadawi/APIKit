@@ -94,25 +94,8 @@ This is intended as a base class for your RESTful server interface.  It includes
 
 Resource paths are specified in your models (the `Routable` protocol).
 
-## Canonical models
+## Object Identity and Canonical Models
 
-It's often useful for each model object to have a canonical instance.  Each `Person` with id `10` should be the same object in memory, for example, no matter where it is in an object graph or where it was loaded from.
+It's useful for each model object to have a canonical instance.  Each `Person` with id `10` should be the same object in memory, for example, no matter where it is in an object graph or where it was loaded from.
 
-You can achieve this by using a `MemoryDataStore` as your canonical object registry, and setting up a `DataStoreDelegate` for your other data stores that manages the link.
-
-So, for example, in your `RemoteDataStore`'s delegate:
-
-```swift
-
-var memoryDataStore = MemoryDataStore()
-
-// MARK: - DataStoreDelegate methods
-
-func dataStore(dataStore:DataStore, didInstantiateModel model:Model) {
-  self.memoryDataStore.save(model)
-}
-
-func dataStore(dataStore:DataStore, canonicalObjectForIdentifier identifier:String, modelClass:AnyClass) -> Model? {
-  return self.memoryDataStore.lookupImmediately(modelClass as! Model.Type, identifier: identifier)
-}
-```
+This is currently enforced by a static `ModelRegistry` property on the `Model` class; this object is responsible for (synchronously!) registering and obtaining unique model instances by id. It defaults to a `MemoryRegistry`, but any conforming object will do.
