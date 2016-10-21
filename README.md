@@ -1,5 +1,7 @@
 # APIKit
 
+This is a framework for working with models that are asynchronously read from and written to some data store.
+
 ## Models
 
 ### Fields
