@@ -274,39 +274,39 @@ class APIKitTests: XCTestCase {
 
     }
 
-    func testSaveDeleteEverything() {
-        let didDeleteB = expectationWithDescription("deleteB")
-        let didDeleteA = expectationWithDescription("deleteA")
-        
-        let store = MemoryDataStore()
-        
-        let a = Person()
-        a.identifier = "123244"
-        
-        let b = Product()
-        b.identifier = "12345566"
-        
-        when(store.save(a), store.save(b)).then { _ -> () in
-            store.list(Person.self).then { people -> () in
-                XCTAssertEqual(people.count, 1)
-                
-                store.deleteAll().then { () -> () in
-                    store.list(Person.self).then { people -> () in
-                        XCTAssertEqual(people.count, 0)
-                        didDeleteA.fulfill()
-                    }
-                    
-                    store.list(Product.self).then { products -> () in
-                        XCTAssertEqual(products.count, 0)
-                        didDeleteB.fulfill()
-                    }
-                }
-            }
-        }
-        
-        self.waitForExpectationsWithTimeout(1, handler:nil)
-        
-    }
+//    func testSaveDeleteEverything() {
+//        let didDeleteB = expectationWithDescription("deleteB")
+//        let didDeleteA = expectationWithDescription("deleteA")
+//        
+//        let store = MemoryDataStore()
+//        
+//        let a = Person()
+//        a.identifier = "123244"
+//        
+//        let b = Product()
+//        b.identifier = "12345566"
+//        
+//        when(store.save(a), store.save(b)).then { _ -> () in
+//            store.list(Person.self).then { people -> () in
+//                XCTAssertEqual(people.count, 1)
+//                
+//                store.deleteAll().then { () -> () in
+//                    store.list(Person.self).then { people -> () in
+//                        XCTAssertEqual(people.count, 0)
+//                        didDeleteA.fulfill()
+//                    }
+//                    
+//                    store.list(Product.self).then { products -> () in
+//                        XCTAssertEqual(products.count, 0)
+//                        didDeleteB.fulfill()
+//                    }
+//                }
+//            }
+//        }
+//        
+//        self.waitForExpectationsWithTimeout(1, handler:nil)
+//        
+//    }
 
     
 }

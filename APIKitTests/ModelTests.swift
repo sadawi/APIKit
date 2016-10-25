@@ -241,37 +241,37 @@ class ModelTests: XCTestCase {
         XCTAssertEqual(state, ValidationState.Invalid(["Field is required"]))
     }
     
-    func testCascadeDelete() {
-        let memory = MemoryDataStore()
-
-//        Model.registry = MemoryRegistry(dataStore: memory)
-        let didSave = expectationWithDescription("save")
-        let didDelete = expectationWithDescription("delete")
-        let object = Object()
-        let component = Component()
-        object.component.value = component
-        
-        when(memory.save(object), memory.save(component)).then { _ in
-            memory.list(Object.self).then { objects -> () in
-                XCTAssertEqual(objects.count, 1)
-                }.then {
-                    memory.list(Component.self).then { components -> () in
-                        XCTAssertEqual(components.count, 1)
-                        didSave.fulfill()
-                        }
-
-                }.then {
-                    memory.delete(object).then { _ in
-                        memory.list(Component.self).then { components -> () in
-                            XCTAssertEqual(components.count, 0)
-                            didDelete.fulfill()
-                        }
-                    }
-            }
-        }
-        
-        self.waitForExpectationsWithTimeout(1, handler: nil)
-    }
+//    func testCascadeDelete() {
+//        let memory = MemoryDataStore()
+//
+////        Model.registry = MemoryRegistry(dataStore: memory)
+//        let didSave = expectationWithDescription("save")
+//        let didDelete = expectationWithDescription("delete")
+//        let object = Object()
+//        let component = Component()
+//        object.component.value = component
+//        
+//        when(memory.save(object), memory.save(component)).then { _ in
+//            memory.list(Object.self).then { objects -> () in
+//                XCTAssertEqual(objects.count, 1)
+//                }.then {
+//                    memory.list(Component.self).then { components -> () in
+//                        XCTAssertEqual(components.count, 1)
+//                        didSave.fulfill()
+//                        }
+//
+//                }.then {
+//                    memory.delete(object).then { _ in
+//                        memory.list(Component.self).then { components -> () in
+//                            XCTAssertEqual(components.count, 0)
+//                            didDelete.fulfill()
+//                        }
+//                    }
+//            }
+//        }
+//        
+//        self.waitForExpectationsWithTimeout(1, handler: nil)
+//    }
 
     private class PathModel: Model {
         override var path: String? {
