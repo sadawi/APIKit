@@ -77,7 +77,7 @@ public class RemoteDataStore: DataStore, ListableDataStore {
     // MARK: - Helper methods that subclasses might want to override
     
     private func url(path path:String) -> NSURL {
-        return self.baseURL.URLByAppendingPathComponent(path)
+        return self.baseURL.URLByAppendingPathComponent(path)!
     }
     
     public func defaultHeaders() -> [String:String] {
