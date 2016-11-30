@@ -9,6 +9,6 @@
 import Foundation
 
 public protocol DataStoreDelegate {
-    func dataStore(dataStore:DataStore, didInstantiateModel model:Model)
-    func dataStore(dataStore:DataStore, canonicalObjectForIdentifier identifier:String, modelClass:AnyClass) -> Model?
+    func dataStore(_ dataStore:DataStore, didInstantiateModel model:Model)
+    func dataStore(_ dataStore:DataStore, canonicalObjectForIdentifier identifier:String, modelClass:AnyClass) -> Model?
 }

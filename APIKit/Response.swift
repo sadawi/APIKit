@@ -9,10 +9,10 @@
 import Foundation
 
 
-public class Response<DataType>: DictionarySerializable {
-    public var data: DataType?
-    public var successful:Bool = true
-    public var error:ErrorType?
+open class Response<DataType>: DictionarySerializable {
+    open var data: DataType?
+    open var successful:Bool = true
+    open var error:Error?
 
     required public init() {
     }

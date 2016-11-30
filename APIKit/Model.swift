@@ -17,10 +17,10 @@ public typealias Identifier = String
 */
 public protocol ModelRegistry {
     /// Registers a new model in the registry.
-    func didInstantiateModel<T:Model>(model:T)
+    func didInstantiateModel<T:Model>(_ model:T)
     
     /// Tries to find a registered canonical instance matching the provided model.  Should return nil if no such object has been registered.
-    func canonicalModelForModel<T:Model>(model:T) -> T?
+    func canonicalModelForModel<T:Model>(_ model:T) -> T?
 }
 
 /**
@@ -37,13 +37,13 @@ public struct MemoryRegistry: ModelRegistry {
         self.memory = dataStore
     }
     
-    public func didInstantiateModel<T:Model>(model: T) {
+    public func didInstantiateModel<T:Model>(_ model: T) {
         if model.identifier != nil {
             self.memory.updateImmediately(model)
         }
     }
     
-    public func canonicalModelForModel<T:Model>(model: T) -> T? {
+    public func canonicalModelForModel<T:Model>(_ model: T) -> T? {
         if let identifier = model.identifier {
             return self.memory.lookupImmediately(T.self, identifier: identifier)
         } else {
@@ -52,11 +52,11 @@ public struct MemoryRegistry: ModelRegistry {
     }
 }
 
-public class Model: NSObject, Routable, NSCopying {
+open class Model: NSObject, Routable, NSCopying {
     /**
      An object that is responsible for keeping track of canonical instances
      */
-    public static var registry:ModelRegistry? = MemoryRegistry()
+    open static var registry:ModelRegistry? = MemoryRegistry()
     
     /**
      The class to instantiate, based on a dictionary value.
@@ -66,13 +66,13 @@ public class Model: NSObject, Routable, NSCopying {
      In other words, if you don't return a subclass, it's likely that you'll silently get an instance of
      whatever class defines this method.
      */
-    public class func instanceClassForDictionaryValue<T>(dictionaryValue: AttributeDictionary) -> T.Type? {
+    open class func instanceClassForDictionaryValue<T>(_ dictionaryValue: AttributeDictionary) -> T.Type? {
         return self as? T.Type
     }
     
-    private static var prototypes = TypeDictionary<Model>()
+    fileprivate static var prototypes = TypeDictionary<Model>()
     
-    internal static func prototypeForType<T: Model>(type: T.Type) -> T {
+    internal static func prototypeForType<T: Model>(_ type: T.Type) -> T {
         if let existing = prototypes[type] as? T {
             return existing
         } else {
@@ -87,9 +87,9 @@ public class Model: NSObject, Routable, NSCopying {
      
      Example: "users/42"
      */
-    public var path:String? {
+    open var path:String? {
         get {
-            if let id = self.identifier, let collectionPath = self.dynamicType.collectionPath {
+            if let id = self.identifier, let collectionPath = type(of: self).collectionPath {
                 return "\(collectionPath)/\(id)"
             } else {
                 return nil
@@ -105,7 +105,7 @@ public class Model: NSObject, Routable, NSCopying {
      - parameter useRegistry: Whether we should attempt to canonicalize models and register new ones
      - parameter configure: A closure to configure a deserialized model, taking a Bool flag indicating whether it was newly instantiated (vs. reused from registry)
      */
-    public class func fromDictionaryValue(dictionaryValue:AttributeDictionary, useRegistry:Bool = true, configure:((Model,Bool) -> Void)?=nil) -> Self? {
+    open class func fromDictionaryValue(_ dictionaryValue:AttributeDictionary, useRegistry:Bool = true, configure:((Model,Bool) -> Void)?=nil) -> Self? {
         var instance = (self.instanceClassForDictionaryValue(dictionaryValue) ?? self).init()
         (instance as Model).dictionaryValue = dictionaryValue
         
@@ -129,7 +129,7 @@ public class Model: NSObject, Routable, NSCopying {
         
     }
     
-    public class func withIdentifier(identifier: Identifier) -> Self {
+    open class func withIdentifier(_ identifier: Identifier) -> Self {
         let instance = self.init()
         instance.identifier = identifier
         if let canonical = Model.registry?.canonicalModelForModel(instance) {
@@ -140,19 +140,19 @@ public class Model: NSObject, Routable, NSCopying {
         }
     }
     
-    public func registerInstance() {
-        self.dynamicType.registry?.didInstantiateModel(self)
+    open func registerInstance() {
+        type(of: self).registry?.didInstantiateModel(self)
     }
     
-    public func canonicalInstance() -> Self {
-        return self.dynamicType.registry?.canonicalModelForModel(self) ?? self
+    open func canonicalInstance() -> Self {
+        return type(of: self).registry?.canonicalModelForModel(self) ?? self
     }
     
     /**
      Creates a clone of this model.  It won't exist in the registry.
      */
-    public func copyWithZone(zone: NSZone) -> AnyObject {
-        return self.dynamicType.fromDictionaryValue(self.dictionaryValue, useRegistry: false)!
+    open func copy(with zone: NSZone?) -> Any {
+        return type(of: self).fromDictionaryValue(self.dictionaryValue, useRegistry: false)!
     }
 
     
@@ -161,7 +161,7 @@ public class Model: NSObject, Routable, NSCopying {
      If all the models in your system have the same identifier field (e.g., "id"), you'll probably want to just put that in your
      base model class.
      */
-    public var identifierField: FieldType? {
+    open var identifierField: FieldType? {
         return nil
     }
     
@@ -169,7 +169,7 @@ public class Model: NSObject, Routable, NSCopying {
      Attempts to find the identifier as a String or Int, and cast it to an Identifier (aka String)
      (because it's useful to have an identifier with known type!)
      */
-    public var identifier:Identifier? {
+    open var identifier:Identifier? {
         get {
             let value = self.identifierField?.anyObjectValue
             
@@ -193,19 +193,19 @@ public class Model: NSObject, Routable, NSCopying {
     }
     
     // TODO: permissions
-    public var editable:Bool = true
+    open var editable:Bool = true
     
-    public var shell:Bool = false
+    open var shell:Bool = false
     
-    public var persisted:Bool {
+    open var persisted:Bool {
         get {
             return self.identifier != nil
         }
     }
     
-    public class var name:String {
+    open class var name:String {
         get {
-            if let name = NSStringFromClass(self).componentsSeparatedByString(".").last {
+            if let name = NSStringFromClass(self).components(separatedBy: ".").last {
                 return name
             } else {
                 return "Unknown"
@@ -215,20 +215,20 @@ public class Model: NSObject, Routable, NSCopying {
     
     // MARK: Routable
     
-    public class var collectionPath: String? {
+    open class var collectionPath: String? {
         get {
             return nil
         }
     }
     
-    public func afterInit()     { }
-    public func afterCreate()   { }
-    public func beforeSave()    { }
-    public func afterDelete()   { }
+    open func afterInit()     { }
+    open func afterCreate()   { }
+    open func beforeSave()    { }
+    open func afterDelete()   { }
     
-    public func cascadeDelete(cascade: ((Model)->Void), inout seenModels: Set<Model>) {
+    open func cascadeDelete(_ cascade: @escaping ((Model)->Void), seenModels: inout Set<Model>) {
         self.visitAllFields(action: { field in
-            if let modelField = field as? ModelFieldType where modelField.cascadeDelete {
+            if let modelField = field as? ModelFieldType , modelField.cascadeDelete {
                 if let model = modelField.anyObjectValue as? Model {
                     cascade(model)
                 } else if let models = modelField.anyObjectValue as? [Model] {
@@ -242,7 +242,7 @@ public class Model: NSObject, Routable, NSCopying {
     
     // MARK: FieldModel
     
-    public func fieldForKeyPath(components:[String]) -> FieldType? {
+    open func fieldForKeyPath(_ components:[String]) -> FieldType? {
         guard components.count > 0 else { return nil }
         
         let fields = self.fields
@@ -259,7 +259,7 @@ public class Model: NSObject, Routable, NSCopying {
         return nil
     }
     
-    public func fieldForKeyPath(path:String) -> FieldType? {
+    open func fieldForKeyPath(_ path:String) -> FieldType? {
         return fieldForKeyPath(self.componentsForKeyPath(path))
     }
     
@@ -269,8 +269,8 @@ public class Model: NSObject, Routable, NSCopying {
      
      To change the default behavior, you'll probably want to subclass.
      */
-    public func componentsForKeyPath(path:String) -> [String] {
-        return path.componentsSeparatedByString(".")
+    open func componentsForKeyPath(_ path:String) -> [String] {
+        return path.components(separatedBy: ".")
     }
     
     /**
@@ -278,14 +278,14 @@ public class Model: NSObject, Routable, NSCopying {
      This can be slow, since it uses reflection.  If you find this to be a performance bottleneck, consider overriding this var
      with an explicit mapping of keys to fields.
      */
-    public var fields: [String:FieldType] {
+    open var fields: [String:FieldType] {
         return _fields
     }
-    lazy private var _fields: [String:FieldType] = {
+    lazy fileprivate var _fields: [String:FieldType] = {
         var result:[String:FieldType] = [:]
         let mirror = Mirror(reflecting: self)
         mirror.eachChild { child in
-            if let label = child.label, value = child.value as? FieldType {
+            if let label = child.label, let value = child.value as? FieldType {
                 // If the field has its key defined, use that; otherwise fall back to the property name.
                 let key = value.key ?? label
                 result[key] = value
@@ -299,7 +299,7 @@ public class Model: NSObject, Routable, NSCopying {
      Which fields should we include in the dictionaryValue?
      By default, includes all of them.
      */
-    public func defaultFieldsForDictionaryValue() -> [FieldType] {
+    open func defaultFieldsForDictionaryValue() -> [FieldType] {
         return Array(self.fields.values)
     }
     
@@ -321,7 +321,7 @@ public class Model: NSObject, Routable, NSCopying {
     /**
      Performs any model-level field initialization your class may need, before any field values are set.
      */
-    public func initializeField(field:FieldType) {
+    open func initializeField(_ field:FieldType) {
     }
     
     public required override init() {
@@ -330,12 +330,12 @@ public class Model: NSObject, Routable, NSCopying {
         self.afterInit()
     }
     
-    public func visitAllFields(recursive recursive:Bool = true, action:(FieldType -> Void)) {
+    open func visitAllFields(recursive:Bool = true, action:((FieldType) -> Void)) {
         var seenModels: Set<Model> = Set()
         self.visitAllFields(recursive: recursive, action: action, seenModels: &seenModels)
     }
     
-    public func visitAllFields(recursive recursive:Bool = true, action:(FieldType -> Void), inout seenModels:Set<Model>) {
+    open func visitAllFields(recursive:Bool = true, action:((FieldType) -> Void), seenModels:inout Set<Model>) {
         guard !seenModels.contains(self) else { return }
         
         seenModels.insert(self)
@@ -358,12 +358,12 @@ public class Model: NSObject, Routable, NSCopying {
         }
     }
 
-    public func visitAllFieldValues(recursive recursive:Bool = true, action:(Any? -> Void)) {
+    open func visitAllFieldValues(recursive:Bool = true, action:((Any?) -> Void)) {
         var seenModels: Set<Model> = Set()
         self.visitAllFieldValues(recursive: recursive, action: action, seenModels: &seenModels)
 }
 
-    public func visitAllFieldValues(recursive recursive:Bool = true, action:(Any? -> Void), inout seenModels:Set<Model>) {
+    open func visitAllFieldValues(recursive:Bool = true, action:((Any?) -> Void), seenModels:inout Set<Model>) {
         guard !seenModels.contains(self) else { return }
 
         seenModels.insert(self)
@@ -398,7 +398,7 @@ public class Model: NSObject, Routable, NSCopying {
      - parameter explicitNull: Whether nil values should be serialized as NSNull. Note that if this is false, dictionary.keys will not include those with nil values.
      - parameter includeField: A closure determining whether a field should be included in the result.  By default, it will be included iff its state is .Set (i.e., it has been explicitly set since it was loaded)
      */
-    public func dictionaryValue(fields fields:[FieldType]?=nil, explicitNull: Bool = false, includeField: ((FieldType) -> Bool)?=nil) -> AttributeDictionary {
+    open func dictionaryValue(fields:[FieldType]?=nil, explicitNull: Bool = false, includeField: ((FieldType) -> Bool)?=nil) -> AttributeDictionary {
         var seenFields:[FieldType] = []
         var includeField = includeField
         if includeField == nil {
@@ -407,7 +407,7 @@ public class Model: NSObject, Routable, NSCopying {
         return self.dictionaryValue(fields: fields, seenFields: &seenFields, explicitNull: explicitNull, includeField: includeField)
     }
     
-    internal func dictionaryValue(fields fields:[FieldType]?=nil, inout seenFields: [FieldType], explicitNull: Bool = false, includeField: ((FieldType) -> Bool)?=nil) -> AttributeDictionary {
+    internal func dictionaryValue(fields:[FieldType]?=nil, seenFields: inout [FieldType], explicitNull: Bool = false, includeField: ((FieldType) -> Bool)?=nil) -> AttributeDictionary {
         let fields = fields ?? self.defaultFieldsForDictionaryValue()
         
         var result:AttributeDictionary = [:]
@@ -427,7 +427,7 @@ public class Model: NSObject, Routable, NSCopying {
      - parameter dictionaryValue: The dictionary representation of this model's new field values.
      - parameter fields: An array of field objects whose values are to be found in the dictionary
      */
-    public func setDictionaryValue(dictionaryValue: AttributeDictionary, fields:[FieldType]?=nil) {
+    open func setDictionaryValue(_ dictionaryValue: AttributeDictionary, fields:[FieldType]?=nil) {
         let fields = (fields ?? self.defaultFieldsForDictionaryValue())
         for (_, field) in self.fields {
             if fields.contains({ $0 === field }) {
@@ -453,10 +453,10 @@ public class Model: NSObject, Routable, NSCopying {
     /**
      Finds all values that are shells (i.e., a model instantiated from just a foreign key)
      */
-    public func shells(recursive recursive:Bool = false) -> [Model] {
+    open func shells(recursive:Bool = false) -> [Model] {
         var results:[Model] = []
         self.visitAllFieldValues(recursive: recursive) { value in
-            if let model = value as? Model where model.shell == true {
+            if let model = value as? Model , model.shell == true {
                 results.append(model)
             }
         }
@@ -466,11 +466,11 @@ public class Model: NSObject, Routable, NSCopying {
     /**
      All models related with foreignKey fields
      */
-    public func foreignKeyModels() -> [Model] {
+    open func foreignKeyModels() -> [Model] {
         var results:[Model] = []
         
         self.visitAllFields { field in
-            if let modelField = field as? ModelFieldType where modelField.foreignKey == true {
+            if let modelField = field as? ModelFieldType , modelField.foreignKey == true {
                 if let value = modelField.anyObjectValue as? Model {
                     results.append(value)
                 } else if let values = modelField.anyObjectValue as? [Model] {
@@ -485,7 +485,7 @@ public class Model: NSObject, Routable, NSCopying {
     
     // MARK: Validation
     
-    public func addError(keyPath path:String, message:String) {
+    open func addError(keyPath path:String, message:String) {
         if let field = self.fieldForKeyPath(path) {
             field.addValidationError(message)
         }
@@ -496,7 +496,7 @@ public class Model: NSObject, Routable, NSCopying {
      
      By default, related models are not themselves validated.  Use the `requireValid()` method on those fields for deeper validation.
      */
-    public func validate() -> ValidationState {
+    open func validate() -> ValidationState {
         self.resetValidationState()
         var messages: [String] = []
         
@@ -513,7 +513,7 @@ public class Model: NSObject, Routable, NSCopying {
         }
     }
     
-    public func resetValidationState() {
+    open func resetValidationState() {
         self.visitAllFields { $0.resetValidationState() }
     }
 

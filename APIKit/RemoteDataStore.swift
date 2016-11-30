@@ -10,34 +10,34 @@ import Alamofire
 import PromiseKit
 import MagneticFields
 
-public enum RemoteDataStoreError: ErrorType {
-    case UnknownError(message: String)
-    case DeserializationFailure
-    case InvalidResponse
-    case NoModelPath(model: Model)
-    case NoModelCollectionPath(modelClass: Model.Type)
+public enum RemoteDataStoreError: Error {
+    case unknownError(message: String)
+    case deserializationFailure
+    case invalidResponse
+    case noModelPath(model: Model)
+    case noModelCollectionPath(modelClass: Model.Type)
     
     var description: String {
         switch(self) {
-        case .DeserializationFailure:
+        case .deserializationFailure:
             return "Could not deserialize model"
-        case .InvalidResponse:
+        case .invalidResponse:
             return "Invalid response value"
-        case .NoModelPath(let model):
-            return "No path for model of type \(model.dynamicType)"
-        case .UnknownError(let message):
+        case .noModelPath(let model):
+            return "No path for model of type \(type(of: model))"
+        case .unknownError(let message):
             return message
-        case .NoModelCollectionPath(let modelClass):
+        case .noModelCollectionPath(let modelClass):
             return "No path for model collection of type \(modelClass)"
         }
     }
 }
 
-public class RemoteDataStore: DataStore, ListableDataStore {
-    public var baseURL:NSURL
-    public var delegate:DataStoreDelegate?
+open class RemoteDataStore: DataStore, ListableDataStore {
+    open var baseURL:URL
+    open var delegate:DataStoreDelegate?
     
-    public init(baseURL:NSURL) {
+    public init(baseURL:URL) {
         self.baseURL = baseURL
     }
     
@@ -48,9 +48,9 @@ public class RemoteDataStore: DataStore, ListableDataStore {
      - parameter modelClass: The Model subclass to be instantiated
      - returns: A Promise yielding a Model instance
      */
-    public func instantiateModel<T:Model>(modelClass:T.Type) -> (Response<AttributeDictionary> -> Promise<T>){
+    open func instantiateModel<T:Model>(_ modelClass:T.Type) -> ((Response<AttributeDictionary>) -> Promise<T>){
         return { (response:Response<AttributeDictionary>) in
-            if let data = response.data, model = self.deserializeModel(modelClass, parameters: data) {
+            if let data = response.data, let model = self.deserializeModel(modelClass, parameters: data) {
                 return Promise(model)
             } else {
                 return Promise(error: RemoteDataStoreError.DeserializationFailure)
@@ -58,7 +58,7 @@ public class RemoteDataStore: DataStore, ListableDataStore {
         }
     }
     
-    public func instantiateModels<T:Model>(modelClass:T.Type) -> (Response<[AttributeDictionary]> -> Promise<[T]>) {
+    open func instantiateModels<T:Model>(_ modelClass:T.Type) -> ((Response<[AttributeDictionary]>) -> Promise<[T]>) {
         return { (response:Response<[AttributeDictionary]>) in
             // TODO: any of the individual models could fail to deserialize, and we're just silently ignoring them.
             // Not sure what the right behavior should be.
@@ -76,23 +76,23 @@ public class RemoteDataStore: DataStore, ListableDataStore {
     
     // MARK: - Helper methods that subclasses might want to override
     
-    private func url(path path:String) -> NSURL {
-        return self.baseURL.URLByAppendingPathComponent(path)!
+    fileprivate func url(path:String) -> URL {
+        return self.baseURL.appendingPathComponent(path)
     }
     
-    public func defaultHeaders() -> [String:String] {
+    open func defaultHeaders() -> [String:String] {
         return [:]
     }
     
-    public func formatPayload(payload:AttributeDictionary) -> AttributeDictionary {
+    open func formatPayload(_ payload:AttributeDictionary) -> AttributeDictionary {
         return payload
     }
     
-    public func serializeModel(model:Model, fields:[FieldType]?=nil) -> AttributeDictionary {
+    open func serializeModel(_ model:Model, fields:[FieldType]?=nil) -> AttributeDictionary {
         return model.dictionaryValue(fields: fields, explicitNull: true)
     }
     
-    public func deserializeModel<T:Model>(modelClass:T.Type, parameters:AttributeDictionary) -> T? {
+    open func deserializeModel<T:Model>(_ modelClass:T.Type, parameters:AttributeDictionary) -> T? {
         // TODO: would rather use value transformer here instead, but T is Model instead of modelClass and it doesn't get deserialized properly
         //        return ModelValueTransformer<T>().importValue(parameters)
         let model = modelClass.fromDictionaryValue(parameters)
@@ -100,7 +100,7 @@ public class RemoteDataStore: DataStore, ListableDataStore {
         return model
     }
     
-    public func handleError(error:ErrorType, model:Model?=nil) {
+    open func handleError(_ error:Error, model:Model?=nil) {
         // Override
     }
     
@@ -115,7 +115,7 @@ public class RemoteDataStore: DataStore, ListableDataStore {
      - parameter apiResponse: The JSON response object from an Alamofire request
      - returns: A Response object with its payload cast to the specified type
      */
-    public func constructResponse<T>(apiResponse:Alamofire.Response<AnyObject,NSError>) -> Response<T>? {
+    open func constructResponse<T>(_ apiResponse:Alamofire.Response<AnyObject,NSError>) -> Response<T>? {
         let response = Response<T>()
         response.data = apiResponse.result.value as? T
         return response
@@ -124,10 +124,10 @@ public class RemoteDataStore: DataStore, ListableDataStore {
     
     // MARK: - Generic requests
     
-    public func nestedParameterEncoding(method method:Alamofire.Method) -> ParameterEncoding {
+    open func nestedParameterEncoding(method:Alamofire.Method) -> ParameterEncoding {
         return ParameterEncoding.Custom({ (request:URLRequestConvertible, parameters:[String : AnyObject]?) -> (NSMutableURLRequest, NSError?) in
             let request = request as? NSMutableURLRequest ?? NSMutableURLRequest()
-            if let parameters = parameters, url = request.URL {
+            if let parameters = parameters, let url = request.URL {
                 if method == .GET {
                     let components = NSURLComponents(URL: url, resolvingAgainstBaseURL: false)
                     components?.query = ParameterEncoder().encodeParameters(parameters)
@@ -141,14 +141,14 @@ public class RemoteDataStore: DataStore, ListableDataStore {
         })
     }
     
-    public func encodingForMethod(method: Alamofire.Method) -> ParameterEncoding {
+    open func encodingForMethod(_ method: Alamofire.Method) -> ParameterEncoding {
         return self.nestedParameterEncoding(method: method)
     }
     
     /**
      A placeholder method in which you can attempt to restore your session (refreshing your oauth token, for example) before each request.
      */
-    public func restoreSession() -> Promise<Void> {
+    open func restoreSession() -> Promise<Void> {
         return Promise<Void>()
     }
     
@@ -161,15 +161,15 @@ public class RemoteDataStore: DataStore, ListableDataStore {
      
      - returns: A Promise parameterized by the data payload type of the response
      */
-    public func request<T>(
-        method: Alamofire.Method,
+    open func request<T>(
+        _ method: Alamofire.Method,
         path: String,
         parameters: AttributeDictionary?=nil,
         headers: [String:String]=[:],
         encoding: ParameterEncoding?=nil,
         model: Model?=nil,
-        timeoutInterval: NSTimeInterval?=nil,
-        cachePolicy: NSURLRequestCachePolicy?=nil,
+        timeoutInterval: TimeInterval?=nil,
+        cachePolicy: NSURLRequest.CachePolicy?=nil,
         requireSession: Bool = true
         ) -> Promise<Response<T>> {
         
@@ -229,11 +229,11 @@ public class RemoteDataStore: DataStore, ListableDataStore {
     
     // MARK: - CRUD operations (DataStore protocol methods)
     
-    public func create<T:Model>(model: T, fields: [FieldType]?) -> Promise<T> {
+    open func create<T:Model>(_ model: T, fields: [FieldType]?) -> Promise<T> {
         return self.create(model, fields: fields, parameters: nil)
     }
     
-    public func create<T:Model>(model: T, fields: [FieldType]?, parameters: [String:AnyObject]?) -> Promise<T> {
+    open func create<T:Model>(_ model: T, fields: [FieldType]?, parameters: [String:AnyObject]?) -> Promise<T> {
         model.resetValidationState()
         model.beforeSave()
         
@@ -247,21 +247,21 @@ public class RemoteDataStore: DataStore, ListableDataStore {
         // See MemoryDataStore for an explanation [1]
         let modelModel = model as Model
         
-        if let collectionPath = modelModel.dynamicType.collectionPath {
-            return self.request(.POST, path: collectionPath, parameters: requestParameters, model:model).thenInBackground(self.instantiateModel(modelModel.dynamicType)).thenInBackground { model in
+        if let collectionPath = type(of: modelModel).collectionPath {
+            return self.request(.POST, path: collectionPath, parameters: requestParameters, model:model).thenInBackground(self.instantiateModel(type(of: modelModel))).thenInBackground { model in
                 model.afterCreate()
                 return Promise(model as! T)
             }
         } else {
-            return Promise(error: RemoteDataStoreError.NoModelCollectionPath(modelClass: modelModel.dynamicType))
+            return Promise(error: RemoteDataStoreError.NoModelCollectionPath(modelClass: type(of: modelModel)))
         }
     }
     
-    public func update<T:Model>(model: T, fields: [FieldType]?) -> Promise<T> {
+    open func update<T:Model>(_ model: T, fields: [FieldType]?) -> Promise<T> {
         return self.update(model, fields: fields, parameters: nil)
     }
     
-    public func update<T:Model>(model: T, fields: [FieldType]?, parameters: [String: AnyObject]?) -> Promise<T> {
+    open func update<T:Model>(_ model: T, fields: [FieldType]?, parameters: [String: AnyObject]?) -> Promise<T> {
         model.resetValidationState()
         model.beforeSave()
         
@@ -274,7 +274,7 @@ public class RemoteDataStore: DataStore, ListableDataStore {
                     requestParameters[k] = v
                 }
             }
-            return self.request(.PATCH, path: path, parameters: requestParameters, model:model).thenInBackground(self.instantiateModel(modelModel.dynamicType)).thenInBackground { model in
+            return self.request(.PATCH, path: path, parameters: requestParameters, model:model).thenInBackground(self.instantiateModel(type(of: modelModel))).thenInBackground { model in
                 // Dancing around to get the type inference to work
                 return Promise(model as! T)
             }
@@ -283,7 +283,7 @@ public class RemoteDataStore: DataStore, ListableDataStore {
         }
     }
     
-    public func delete<T:Model>(model: T) -> Promise<T> {
+    open func delete<T:Model>(_ model: T) -> Promise<T> {
         if let path = (model as Model).path {
             return self.request(.DELETE, path: path).thenInBackground { (response:Response<T>) -> Promise<T> in
                 model.afterDelete()
@@ -293,11 +293,11 @@ public class RemoteDataStore: DataStore, ListableDataStore {
             return Promise(error: RemoteDataStoreError.NoModelPath(model: model))
         }
     }
-    public func lookup<T: Model>(modelClass:T.Type, identifier:String) -> Promise<T> {
+    open func lookup<T: Model>(_ modelClass:T.Type, identifier:String) -> Promise<T> {
         return self.lookup(modelClass, identifier: identifier, parameters: nil)
     }
     
-    public func lookup<T: Model>(modelClass:T.Type, identifier:String, parameters: [String:AnyObject]?) -> Promise<T> {
+    open func lookup<T: Model>(_ modelClass:T.Type, identifier:String, parameters: [String:AnyObject]?) -> Promise<T> {
         let model = modelClass.init() as T
         model.identifier = identifier
         if let path = (model as Model).path {
@@ -307,7 +307,7 @@ public class RemoteDataStore: DataStore, ListableDataStore {
         }
     }
     
-    public func refresh<T:Model>(model:T, parameters:[String:AnyObject]?=nil) -> Promise<T> {
+    open func refresh<T:Model>(_ model:T, parameters:[String:AnyObject]?=nil) -> Promise<T> {
         if let identifier = model.identifier {
             return self.lookup(T.self, identifier: identifier, parameters: parameters)
         } else {
@@ -315,7 +315,7 @@ public class RemoteDataStore: DataStore, ListableDataStore {
         }
     }
     
-    public func list<T: Model>(modelClass:T.Type) -> Promise<[T]> {
+    open func list<T: Model>(_ modelClass:T.Type) -> Promise<[T]> {
         return self.list(modelClass, parameters: nil)
     }
     
@@ -326,7 +326,7 @@ public class RemoteDataStore: DataStore, ListableDataStore {
      - parameter path: An optional path.  Defaults to modelClass.path
      - parameter parameters: Request parameters to pass along in the request.
      */
-    public func list<T: Model>(modelClass:T.Type, path:String?=nil, parameters:[String:AnyObject]?) -> Promise<[T]> {
+    open func list<T: Model>(_ modelClass:T.Type, path:String?=nil, parameters:[String:AnyObject]?) -> Promise<[T]> {
         if let collectionPath = (path ?? modelClass.collectionPath) {
             return self.request(.GET, path: collectionPath, parameters: parameters).thenInBackground(self.instantiateModels(modelClass))
         } else {

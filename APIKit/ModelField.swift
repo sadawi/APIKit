@@ -10,8 +10,8 @@ import Foundation
 import MagneticFields
 
 public enum DeleteBehavior {
-    case Nullify
-    case Delete
+    case nullify
+    case delete
 }
 
 public protocol ModelFieldType: FieldType {
@@ -19,33 +19,33 @@ public protocol ModelFieldType: FieldType {
     var foreignKey:Bool { get set }
     var cascadeDelete: Bool { get }
 
-    func inverseValueRemoved(value: Model?)
-    func inverseValueAdded(value: Model?)
+    func inverseValueRemoved(_ value: Model?)
+    func inverseValueAdded(_ value: Model?)
 }
 
-public class ModelField<T: Model>: Field<T>, ModelFieldType {
-    public var foreignKey:Bool = false
-    public weak var model: Model?
+open class ModelField<T: Model>: Field<T>, ModelFieldType {
+    open var foreignKey:Bool = false
+    open weak var model: Model?
     
-    public var cascadeDelete: Bool = true
+    open var cascadeDelete: Bool = true
     
-    private var _inverse: (T->ModelFieldType)?
+    fileprivate var _inverse: ((T)->ModelFieldType)?
     
-    public init(value:T?=nil, name:String?=nil, priority:Int=0, key:String?=nil, foreignKey:Bool=false, inverse: (T->ModelFieldType)?=nil) {
+    public init(value:T?=nil, name:String?=nil, priority:Int=0, key:String?=nil, foreignKey:Bool=false, inverse: ((T)->ModelFieldType)?=nil) {
         super.init(value: value, name: name, priority: priority, key: key)
         self.foreignKey = foreignKey
         self._inverse = inverse
     }
     
-    public override func defaultValueTransformer() -> ValueTransformer<T> {
+    open override func defaultValueTransformer() -> MagneticFields.ValueTransformer {
         return self.foreignKey ? ModelForeignKeyValueTransformer<T>.sharedInstance : ModelValueTransformer<T>.sharedInstance
     }
     
-    public func inverse(model:T) -> ModelFieldType? {
+    open func inverse(_ model:T) -> ModelFieldType? {
         return self._inverse?(model)
     }
     
-    public override func valueUpdated(oldValue oldValue:T?, newValue: T?) {
+    open override func valueUpdated(oldValue:T?, newValue: T?) {
         super.valueUpdated(oldValue: oldValue, newValue: newValue)
         
         if oldValue != newValue {
@@ -60,7 +60,7 @@ public class ModelField<T: Model>: Field<T>, ModelFieldType {
         }
     }
     
-    public func requireValid() -> Self {
+    open func requireValid() -> Self {
         return self.require(message: "Value is invalid", allowNil:true) { value in
             return value.validate().isValid
         }
@@ -68,13 +68,13 @@ public class ModelField<T: Model>: Field<T>, ModelFieldType {
     
     // MARK: - ModelFieldType
     
-    public func inverseValueAdded(value: Model?) {
+    open func inverseValueAdded(_ value: Model?) {
         if let value = value as? T {
             self.value = value
         }
     }
     
-    public func inverseValueRemoved(value: Model?) {
+    open func inverseValueRemoved(_ value: Model?) {
         self.value = nil
     }
     
@@ -83,15 +83,15 @@ public class ModelField<T: Model>: Field<T>, ModelFieldType {
     }
     
     
-    public override func writeUnseenValueToDictionary(inout dictionary: [String : AnyObject], inout seenFields: [FieldType], key: String, explicitNull: Bool = false) {
+    open override func writeUnseenValue(to dictionary: inout [String : AnyObject], seenFields: inout [FieldType], key: String, explicitNull: Bool = false) {
         if let modelValueTransformer = self.valueTransformer() as? ModelValueTransformer<T> {
             dictionary[key] = modelValueTransformer.exportValue(self.value, seenFields: &seenFields, explicitNull: explicitNull)
         } else { 
-            super.writeUnseenValueToDictionary(&dictionary, seenFields: &seenFields, key: key, explicitNull: explicitNull)
+            super.writeUnseenValue(to: &dictionary, seenFields: &seenFields, key: key, explicitNull: explicitNull)
         }
     }
     
-    public override func writeSeenValueToDictionary(inout dictionary: [String : AnyObject], inout seenFields: [FieldType], key: String) {
+    open override func writeSeenValue(to dictionary: inout [String : AnyObject], seenFields: inout [FieldType], key: String) {
         // Only writes the identifier field, if it exists
         if let identifierField = self.value?.identifierField, let modelValueTransformer = self.valueTransformer() as? ModelValueTransformer<T> {
             dictionary[key] = modelValueTransformer.exportValue(self.value, fields: [identifierField], seenFields: &seenFields)
@@ -99,13 +99,13 @@ public class ModelField<T: Model>: Field<T>, ModelFieldType {
     }
 }
 
-public class ModelArrayField<T: Model>: ArrayField<T>, ModelFieldType {
-    public weak var model: Model?
-    private var _inverse: (T->ModelFieldType)?
-    public var foreignKey: Bool = false
-    public var cascadeDelete: Bool = true
+open class ModelArrayField<T: Model>: ArrayField<T>, ModelFieldType {
+    open weak var model: Model?
+    fileprivate var _inverse: ((T)->ModelFieldType)?
+    open var foreignKey: Bool = false
+    open var cascadeDelete: Bool = true
 
-    public override var value:[T]? {
+    open override var value:[T]? {
         didSet {
             let oldValues = oldValue ?? []
             let newValues = self.value ?? []
@@ -122,33 +122,33 @@ public class ModelArrayField<T: Model>: ArrayField<T>, ModelFieldType {
         }
     }
     
-    public init(_ field:ModelField<T>, value:[T]?=[], name:String?=nil, priority:Int=0, key:String?=nil, inverse: (T->ModelFieldType)?=nil) {
+    public init(_ field:ModelField<T>, value:[T]?=[], name:String?=nil, priority:Int=0, key:String?=nil, inverse: ((T)->ModelFieldType)?=nil) {
         super.init(field, value: value, name: name, priority: priority, key: key)
         self.foreignKey = field.foreignKey
         self._inverse = inverse ?? field._inverse
     }
 
-    public override func valueRemoved(value: T) {
+    open override func valueRemoved(_ value: T) {
         self.inverse(value)?.inverseValueRemoved(self.model)
     }
     
-    public override func valueAdded(value: T) {
+    open override func valueAdded(_ value: T) {
         self.inverse(value)?.inverseValueAdded(self.model)
     }
     
-    public func inverse(model:T) -> ModelFieldType? {
+    open func inverse(_ model:T) -> ModelFieldType? {
         return self._inverse?(model)
     }
     
     // MARK: - ModelFieldType
     
-    public func inverseValueAdded(value: Model?) {
+    open func inverseValueAdded(_ value: Model?) {
         if let value = value as? T {
             self.append(value)
         }
     }
     
-    public func inverseValueRemoved(value: Model?) {
+    open func inverseValueRemoved(_ value: Model?) {
         if let value = value as? T {
             self.removeFirst(value)
         }

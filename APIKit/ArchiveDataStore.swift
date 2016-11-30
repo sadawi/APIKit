@@ -9,24 +9,24 @@
 import Foundation
 import PromiseKit
 
-enum ArchiveError: ErrorType {
-    case NoPath
-    case UnarchiveError
-    case ArchiveError
-    case DirectoryError
+enum ArchiveError: Error {
+    case noPath
+    case unarchiveError
+    case archiveError
+    case directoryError
 }
 
 private let kDefaultGroup = ""
 
-public class ArchiveDataStore: ListableDataStore, ClearableDataStore {
-    public static let sharedInstance = ArchiveDataStore()
+open class ArchiveDataStore: ListableDataStore, ClearableDataStore {
+    open static let sharedInstance = ArchiveDataStore()
 
     
     /**
      Unarchives the default group of instances of a model class.  This will not include any lists of this model class 
      that were saved with a group name.
      */
-    public func list<T : Model>(modelClass: T.Type) -> Promise<[T]> {
+    open func list<T : Model>(_ modelClass: T.Type) -> Promise<[T]> {
         return self.list(modelClass, group: kDefaultGroup)
     }
 
@@ -36,18 +36,18 @@ public class ArchiveDataStore: ListableDataStore, ClearableDataStore {
      - parameter modelClass: The model class to unarchive.
      - parameter group: An identifier for the group
      */
-    public func list<T : Model>(modelClass: T.Type, group: String) -> Promise<[T]> {
+    open func list<T : Model>(_ modelClass: T.Type, group: String) -> Promise<[T]> {
         let results = self.unarchive(modelClass, suffix: group)
-        return Promise(results)
+        return Promise(value: results)
     }
     
-    private func accumulateRelatedModels(models: [Model], suffix: String) -> [String:[Model]] {
+    fileprivate func accumulateRelatedModels(_ models: [Model], suffix: String) -> [String:[Model]] {
         var registry:[String:[Model]] = [:]
         
         let add = { (model:Model?) -> () in
             guard let model = model else { return }
             
-            let key = self.keyForClass(model.dynamicType).stringByAppendingString(suffix)
+            let key = self.keyForClass(type(of: model)) + suffix
             var existing:[Model]? = registry[key]
             if existing == nil {
                 existing = []
@@ -77,68 +77,68 @@ public class ArchiveDataStore: ListableDataStore, ClearableDataStore {
      - parameter group: A specific group name identifying this model list.
      - parameter includeRelated: Whether the entire object graph should be archived.
      */
-    public func saveList<T: Model>(modelClass:T.Type, models: [T], group: String="", includeRelated: Bool = false) -> Promise<Void> {
-        guard let _ = self.createdDirectory() else { return Promise(error: ArchiveError.DirectoryError) }
+    open func saveList<T: Model>(_ modelClass:T.Type, models: [T], group: String="", includeRelated: Bool = false) -> Promise<Void> {
+        guard let _ = self.createdDirectory() else { return Promise(error: ArchiveError.directoryError) }
         
         let registry = self.accumulateRelatedModels(models, suffix: group)
         
         for (key, models) in registry {
-            self.archive(models, key: key)
+            _ = self.archive(models, key: key)
         }
-        return Promise<Void>()
+        return Promise<Void>(value: ())
         
     }
 
-    public func deleteAll() -> Promise<Void> {
-        let filemanager = NSFileManager.defaultManager()
+    open func deleteAll() -> Promise<Void> {
+        let filemanager = FileManager.default
         if let directory = self.directory() {
             do {
-                try filemanager.removeItemAtPath(directory)
-                return Promise<Void>()
+                try filemanager.removeItem(atPath: directory)
+                return Promise<Void>(value: ())
             } catch let error {
                 return Promise(error: error)
             }
         } else {
-            return Promise(error: ArchiveError.NoPath)
+            return Promise(error: ArchiveError.noPath)
         }
     }
     
-    public func deleteAll<T : Model>(modelClass: T.Type) -> Promise<Void> {
+    open func deleteAll<T : Model>(_ modelClass: T.Type) -> Promise<Void> {
         return self.deleteAll(modelClass, group: kDefaultGroup)
     }
     
-    public func deleteAll<T : Model>(modelClass: T.Type, group suffix: String) -> Promise<Void> {
-        let key = self.keyForClass(modelClass).stringByAppendingString(suffix)
+    open func deleteAll<T : Model>(_ modelClass: T.Type, group suffix: String) -> Promise<Void> {
+        let key = self.keyForClass(modelClass) + suffix
         
         if let path = self.pathForKey(key) {
-            let filemanager = NSFileManager.defaultManager()
+            let filemanager = FileManager.default
             do {
-                try filemanager.removeItemAtPath(path)
-                return Promise<Void>()
+                try filemanager.removeItem(atPath: path)
+                return Promise<Void>(value: ())
             } catch let error {
                 return Promise(error: error)
             }
         } else {
-            return Promise(error: ArchiveError.NoPath)
+            return Promise(error: ArchiveError.noPath)
         }
     }
     
     /**
      Loads all instances of a class, and recursively unarchives all classes of related (shell) models.
      */
-    private func unarchive<T: Model>(modelClass: T.Type, suffix: String, keysToIgnore:NSMutableSet=NSMutableSet()) -> [T] {
-        let key = self.keyForClass(modelClass).stringByAppendingString(suffix)
+    fileprivate func unarchive<T: Model>(_ modelClass: T.Type, suffix: String, keysToIgnore:NSMutableSet=NSMutableSet()) -> [T] {
+        let key = self.keyForClass(modelClass) + suffix
         
-        if !keysToIgnore.containsObject(key) {
-            keysToIgnore.addObject(key)
+        if !keysToIgnore.contains(key) {
+            keysToIgnore.add(key)
             
             if let path = self.pathForKey(key) {
-                let unarchived = NSKeyedUnarchiver.unarchiveObjectWithFile(path)
+                let unarchived = NSKeyedUnarchiver.unarchiveObject(withFile: path)
                 if let dictionaries = unarchived as? [AttributeDictionary] {
                     let models = dictionaries.map { modelClass.fromDictionaryValue($0) }.flatMap { $0 }
                     for model in models {
                         for shell in model.shells() {
-                            self.unarchive(shell.dynamicType, suffix: suffix, keysToIgnore: keysToIgnore)
+                            self.unarchive(type(of: shell), suffix: suffix, keysToIgnore: keysToIgnore)
                         }
                     }
                     return models
@@ -149,7 +149,7 @@ public class ArchiveDataStore: ListableDataStore, ClearableDataStore {
         return []
     }
     
-    private func archive<T: Model>(models: [T], key: String) -> Bool {
+    fileprivate func archive<T: Model>(_ models: [T], key: String) -> Bool {
         if let path = self.pathForKey(key) {
             let dictionaries = models.map { $0.dictionaryValue }
             if NSKeyedArchiver.archiveRootObject(dictionaries, toFile: path) {
@@ -162,13 +162,13 @@ public class ArchiveDataStore: ListableDataStore, ClearableDataStore {
         }
     }
     
-    func keyForClass(cls: AnyClass) -> String {
+    func keyForClass(_ cls: AnyClass) -> String {
         return cls.description()
     }
     
     func directory() -> String? {
-        if let path = NSSearchPathForDirectoriesInDomains(.CachesDirectory, .UserDomainMask, true).last as NSString? {
-            return path.stringByAppendingPathComponent("archives")
+        if let path = NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true).last as NSString? {
+            return path.appendingPathComponent("archives")
         } else {
             return nil
         }
@@ -177,14 +177,14 @@ public class ArchiveDataStore: ListableDataStore, ClearableDataStore {
     func createdDirectory() -> String? {
         guard let path = self.directory() else { return nil }
         do {
-            try NSFileManager.defaultManager().createDirectoryAtPath(path, withIntermediateDirectories: true, attributes: nil)
+            try FileManager.default.createDirectory(atPath: path, withIntermediateDirectories: true, attributes: nil)
             return path
         } catch {
             return nil
         }
     }
     
-    func pathForKey(key: String) -> String? {
-        return (self.directory() as NSString?)?.stringByAppendingPathComponent(key)
+    func pathForKey(_ key: String) -> String? {
+        return (self.directory() as NSString?)?.appendingPathComponent(key)
     }
 }

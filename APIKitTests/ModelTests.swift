@@ -22,24 +22,24 @@ class ModelTests: XCTestCase {
         super.tearDown()
     }
     
-    private class Profile: Model {
+    fileprivate class Profile: Model {
         let person:ModelField<Person> = ModelField<Person>(inverse: { $0.profile })
     }
     
-    private class Company: Model {
+    fileprivate class Company: Model {
         let name = Field<String>()
         let size = Field<Int>()
         let parentCompany = ModelField<Company>()
         let employees:ModelArrayField<Person> = *ModelField<Person>(inverse: { person in return person.company })
     }
     
-    private class Person: Model {
+    fileprivate class Person: Model {
         let name = Field<String>()
         let company = ModelField<Company>(inverse: { company in return company.employees })
         let profile = ModelField<Profile>(inverse: { $0.person })
     }
     
-    private class Club: Model {
+    fileprivate class Club: Model {
         let name = Field<String>()
         let members = *ModelField<Person>()
     }
@@ -69,10 +69,10 @@ class ModelTests: XCTestCase {
         }
     }
     
-    private class InitializedFields: Model {
+    fileprivate class InitializedFields: Model {
         let name = Field<String>()
         
-        private override func initializeField(field: FieldType) {
+        fileprivate override func initializeField(_ field: FieldType) {
             if field.key == "name" {
                 field.name = "Test"
             }
@@ -142,8 +142,8 @@ class ModelTests: XCTestCase {
         XCTAssertEqual(0, company1.employees.value?.count)
     }
     
-    private class Letter: Model {
-        override class func instanceClassForDictionaryValue<T>(dictionaryValue: AttributeDictionary) -> T.Type? {
+    fileprivate class Letter: Model {
+        override class func instanceClassForDictionaryValue<T>(_ dictionaryValue: AttributeDictionary) -> T.Type? {
             if let letter = dictionaryValue["letter"] as? String {
                 if letter == "a" {
                     return A.self as? T.Type
@@ -159,13 +159,13 @@ class ModelTests: XCTestCase {
         }
     }
     
-    private class A: Letter {
+    fileprivate class A: Letter {
     }
     
-    private class B: Letter {
+    fileprivate class B: Letter {
     }
     
-    private class UnrelatedClass: Model {
+    fileprivate class UnrelatedClass: Model {
     }
     
     func testCustomSubclass() {
@@ -177,14 +177,14 @@ class ModelTests: XCTestCase {
         
         // We didn't define the case for "c", so it falls back to Letter.
         let c = Letter.fromDictionaryValue(["letter": "c"])
-        XCTAssert(c!.dynamicType == Letter.self)
+        XCTAssert(type(of: c!) == Letter.self)
 
         // Note that the unrelated type falls back to Letter!
         let x = Letter.fromDictionaryValue(["letter": "x"])
-        XCTAssert(x!.dynamicType == Letter.self)
+        XCTAssert(type(of: x!) == Letter.self)
     }
     
-    private class Object: Model {
+    fileprivate class Object: Model {
         let id = Field<String>()
         
         let name                = Field<String>().requireNotNil()
@@ -196,11 +196,11 @@ class ModelTests: XCTestCase {
         }
     }
     
-    private class EssentialComponent: Model {
+    fileprivate class EssentialComponent: Model {
         let number = Field<Int>().requireNotNil()
     }
     
-    private class Component: Model {
+    fileprivate class Component: Model {
         let id = Field<String>()
 
         let name = Field<String>().requireNotNil()
@@ -273,7 +273,7 @@ class ModelTests: XCTestCase {
 //        self.waitForExpectationsWithTimeout(1, handler: nil)
 //    }
 
-    private class PathModel: Model {
+    fileprivate class PathModel: Model {
         override var path: String? {
             return "testPath"
         }

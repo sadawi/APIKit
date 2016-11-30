@@ -17,31 +17,31 @@ class CompoundDataStore {
     }
     
     // Override this to customize how each model class is looked up
-    func dataStoresForModelClass<T:Model>(modelClass:T.Type, operation:Operation) -> [DataStore] {
+    func dataStoresForModelClass<T:Model>(_ modelClass:T.Type, operation:Operation) -> [DataStore] {
         return self.dataStores
     }
 
-    func create(model: Model, fields: [FieldType]?) -> Promise<Model> {
+    func create(_ model: Model, fields: [FieldType]?) -> Promise<Model> {
         return Promise { fulfill, reject in
             
         }
     }
-    func update(model: Model, fields: [FieldType]?) -> Promise<Model> {
+    func update(_ model: Model, fields: [FieldType]?) -> Promise<Model> {
         return Promise { fulfill, reject in
             
         }
     }
-    func delete(model: Model) -> Promise<Model> {
+    func delete(_ model: Model) -> Promise<Model> {
         return Promise { fulfill, reject in
             
         }
     }
-    func lookup<T: Model>(modelClass:T.Type, identifier:String) -> Promise<T?> {
+    func lookup<T: Model>(_ modelClass:T.Type, identifier:String) -> Promise<T?> {
         return Promise { fulfill, reject in
             
         }
     }
-    func list<T: Model>(modelClass:T.Type) -> Promise<[T]> {
+    func list<T: Model>(_ modelClass:T.Type) -> Promise<[T]> {
         return Promise { fulfill, reject in
             
         }

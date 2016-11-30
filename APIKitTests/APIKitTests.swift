@@ -31,7 +31,7 @@ private class Product:BaseModel {
 private class Company:BaseModel {
     let name        = Field<String>()
     let products    = *ModelField<Product>()
-    let widgets     = *ModelField<Product>(foreignKey: true, key: "widgetIDs")
+    let widgets     = *ModelField<Product>(key: "widgetIDs", foreignKey: true)
 }
 
 private class Person:BaseModel {
@@ -144,7 +144,7 @@ class APIKitTests: XCTestCase {
     }
 
     func testShells() {
-        let didSave = expectationWithDescription("save")
+        let didSave = expectation(description: "save")
         
         let phil = Person.fromDictionaryValue(["name": "Phil", "age": 44, "company": "testID"])!
         
@@ -171,12 +171,12 @@ class APIKitTests: XCTestCase {
             didSave.fulfill()
         }
         
-        self.waitForExpectationsWithTimeout(1, handler:nil)
+        self.waitForExpectations(timeout: 1, handler:nil)
     }
     
     func testResource() {
-        let didSave = expectationWithDescription("save")
-        let didLookup = expectationWithDescription("lookup")
+        let didSave = expectation(description: "save")
+        let didLookup = expectation(description: "lookup")
         
         let a = Person(name: "Kevin", age: 33)
         XCTAssertNil(a.identifier)
@@ -185,14 +185,14 @@ class APIKitTests: XCTestCase {
             XCTAssertNotNil(model.identifier)
             didSave.fulfill()
             let id = model.identifier!
-            return ModelManager.sharedInstance.dataStore.lookup(a.dynamicType, identifier: id)
+            return ModelManager.sharedInstance.dataStore.lookup(type(of: a), identifier: id)
             }.then { model -> () in
                 XCTAssertNotNil(model)
                 XCTAssert(model === a)
                 didLookup.fulfill()
         }
         
-        self.waitForExpectationsWithTimeout(1, handler:nil)
+        self.waitForExpectations(timeout: 1, handler:nil)
     }
 
     func testVisitAllFields() {
@@ -210,7 +210,7 @@ class APIKitTests: XCTestCase {
                 keys.append(k)
             }
         }
-        XCTAssertEqual(keys.sort(), ["id", "name", "products", "widgetIDs"])
+        XCTAssertEqual(keys.sorted(), ["id", "name", "products", "widgetIDs"])
         
         keys = []
         company.visitAllFields(recursive: true) { field in
@@ -218,7 +218,7 @@ class APIKitTests: XCTestCase {
                 keys.append(k)
             }
         }
-        XCTAssertEqual(keys.sort(), ["category", "id", "id", "name", "productName", "products", "widgetIDs"])
+        XCTAssertEqual(keys.sorted(), ["category", "id", "id", "name", "productName", "products", "widgetIDs"])
     }
 
     func testVisitAllFieldsSimple() {
@@ -236,7 +236,7 @@ class APIKitTests: XCTestCase {
                 keys.append(k)
             }
         }
-        XCTAssertEqual(keys.sort(), ["categoryName", "id"])
+        XCTAssertEqual(keys.sorted(), ["categoryName", "id"])
         
         keys = []
         iphone.visitAllFields(recursive: true) { field in
@@ -244,13 +244,13 @@ class APIKitTests: XCTestCase {
                 keys.append(k)
             }
         }
-        XCTAssertEqual(keys.sort(), ["category", "categoryName", "id", "id", "productName"])
+        XCTAssertEqual(keys.sorted(), ["category", "categoryName", "id", "id", "productName"])
     }
     
     func testSaveDelete() {
-        let didSave = expectationWithDescription("save")
-        let didList = expectationWithDescription("list")
-        let didDelete = expectationWithDescription("delete")
+        let didSave = expectation(description: "save")
+        let didList = expectation(description: "list")
+        let didDelete = expectation(description: "delete")
         
         let store = MemoryDataStore()
         let a = Person()
@@ -270,7 +270,7 @@ class APIKitTests: XCTestCase {
             }
         }
         
-        self.waitForExpectationsWithTimeout(1, handler:nil)
+        self.waitForExpectations(timeout: 1, handler:nil)
 
     }
 

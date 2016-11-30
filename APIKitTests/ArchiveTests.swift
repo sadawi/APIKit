@@ -13,7 +13,7 @@ import MagneticFields
 private class Pet: Model {
     let id = Field<String>()
     let name = Field<String>()
-    let owner = ModelField<Person>(foreignKey: true, key: "ownerID")
+    let owner = ModelField<Person>(key: "ownerID", foreignKey: true)
 }
 
 private class Person: Model {
@@ -53,8 +53,8 @@ class ArchiveTests: XCTestCase {
         pet.name.value = "Fluffy"
         pet.owner.value = alice
         
-        let didLoad = expectationWithDescription("load")
-        let didSave = expectationWithDescription("save")
+        let didLoad = expectation(description: "load")
+        let didSave = expectation(description: "save")
 
         archive.saveList(Pet.self, models: [pet], includeRelated: true).then { () -> () in
             didSave.fulfill()
@@ -74,7 +74,7 @@ class ArchiveTests: XCTestCase {
                 XCTFail(String(error))
         }
 
-        self.waitForExpectationsWithTimeout(1, handler:nil)
+        self.waitForExpectations(timeout: 1, handler:nil)
     }
 
     func testArchive() {
@@ -82,9 +82,9 @@ class ArchiveTests: XCTestCase {
         let person1 = Person()
         person1.name.value = "Alice"
         
-        let didLoad = expectationWithDescription("load")
-        let didSave = expectationWithDescription("save")
-        let didDelete = expectationWithDescription("delete")
+        let didLoad = expectation(description: "load")
+        let didSave = expectation(description: "save")
+        let didDelete = expectation(description: "delete")
         
         archive.saveList(Person.self, models: [person1]).then { () -> () in
             didSave.fulfill()
@@ -111,7 +111,7 @@ class ArchiveTests: XCTestCase {
                 XCTFail(String(error))
         }
         
-        self.waitForExpectationsWithTimeout(1, handler:nil)
+        self.waitForExpectations(timeout: 1, handler:nil)
     }
     
     func testArchiveDeleteAll() {
@@ -119,7 +119,7 @@ class ArchiveTests: XCTestCase {
         let person1 = Person()
         person1.name.value = "Alice"
         
-        let didDelete = expectationWithDescription("delete")
+        let didDelete = expectation(description: "delete")
         
         archive.saveList(Person.self, models: [person1]).then { () -> () in
             archive.deleteAll(Person.self).then {
@@ -130,7 +130,7 @@ class ArchiveTests: XCTestCase {
             }
         }
         
-        self.waitForExpectationsWithTimeout(1, handler:nil)
+        self.waitForExpectations(timeout: 1, handler:nil)
     }
 
 }

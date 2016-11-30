@@ -9,17 +9,17 @@
 
 import Foundation
 
-public class ParameterEncoder {
-    public var escapeStrings: Bool = false
-    public var includeNullValues: Bool = false
-    public var nullString = ""
+open class ParameterEncoder {
+    open var escapeStrings: Bool = false
+    open var includeNullValues: Bool = false
+    open var nullString = ""
     
     public init(escapeStrings: Bool = false, includeNullValues:Bool = false) {
         self.escapeStrings = escapeStrings
         self.includeNullValues = includeNullValues
     }
     
-    public func encodeParameters(object: AnyObject, prefix: String! = nil) -> String {
+    open func encodeParameters(_ object: AnyObject, prefix: String! = nil) -> String {
         if let dictionary = object as? [String: AnyObject] {
             var results:[String] = []
             
@@ -28,19 +28,19 @@ public class ParameterEncoder {
                     results.append(self.encodeParameters(value, prefix: prefix != nil ? "\(prefix)[\(key)]" : key))
                 }
             }
-            return results.joinWithSeparator("&")
+            return results.joined(separator: "&")
         } else if let array = object as? [AnyObject] {
-            let results = array.enumerate().map { (index, value) -> String in
+            let results = array.enumerated().map { (index, value) -> String in
                 return self.encodeParameters(value, prefix: prefix != nil ? "\(prefix)[\(index)]" : "\(index)")
             }
-            return results.joinWithSeparator("&")
+            return results.joined(separator: "&")
         } else {
             let string = self.encodeValue(object)
             return prefix != nil ? "\(prefix)=\(string)" : "\(string)"
         }
     }
     
-    public func encodeValue(value: AnyObject) -> String {
+    open func encodeValue(_ value: AnyObject) -> String {
         var string:String
         if self.valueIsNull(value) {
             string = self.encodeNullValue()
@@ -53,15 +53,15 @@ public class ParameterEncoder {
         return string
     }
     
-    public func valueIsNull(value: AnyObject?) -> Bool {
+    open func valueIsNull(_ value: AnyObject?) -> Bool {
         return value == nil || (value as? NSNull == NSNull())
     }
     
-    public func encodeNullValue() -> String {
+    open func encodeNullValue() -> String {
         return self.nullString
     }
     
-    public func escape(string: String) -> String {
-        return string.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.URLQueryAllowedCharacterSet()) ?? ""
+    open func escape(_ string: String) -> String {
+        return string.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlQueryAllowed) ?? ""
     }
 }

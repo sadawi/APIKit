@@ -1,40 +1,35 @@
 PODS:
-  - Alamofire (3.5.1)
-  - MagneticFields (0.6.7)
-  - OMGHTTPURLRQ (3.2.0):
-    - OMGHTTPURLRQ/RQ (= 3.2.0)
-  - OMGHTTPURLRQ/FormURLEncode (3.2.0)
-  - OMGHTTPURLRQ/RQ (3.2.0):
-    - OMGHTTPURLRQ/FormURLEncode
-    - OMGHTTPURLRQ/UserAgent
-  - OMGHTTPURLRQ/UserAgent (3.2.0)
-  - PromiseKit (3.5.1):
-    - PromiseKit/Foundation (= 3.5.1)
-    - PromiseKit/QuartzCore (= 3.5.1)
-    - PromiseKit/UIKit (= 3.5.1)
-  - PromiseKit/CorePromise (3.5.1)
-  - PromiseKit/Foundation (3.5.1):
-    - OMGHTTPURLRQ (~> 3.2.0)
+  - Alamofire (4.2.0)
+  - MagneticFields (0.7.0)
+  - PromiseKit (4.0.5):
+    - PromiseKit/Foundation (= 4.0.5)
+    - PromiseKit/QuartzCore (= 4.0.5)
+    - PromiseKit/UIKit (= 4.0.5)
+  - PromiseKit/CorePromise (4.0.5)
+  - PromiseKit/Foundation (4.0.5):
     - PromiseKit/CorePromise
-  - PromiseKit/QuartzCore (3.5.1):
+  - PromiseKit/QuartzCore (4.0.5):
     - PromiseKit/CorePromise
-  - PromiseKit/UIKit (3.5.1):
+  - PromiseKit/UIKit (4.0.5):
     - PromiseKit/CorePromise
-  - SwiftyJSON (2.3.3)
+  - SwiftyJSON (3.1.3)
 
 DEPENDENCIES:
-  - Alamofire (~> 3.0)
-  - MagneticFields (= 0.6.7)
-  - PromiseKit (~> 3.0)
-  - SwiftyJSON (~> 2.3.0)
+  - Alamofire
+  - MagneticFields (from `~/Dropbox/projects/_lib/iOS/MagneticFields`)
+  - PromiseKit
+  - SwiftyJSON
+
+EXTERNAL SOURCES:
+  MagneticFields:
+    :path: "~/Dropbox/projects/_lib/iOS/MagneticFields"
 
 SPEC CHECKSUMS:
-  Alamofire: 0dfba1184a543e2aa160f4e39cac4e8aba48d223
-  MagneticFields: 1bb373b72e8117ccd80b1be060992bafc2d4f68c
-  OMGHTTPURLRQ: 1e54807cb7d5dbb506926e53498e1e9ac5720c79
-  PromiseKit: 99ea973444a4bff6c38ffb97fa1bb175e619bcf0
-  SwiftyJSON: 0fd0a115a3c0c09b277d2ab801df154902b942c3
+  Alamofire: aa2e09d871c9160ac53c90e83c68064a94e3dfbe
+  MagneticFields: a029d66ce611a066d0d790eefae4740c33535126
+  PromiseKit: 593b5e24ded6cbb1ebc708bc2c3428a8a5632d91
+  SwiftyJSON: 38a8ea2006779c0fc4c310cb2ee8195327740faf
 
-PODFILE CHECKSUM: c92bcd70c38f93cab3c86de4afc77cceb0a55eab
+PODFILE CHECKSUM: 75a89e4d14c69afbecd873c8bc3e11456a46f71b
 
 COCOAPODS: 1.1.1

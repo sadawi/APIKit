@@ -8,8 +8,8 @@
 
 import Foundation
 
-public struct TypeDictionary<T>: SequenceType {
-    private var dictionary: [TypeWrapper: T] = [:]
+public struct TypeDictionary<T>: Sequence {
+    fileprivate var dictionary: [TypeWrapper: T] = [:]
     
     public init() {
     }
@@ -27,10 +27,10 @@ public struct TypeDictionary<T>: SequenceType {
         }
     }
     
-    public func generate() -> AnyGenerator<(Any.Type, T)> {
+    public func makeIterator() -> AnyIterator<(Any.Type, T)> {
         var nextIndex = dictionary.keys.count-1
         
-        return AnyGenerator {
+        return AnyIterator {
             if (nextIndex < 0) {
                 return nil
             }
@@ -48,7 +48,7 @@ private struct TypeWrapper:Hashable {
         self.type = type
     }
     var hashValue:Int {
-        return String(self.type).hashValue
+        return String(describing: self.type).hashValue
     }
 }
 

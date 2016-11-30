@@ -9,8 +9,8 @@
 import Foundation
 
 extension Mirror {
-    func eachChild(iterator: ( Child -> Void )) {
-        if let mirror = self.superclassMirror() {
+    func eachChild(_ iterator: ( (Child) -> Void )) {
+        if let mirror = self.superclassMirror {
             mirror.eachChild(iterator)
         }
         

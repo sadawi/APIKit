@@ -8,16 +8,16 @@
 
 import Foundation
 
-public extension _ArrayType where Generator.Element: Hashable {
-    func difference<T where T:_ArrayType, T.Generator.Element == Generator.Element>(other: T) -> Array<Generator.Element> {
+public extension Collection where Iterator.Element: Hashable {
+    func difference<T>(_ other: T) -> Array<Iterator.Element> where T:Collection, T.Iterator.Element == Iterator.Element {
         let selfSet = Set(self)
         let otherSet = Set(other)
-        return Array(selfSet.subtract(otherSet))
+        return Array(selfSet.subtracting(otherSet))
     }
     
-    func symmetricDifference(other: Array<Generator.Element>) -> (Array<Generator.Element>, Array<Generator.Element>) {
+    func symmetricDifference(_ other: Array<Iterator.Element>) -> (Array<Iterator.Element>, Array<Iterator.Element>) {
         let selfSet = Set(self)
         let otherSet = Set(other)
-        return (Array(selfSet.subtract(otherSet)), Array(otherSet.subtract(selfSet)))
+        return (Array(selfSet.subtracting(otherSet)), Array(otherSet.subtracting(selfSet)))
     }
 }
