@@ -107,7 +107,7 @@ open class Model: NSObject, Routable, NSCopying {
      */
     open class func fromDictionaryValue(_ dictionaryValue:AttributeDictionary, useRegistry:Bool = true, configure:((Model,Bool) -> Void)?=nil) -> Self? {
         var instance = (self.instanceClassForDictionaryValue(dictionaryValue) ?? self).init()
-        (instance as Model).dictionaryValue = dictionaryValue
+        (instance as Model).setDictionaryValue(dictionaryValue)
         
         var isNew = true
         
@@ -117,7 +117,7 @@ open class Model: NSObject, Routable, NSCopying {
                 if let canonical = registry.canonicalModelForModel(instance) {
                     isNew = false
                     instance = canonical
-                    (instance as Model).dictionaryValue = dictionaryValue
+                    (instance as Model).setDictionaryValue(dictionaryValue)
                 } else {
                     isNew = true
                     registry.didInstantiateModel(instance)
@@ -152,7 +152,7 @@ open class Model: NSObject, Routable, NSCopying {
      Creates a clone of this model.  It won't exist in the registry.
      */
     open func copy(with zone: NSZone?) -> Any {
-        return type(of: self).fromDictionaryValue(self.dictionaryValue, useRegistry: false)!
+        return type(of: self).fromDictionaryValue(self.dictionaryValue(), useRegistry: false)!
     }
 
     
@@ -402,7 +402,7 @@ open class Model: NSObject, Routable, NSCopying {
         var seenFields:[FieldType] = []
         var includeField = includeField
         if includeField == nil {
-            includeField = { $0.state == .Set }
+            includeField = { (field:FieldType) -> Bool in field.loadState == LoadState.loaded }
         }
         return self.dictionaryValue(fields: fields, seenFields: &seenFields, explicitNull: explicitNull, includeField: includeField)
     }
@@ -413,8 +413,8 @@ open class Model: NSObject, Routable, NSCopying {
         var result:AttributeDictionary = [:]
         let include = fields
         for (_, field) in self.fields {
-            if include.contains({ $0 === field }) && includeField?(field) != false {
-                field.writeToDictionary(&result, seenFields: &seenFields, explicitNull: explicitNull)
+            if include.contains(where: { $0 === field }) && includeField?(field) != false {
+                field.write(to: &result, seenFields: &seenFields, explicitNull: explicitNull)
             }
         }
         return result
@@ -430,8 +430,8 @@ open class Model: NSObject, Routable, NSCopying {
     open func setDictionaryValue(_ dictionaryValue: AttributeDictionary, fields:[FieldType]?=nil) {
         let fields = (fields ?? self.defaultFieldsForDictionaryValue())
         for (_, field) in self.fields {
-            if fields.contains({ $0 === field }) {
-                field.readFromDictionary(dictionaryValue)
+            if fields.contains(where: { $0 === field }) {
+                field.read(from: dictionaryValue)
             }
         }
     }
@@ -487,15 +487,15 @@ open class Model: NSObject, Routable, NSCopying {
         var messages: [String] = []
         
         self.visitAllFields(recursive: false) { field in
-            if case .Invalid(let fieldMessages) = field.validate() {
-                messages.appendContentsOf(fieldMessages)
+            if case .invalid(let fieldMessages) = field.validate() {
+                messages.append(contentsOf: fieldMessages)
             }
         }
         
         if messages.count == 0 {
-            return .Valid
+            return .valid
         } else {
-            return .Invalid(messages)
+            return .invalid(messages)
         }
     }
     

@@ -13,6 +13,7 @@ import MagneticFields
 public enum RemoteDataStoreError: Error {
     case unknownError(message: String)
     case deserializationFailure
+    case serializationFailure
     case invalidResponse
     case noModelPath(model: Model)
     case noModelCollectionPath(modelClass: Model.Type)
@@ -21,6 +22,8 @@ public enum RemoteDataStoreError: Error {
         switch(self) {
         case .deserializationFailure:
             return "Could not deserialize model"
+        case .serializationFailure:
+            return "Could not serialize"
         case .invalidResponse:
             return "Invalid response value"
         case .noModelPath(let model):
@@ -115,7 +118,7 @@ open class RemoteDataStore: DataStore, ListableDataStore {
      - parameter apiResponse: The JSON response object from an Alamofire request
      - returns: A Response object with its payload cast to the specified type
      */
-    open func constructResponse<T>(_ apiResponse:Alamofire.DataResponse<AnyObject>) -> Response<T>? {
+    open func constructResponse<T>(_ apiResponse:Alamofire.DataResponse<Any>) -> Response<T>? {
         let response = Response<T>()
         response.data = apiResponse.result.value as? T
         return response
@@ -124,25 +127,27 @@ open class RemoteDataStore: DataStore, ListableDataStore {
     
     // MARK: - Generic requests
     
-    open func nestedParameterEncoding(method:Alamofire.HTTPMethod) -> ParameterEncoding {
-        return ParameterEncoding.custom({ (request:URLRequestConvertible, parameters:[String : AnyObject]?) -> (NSMutableURLRequest, NSError?) in
-            let request = request as? NSMutableURLRequest ?? NSMutableURLRequest()
-            if let parameters = parameters, let url = request.URL {
-                if method == .GET {
-                    let components = NSURLComponents(URL: url, resolvingAgainstBaseURL: false)
-                    components?.query = ParameterEncoder().encodeParameters(parameters)
-                    request.URL = components?.URL
-                } else {
-                    request.addValue("application/x-www-form-urlencoded; charset=utf-8", forHTTPHeaderField: "Content-Type")
-                    request.HTTPBody = ParameterEncoder(includeNullValues: true).encodeParameters(parameters).dataUsingEncoding(NSUTF8StringEncoding)
-                }
-            }
-            return (request, nil)
-        })
-    }
+    // TODO: update for Alamofire 4 ParameterEncoding protocol
+//    open func nestedParameterEncoding(method:Alamofire.HTTPMethod) -> ParameterEncoding {
+//        return ParameterEncoding.custom({ (request:URLRequestConvertible, parameters:[String : AnyObject]?) -> (NSMutableURLRequest, NSError?) in
+//            let request = request as? NSMutableURLRequest ?? NSMutableURLRequest()
+//            if let parameters = parameters, let url = request.URL {
+//                if method == .GET {
+//                    let components = NSURLComponents(URL: url, resolvingAgainstBaseURL: false)
+//                    components?.query = ParameterEncoder().encodeParameters(parameters)
+//                    request.URL = components?.URL
+//                } else {
+//                    request.addValue("application/x-www-form-urlencoded; charset=utf-8", forHTTPHeaderField: "Content-Type")
+//                    request.HTTPBody = ParameterEncoder(includeNullValues: true).encodeParameters(parameters).dataUsingEncoding(NSUTF8StringEncoding)
+//                }
+//            }
+//            return (request, nil)
+//        })
+//    }
     
     open func encodingForMethod(_ method: Alamofire.HTTPMethod) -> ParameterEncoding {
-        return self.nestedParameterEncoding(method: method)
+        return URLEncoding()
+//        return self.nestedParameterEncoding(method: method)
     }
     
     /**
@@ -183,7 +188,7 @@ open class RemoteDataStore: DataStore, ListableDataStore {
                 let headers = self.defaultHeaders() + headers
                 
                 // Manually recreating what Alamofire.request does so we have access to the NSURLRequest object:
-                let mutableRequest = NSMutableURLRequest(url: url)
+                var mutableRequest = URLRequest(url: url)
                 for (field, value) in headers {
                     mutableRequest.setValue(value, forHTTPHeaderField: field)
                 }
@@ -194,11 +199,13 @@ open class RemoteDataStore: DataStore, ListableDataStore {
                     mutableRequest.cachePolicy = cachePolicy
                 }
                 mutableRequest.httpMethod = method.rawValue
-                let encodedRequest = encoding.encode(mutableRequest, with: parameters).0
+                
+                
+                guard let encodedRequest = try? encoding.encode(mutableRequest, with: parameters) else { reject(RemoteDataStoreError.serializationFailure); return }
                 
                 Alamofire.request(encodedRequest).responseJSON { response in
                     switch response.result {
-                    case .Success:
+                    case .success:
                         if let value:Response<T> = self.constructResponse(response) {
                             if let error=value.error {
                                 // the request might have succeeded, but we found an error when constructing the Response object
@@ -208,12 +215,12 @@ open class RemoteDataStore: DataStore, ListableDataStore {
                                 fulfill(value)
                             }
                         } else {
-                            let error = RemoteDataStoreError.InvalidResponse
+                            let error = RemoteDataStoreError.invalidResponse
                             self.handleError(error)
                             reject(error)
                         }
-                    case .Failure(let error):
-                        self.handleError(error as ErrorType, model:model)
+                    case .failure(let error):
+                        self.handleError(error as Error, model:model)
                         reject(error)
                     }
                 }

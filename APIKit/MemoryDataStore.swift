@@ -97,7 +97,7 @@ open class MemoryDataStore: DataStore, ListableDataStore, ClearableDataStore {
         return collection?[identifier] as? T
     }
 
-    open func updateImmediately<T: Model>(_ model: T) -> T {
+    @discardableResult open func updateImmediately<T: Model>(_ model: T) -> T {
         // store in the collection just to be safe
         if let id = model.identifier {
             // casting model to Model to avoid weird Swift (?) bug (see [1] at top of file)
