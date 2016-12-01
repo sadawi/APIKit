@@ -87,7 +87,7 @@ class APIKitTests: XCTestCase {
     }
     
     func testArrayVisit() {
-        let company = Company.fromDictionaryValue(["products": [["id":"100", "productName": "iPhone"]]])
+        let company = Company.fromDictionaryValue(["products": [["id":"100", "productName": "iPhone"]] as AnyObject])
         XCTAssertEqual(company?.products.value?.count, 1)
         var iphone = false
         company?.visitAllFieldValues(recursive: true) { value in
@@ -108,7 +108,7 @@ class APIKitTests: XCTestCase {
         left.right.value = right
         right.left.value = left
         
-        let leftDict = left.dictionaryValue
+        let leftDict = left.dictionaryValue()
         XCTAssertEqual(leftDict.count, 2)
         
         XCTAssertEqual(leftDict["id"] as? String, "leftID")
@@ -138,7 +138,7 @@ class APIKitTests: XCTestCase {
     }
     
     func testArrayShells() {
-        let company = Company.fromDictionaryValue(["widgetIDs": ["44", "55"]])
+        let company = Company.fromDictionaryValue(["widgetIDs": ["44", "55"] as AnyObject])
         let shells = company?.shells(recursive: true)
         XCTAssertEqual(shells?.count, 2)
     }
@@ -146,14 +146,14 @@ class APIKitTests: XCTestCase {
     func testShells() {
         let didSave = expectation(description: "save")
         
-        let phil = Person.fromDictionaryValue(["name": "Phil", "age": 44, "company": "testID"])!
+        let phil = Person.fromDictionaryValue(["name": "Phil" as AnyObject, "age": 44 as AnyObject, "company": "testID" as AnyObject])!
         
         ModelManager.sharedInstance.dataStore.save(phil).then { model -> Void in
             // Fails because 555 is not a valid owner id (should be string)
-            let grazi0 = Pet.fromDictionaryValue(["name": "Grazi", "owner": 555])
+            let grazi0 = Pet.fromDictionaryValue(["name": "Grazi" as AnyObject, "owner": 555 as AnyObject])
             XCTAssertNil(grazi0?.owner.value?.id.value)
 
-            let grazi1 = Pet.fromDictionaryValue(["name": "Grazi", "owner": phil.id.value!])
+            let grazi1 = Pet.fromDictionaryValue(["name": "Grazi" as AnyObject, "owner": phil.id.value! as AnyObject])
             XCTAssertEqual(grazi1?.owner.value?.id.value, phil.id.value)
             
             let shells = grazi1!.shells()

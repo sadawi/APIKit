@@ -67,11 +67,11 @@ class ArchiveTests: XCTestCase {
                 XCTAssertEqual(pet.owner.value, alice)
                 
                 didLoad.fulfill()
-                }.error { error in
-                    XCTFail(String(error))
+                }.catch { error in
+                    XCTFail(String(describing: error))
             }
-            }.error { error in
-                XCTFail(String(error))
+            }.catch { error in
+                XCTFail(String(describing: error))
         }
 
         self.waitForExpectations(timeout: 1, handler:nil)
@@ -104,11 +104,11 @@ class ArchiveTests: XCTestCase {
                     }
                 }
                 
-                }.error { error in
-                    XCTFail(String(error))
+                }.catch { error in
+                    XCTFail(String(describing: error))
             }
-            }.error { error in
-                XCTFail(String(error))
+            }.catch { error in
+                XCTFail(String(describing: error))
         }
         
         self.waitForExpectations(timeout: 1, handler:nil)

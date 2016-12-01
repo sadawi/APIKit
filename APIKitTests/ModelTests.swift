@@ -56,7 +56,7 @@ class ModelTests: XCTestCase {
         co2.name.value = "Parent Company"
         co.parentCompany.value = co2
         
-        let dict = co.dictionaryValue
+        let dict = co.dictionaryValue()
         print(dict)
         
         XCTAssertEqual(dict["name"] as? String, "The Widget Company")
@@ -90,7 +90,7 @@ class ModelTests: XCTestCase {
         c.name.value = "Chess Club"
         c.members.value = [a,b]
         
-        let cDict = c.dictionaryValue
+        let cDict = c.dictionaryValue()
         XCTAssertEqual(cDict["name"] as? String, "Chess Club")
         
         let members = cDict["members"] as? [AttributeDictionary]
@@ -169,18 +169,18 @@ class ModelTests: XCTestCase {
     }
     
     func testCustomSubclass() {
-        let a = Letter.fromDictionaryValue(["letter": "a"])
+        let a = Letter.fromDictionaryValue(["letter": "a" as AnyObject])
         XCTAssert(a is A)
 
-        let b = Letter.fromDictionaryValue(["letter": "b"])
+        let b = Letter.fromDictionaryValue(["letter": "b" as AnyObject])
         XCTAssert(b is B)
         
         // We didn't define the case for "c", so it falls back to Letter.
-        let c = Letter.fromDictionaryValue(["letter": "c"])
+        let c = Letter.fromDictionaryValue(["letter": "c" as AnyObject])
         XCTAssert(type(of: c!) == Letter.self)
 
         // Note that the unrelated type falls back to Letter!
-        let x = Letter.fromDictionaryValue(["letter": "x"])
+        let x = Letter.fromDictionaryValue(["letter": "x" as AnyObject])
         XCTAssert(type(of: x!) == Letter.self)
     }
     
@@ -238,7 +238,7 @@ class ModelTests: XCTestCase {
     func testValidationMessages() {
         let component = EssentialComponent()
         let state = component.validate()
-        XCTAssertEqual(state, ValidationState.Invalid(["Field is required"]))
+        XCTAssertEqual(state, ValidationState.invalid(["Field is required"]))
     }
     
 //    func testCascadeDelete() {
