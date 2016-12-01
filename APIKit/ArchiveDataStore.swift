@@ -126,7 +126,7 @@ open class ArchiveDataStore: ListableDataStore, ClearableDataStore {
     /**
      Loads all instances of a class, and recursively unarchives all classes of related (shell) models.
      */
-    fileprivate func unarchive<T: Model>(_ modelClass: T.Type, suffix: String, keysToIgnore:NSMutableSet=NSMutableSet()) -> [T] {
+    @discardableResult fileprivate func unarchive<T: Model>(_ modelClass: T.Type, suffix: String, keysToIgnore:NSMutableSet=NSMutableSet()) -> [T] {
         let key = self.keyForClass(modelClass) + suffix
         
         if !keysToIgnore.contains(key) {

@@ -226,7 +226,7 @@ open class Model: NSObject, Routable, NSCopying {
     open func beforeSave()    { }
     open func afterDelete()   { }
     
-    open func cascadeDelete(_ cascade: @escaping ((Model)->Void), seenModels: inout Set<Model>) {
+    open func cascadeDelete(_ cascade: ((Model)->Void), seenModels: inout Set<Model>) {
         self.visitAllFields(action: { field in
             if let modelField = field as? ModelFieldType , modelField.cascadeDelete {
                 if let model = modelField.anyObjectValue as? Model {

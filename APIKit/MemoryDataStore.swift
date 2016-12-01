@@ -66,7 +66,7 @@ open class MemoryDataStore: DataStore, ListableDataStore, ClearableDataStore {
         return self.delete(model, seenModels: &seenModels)
     }
     
-    open func delete<T:Model>(_ model: T, seenModels: inout Set<Model>) -> Promise<T> {
+    @discardableResult open func delete<T:Model>(_ model: T, seenModels: inout Set<Model>) -> Promise<T> {
         return Promise { fulfill, reject in
             if let id=self.keyForModel(model), let collection = self.collectionForClass(type(of: (model as Model))) {
                 collection.removeObject(forKey: id)

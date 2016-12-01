@@ -35,7 +35,6 @@ public protocol DataStore {
     
     /**
      Deletes a record.
-     TODO: cascade
      */
     func delete<T:Model>(_ model:T) -> Promise<T>
     
@@ -86,7 +85,7 @@ public extension DataStore {
      Upsert.  Creates a new record or updates an existing one, depending on whether we think it's been persisted.
      */
     public func save(_ model:Model, fields:[FieldType]?=nil) -> Promise<Model> {
-        return self.containsModel(model).thenInBackground { (result:Bool) -> Promise<Model> in
+        return self.containsModel(model).then(on: .global()) { (result:Bool) -> Promise<Model> in
             if result {
                 return self.update(model, fields: fields)
             } else {

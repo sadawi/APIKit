@@ -115,7 +115,7 @@ open class RemoteDataStore: DataStore, ListableDataStore {
      - parameter apiResponse: The JSON response object from an Alamofire request
      - returns: A Response object with its payload cast to the specified type
      */
-    open func constructResponse<T>(_ apiResponse:Alamofire.Response<AnyObject,NSError>) -> Response<T>? {
+    open func constructResponse<T>(_ apiResponse:Alamofire.DataResponse<AnyObject>) -> Response<T>? {
         let response = Response<T>()
         response.data = apiResponse.result.value as? T
         return response
@@ -124,7 +124,7 @@ open class RemoteDataStore: DataStore, ListableDataStore {
     
     // MARK: - Generic requests
     
-    open func nestedParameterEncoding(method:Alamofire.Method) -> ParameterEncoding {
+    open func nestedParameterEncoding(method:Alamofire.HTTPMethod) -> ParameterEncoding {
         return ParameterEncoding.custom({ (request:URLRequestConvertible, parameters:[String : AnyObject]?) -> (NSMutableURLRequest, NSError?) in
             let request = request as? NSMutableURLRequest ?? NSMutableURLRequest()
             if let parameters = parameters, let url = request.URL {
@@ -141,7 +141,7 @@ open class RemoteDataStore: DataStore, ListableDataStore {
         })
     }
     
-    open func encodingForMethod(_ method: Alamofire.Method) -> ParameterEncoding {
+    open func encodingForMethod(_ method: Alamofire.HTTPMethod) -> ParameterEncoding {
         return self.nestedParameterEncoding(method: method)
     }
     
@@ -162,7 +162,7 @@ open class RemoteDataStore: DataStore, ListableDataStore {
      - returns: A Promise parameterized by the data payload type of the response
      */
     open func request<T>(
-        _ method: Alamofire.Method,
+        _ method: Alamofire.HTTPMethod,
         path: String,
         parameters: AttributeDictionary?=nil,
         headers: [String:String]=[:],
@@ -193,8 +193,8 @@ open class RemoteDataStore: DataStore, ListableDataStore {
                 if let cachePolicy = cachePolicy {
                     mutableRequest.cachePolicy = cachePolicy
                 }
-                mutableRequest.HTTPMethod = method.rawValue
-                let encodedRequest = encoding.encode(mutableRequest, parameters: parameters).0
+                mutableRequest.httpMethod = method.rawValue
+                let encodedRequest = encoding.encode(mutableRequest, with: parameters).0
                 
                 Alamofire.request(encodedRequest).responseJSON { response in
                     switch response.result {
@@ -248,12 +248,12 @@ open class RemoteDataStore: DataStore, ListableDataStore {
         let modelModel = model as Model
         
         if let collectionPath = type(of: modelModel).collectionPath {
-            return self.request(.POST, path: collectionPath, parameters: requestParameters, model:model).thenInBackground(self.instantiateModel(type(of: modelModel))).thenInBackground { model in
+            return self.request(.post, path: collectionPath, parameters: requestParameters, model:model).then(on: .global(), execute: self.instantiateModel(type(of: modelModel))).then(on: .global()) { model in
                 model.afterCreate()
-                return Promise(model as! T)
+                return Promise(value: model as! T)
             }
         } else {
-            return Promise(error: RemoteDataStoreError.NoModelCollectionPath(modelClass: type(of: modelModel)))
+            return Promise(error: RemoteDataStoreError.noModelCollectionPath(modelClass: type(of: modelModel)))
         }
     }
     
@@ -274,23 +274,23 @@ open class RemoteDataStore: DataStore, ListableDataStore {
                     requestParameters[k] = v
                 }
             }
-            return self.request(.PATCH, path: path, parameters: requestParameters, model:model).thenInBackground(self.instantiateModel(type(of: modelModel))).thenInBackground { model in
+            return self.request(.patch, path: path, parameters: requestParameters, model:model).then(on: .global(), execute: self.instantiateModel(type(of: modelModel))).then(on: .global()) { model -> Promise<T> in
                 // Dancing around to get the type inference to work
-                return Promise(model as! T)
+                return Promise<T>(value: model as! T)
             }
         } else {
-            return Promise(error: RemoteDataStoreError.NoModelPath(model: model))
+            return Promise(error: RemoteDataStoreError.noModelPath(model: model))
         }
     }
     
     open func delete<T:Model>(_ model: T) -> Promise<T> {
         if let path = (model as Model).path {
-            return self.request(.DELETE, path: path).thenInBackground { (response:Response<T>) -> Promise<T> in
+            return self.request(.delete, path: path).then(on: .global()) { (response:Response<T>) -> Promise<T> in
                 model.afterDelete()
-                return Promise(model)
+                return Promise(value: model)
             }
         } else {
-            return Promise(error: RemoteDataStoreError.NoModelPath(model: model))
+            return Promise(error: RemoteDataStoreError.noModelPath(model: model))
         }
     }
     open func lookup<T: Model>(_ modelClass:T.Type, identifier:String) -> Promise<T> {
@@ -301,7 +301,7 @@ open class RemoteDataStore: DataStore, ListableDataStore {
         let model = modelClass.init() as T
         model.identifier = identifier
         if let path = (model as Model).path {
-            return self.request(.GET, path: path, parameters: parameters).thenInBackground(self.instantiateModel(modelClass))
+            return self.request(.get, path: path, parameters: parameters).then(on: .global(), execute: self.instantiateModel(modelClass))
         } else {
             return Promise(error: RemoteDataStoreError.noModelPath(model: model))
         }
@@ -311,7 +311,7 @@ open class RemoteDataStore: DataStore, ListableDataStore {
         if let identifier = model.identifier {
             return self.lookup(T.self, identifier: identifier, parameters: parameters)
         } else {
-            return Promise(error: RemoteDataStoreError.NoModelPath(model: model))
+            return Promise(error: RemoteDataStoreError.noModelPath(model: model))
         }
     }
     
@@ -328,9 +328,9 @@ open class RemoteDataStore: DataStore, ListableDataStore {
      */
     open func list<T: Model>(_ modelClass:T.Type, path:String?=nil, parameters:[String:AnyObject]?) -> Promise<[T]> {
         if let collectionPath = (path ?? modelClass.collectionPath) {
-            return self.request(.GET, path: collectionPath, parameters: parameters).thenInBackground(self.instantiateModels(modelClass))
+            return self.request(.get, path: collectionPath, parameters: parameters).then(on: .global(), execute: self.instantiateModels(modelClass))
         } else {
-            return Promise(error: RemoteDataStoreError.NoModelCollectionPath(modelClass: modelClass))
+            return Promise(error: RemoteDataStoreError.noModelCollectionPath(modelClass: modelClass))
         }
     }
     

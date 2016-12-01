@@ -37,7 +37,7 @@ open class ModelField<T: Model>: Field<T>, ModelFieldType {
         self._inverse = inverse
     }
     
-    open override func defaultValueTransformer() -> MagneticFields.ValueTransformer {
+    open override func defaultValueTransformer() -> MagneticFields.ValueTransformer<T> {
         return self.foreignKey ? ModelForeignKeyValueTransformer<T>.sharedInstance : ModelValueTransformer<T>.sharedInstance
     }
     

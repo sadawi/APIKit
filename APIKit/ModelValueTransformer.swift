@@ -40,7 +40,7 @@ open class ModelValueTransformer<T: Model>: MagneticFields.ValueTransformer<T> {
 }
 
 open class ModelForeignKeyValueTransformer<T: Model>: MagneticFields.ValueTransformer<T> {
-    public required override init() {
+    public required init() {
         super.init(importAction: { value in
             
             // Normally we'd check for null by simply trying to cast to the correct type, but only a model instance knows the type of its identifier field.
