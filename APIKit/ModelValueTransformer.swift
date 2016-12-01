@@ -9,9 +9,9 @@
 import Foundation
 import MagneticFields
 
-open class ModelValueTransformer<T: Model>: MagneticFields.ValueTransformer {
+open class ModelValueTransformer<T: Model>: MagneticFields.ValueTransformer<T> {
     
-    public required override init() {
+    public required init() {
         super.init()
     }
 
@@ -32,14 +32,14 @@ open class ModelValueTransformer<T: Model>: MagneticFields.ValueTransformer {
     open func exportValue(_ value: T?, fields: [FieldType]?=nil, seenFields: inout [FieldType], explicitNull: Bool = false) -> AnyObject? {
         // Why do I have to cast it to Model?  T is already a Model.
         if let value = value as? Model {
-            return value.dictionaryValue(fields: fields, seenFields: &seenFields, explicitNull: explicitNull)
+            return value.dictionaryValue(fields: fields, seenFields: &seenFields, explicitNull: explicitNull) as AnyObject
         } else {
             return type(of: self).nullValue(explicit: explicitNull)
         }
     }
 }
 
-open class ModelForeignKeyValueTransformer<T: Model>: MagneticFields.ValueTransformer {
+open class ModelForeignKeyValueTransformer<T: Model>: MagneticFields.ValueTransformer<T> {
     public required override init() {
         super.init(importAction: { value in
             

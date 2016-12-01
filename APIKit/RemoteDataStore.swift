@@ -51,9 +51,9 @@ open class RemoteDataStore: DataStore, ListableDataStore {
     open func instantiateModel<T:Model>(_ modelClass:T.Type) -> ((Response<AttributeDictionary>) -> Promise<T>){
         return { (response:Response<AttributeDictionary>) in
             if let data = response.data, let model = self.deserializeModel(modelClass, parameters: data) {
-                return Promise(model)
+                return Promise(value: model)
             } else {
-                return Promise(error: RemoteDataStoreError.DeserializationFailure)
+                return Promise(error: RemoteDataStoreError.deserializationFailure)
             }
         }
     }
@@ -67,9 +67,9 @@ open class RemoteDataStore: DataStore, ListableDataStore {
                     let model:T? = self.deserializeModel(modelClass, parameters: value)
                     return model
                     }.flatMap{$0}
-                return Promise(models)
+                return Promise(value: models)
             } else {
-                return Promise([])
+                return Promise(value: [])
             }
         }
     }
@@ -125,7 +125,7 @@ open class RemoteDataStore: DataStore, ListableDataStore {
     // MARK: - Generic requests
     
     open func nestedParameterEncoding(method:Alamofire.Method) -> ParameterEncoding {
-        return ParameterEncoding.Custom({ (request:URLRequestConvertible, parameters:[String : AnyObject]?) -> (NSMutableURLRequest, NSError?) in
+        return ParameterEncoding.custom({ (request:URLRequestConvertible, parameters:[String : AnyObject]?) -> (NSMutableURLRequest, NSError?) in
             let request = request as? NSMutableURLRequest ?? NSMutableURLRequest()
             if let parameters = parameters, let url = request.URL {
                 if method == .GET {
@@ -149,7 +149,7 @@ open class RemoteDataStore: DataStore, ListableDataStore {
      A placeholder method in which you can attempt to restore your session (refreshing your oauth token, for example) before each request.
      */
     open func restoreSession() -> Promise<Void> {
-        return Promise<Void>()
+        return Promise<Void>(value: ())
     }
     
     /**
@@ -183,7 +183,7 @@ open class RemoteDataStore: DataStore, ListableDataStore {
                 let headers = self.defaultHeaders() + headers
                 
                 // Manually recreating what Alamofire.request does so we have access to the NSURLRequest object:
-                let mutableRequest = NSMutableURLRequest(URL: url)
+                let mutableRequest = NSMutableURLRequest(url: url)
                 for (field, value) in headers {
                     mutableRequest.setValue(value, forHTTPHeaderField: field)
                 }
@@ -221,7 +221,7 @@ open class RemoteDataStore: DataStore, ListableDataStore {
         }
         
         if requireSession {
-            return self.restoreSession().thenInBackground(action)
+            return self.restoreSession().then(on: .global(), execute: action)
         } else {
             return action()
         }
@@ -303,7 +303,7 @@ open class RemoteDataStore: DataStore, ListableDataStore {
         if let path = (model as Model).path {
             return self.request(.GET, path: path, parameters: parameters).thenInBackground(self.instantiateModel(modelClass))
         } else {
-            return Promise(error: RemoteDataStoreError.NoModelPath(model: model))
+            return Promise(error: RemoteDataStoreError.noModelPath(model: model))
         }
     }
     

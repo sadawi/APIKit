@@ -151,7 +151,7 @@ open class ArchiveDataStore: ListableDataStore, ClearableDataStore {
     
     fileprivate func archive<T: Model>(_ models: [T], key: String) -> Bool {
         if let path = self.pathForKey(key) {
-            let dictionaries = models.map { $0.dictionaryValue }
+            let dictionaries = models.map { $0.dictionaryValue() }
             if NSKeyedArchiver.archiveRootObject(dictionaries, toFile: path) {
                 return true
             } else {

@@ -15,8 +15,8 @@ private struct TransformerCache {
 }
 
 extension MagneticFields.ValueTransformer {
-    class var sharedInstance: ValueTransformer {
-        if let existing = TransformerCache.transformers[self] as? ValueTransformer {
+    class var sharedInstance: MagneticFields.ValueTransformer<T> {
+        if let existing = TransformerCache.transformers[self] as? MagneticFields.ValueTransformer<T> {
             return existing
         } else {
             let newInstance = self.init()

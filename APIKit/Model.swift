@@ -437,20 +437,6 @@ open class Model: NSObject, Routable, NSCopying {
     }
     
     /**
-     The default dictionary representation of this model.
-     
-     If you want to customize the input/output, override `dictionaryValue(fields:)` and/or `setDictionaryValue(_:fields:)`.
-     */
-    public final var dictionaryValue:AttributeDictionary {
-        get {
-            return self.dictionaryValue()
-        }
-        set {
-            self.setDictionaryValue(newValue)
-        }
-    }
-    
-    /**
      Finds all values that are shells (i.e., a model instantiated from just a foreign key)
      */
     open func shells(recursive:Bool = false) -> [Model] {
