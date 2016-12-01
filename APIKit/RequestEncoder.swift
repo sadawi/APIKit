@@ -19,24 +19,41 @@ open class ParameterEncoder {
         self.includeNullValues = includeNullValues
     }
     
-    open func encodeParameters(_ object: AnyObject, prefix: String! = nil) -> String {
+    open func encodeParameters(_ object: AnyObject, prefix: String? = nil) -> String {
         if let dictionary = object as? [String: AnyObject] {
             var results:[String] = []
             
             for (key, value) in dictionary {
                 if !self.valueIsNull(value) || self.includeNullValues {
-                    results.append(self.encodeParameters(value, prefix: prefix != nil ? "\(prefix)[\(key)]" : key))
+                    var prefixString: String
+                    if let prefix = prefix {
+                        prefixString = "\(prefix)[\(key)]"
+                    } else {
+                        prefixString = key
+                    }
+
+                    results.append(self.encodeParameters(value, prefix: prefixString))
                 }
             }
             return results.joined(separator: "&")
         } else if let array = object as? [AnyObject] {
             let results = array.enumerated().map { (index, value) -> String in
-                return self.encodeParameters(value, prefix: prefix != nil ? "\(prefix)[\(index)]" : "\(index)")
+                var prefixString: String
+                if let prefix = prefix {
+                    prefixString = "\(prefix)[\(index)]"
+                } else {
+                    prefixString = "\(index)"
+                }
+                return self.encodeParameters(value, prefix: prefixString)
             }
             return results.joined(separator: "&")
         } else {
             let string = self.encodeValue(object)
-            return prefix != nil ? "\(prefix)=\(string)" : "\(string)"
+            if let prefix = prefix {
+                return "\(prefix)=\(string)"
+            } else {
+                return "\(string)"
+            }
         }
     }
     

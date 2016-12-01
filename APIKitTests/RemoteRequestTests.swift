@@ -19,7 +19,7 @@ class RemoteRequestTests: XCTestCase {
     func testRequestEncoding() {
         let dict = ["people": [["name": "Bob", "age": 65], ["name": "Alice"]]]
         let json = ParameterEncoder().encodeParameters(dict as AnyObject)
-        XCTAssertEqual("people[0][age]=65&people[0][name]=Bob&people[1][name]=Alice", json)
+        XCTAssertEqual("people[0][name]=Bob&people[0][age]=65&people[1][name]=Alice", json)
     }
     
     func testEncoding() {
