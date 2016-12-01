@@ -238,7 +238,7 @@ class ModelTests: XCTestCase {
     func testValidationMessages() {
         let component = EssentialComponent()
         let state = component.validate()
-        XCTAssertEqual(state, ValidationState.invalid(["Field is required"]))
+        XCTAssertEqual(state, ValidationState.invalid(["is required"]))
     }
     
 //    func testCascadeDelete() {
